@@ -1,0 +1,29 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.server.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    },
+  ],
+  "compilerOptions": {
+    // Alias resolution for the editor's inferred "solution" project so
+    // routes/imports resolve even if the referenced projects aren't loaded.
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@shared/*": [
+        "./shared/*"
+      ],
+      "@server/*": [
+        "./server/*"
+      ]
+    }
+  }
+}

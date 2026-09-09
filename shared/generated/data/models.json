@@ -1,0 +1,1367 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-11T09:17:20.273Z",
+  "models": [
+    {
+      "id": "41ca173f-72d5-4420-8915-49e835d2676e",
+      "name": "@cf/aisingapore/gemma-sea-lion-v4-27b-it",
+      "urlPath": "gemma-sea-lion-v4-27b-it",
+      "provider": "aisingapore",
+      "task": "text-generation",
+      "description": "SEA-LION stands for Southeast Asian Languages In One Network, which is a collection of Large Language Models (LLMs) which have been pretrained and instruct-tuned for the Southeast Asia (SEA) region.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 128000,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.351,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 0.555,
+          "currency": "USD"
+        }
+      ],
+      "terms": null,
+      "createdAt": "2025-09-23 19:27:30.468"
+    },
+    {
+      "id": "9e087485-23dc-47fa-997d-f5bfafc0c7cc",
+      "name": "@cf/black-forest-labs/flux-1-schnell",
+      "urlPath": "flux-1-schnell",
+      "provider": "black-forest-labs",
+      "task": "text-to-image",
+      "description": "FLUX.1 [schnell] is a 12 billion parameter rectified flow transformer capable of generating images from text descriptions. ",
+      "capabilities": {
+        "streaming": false,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": null,
+      "pricing": null,
+      "terms": "https://bfl.ai/legal/terms-of-service",
+      "createdAt": "2024-08-29 16:37:39.541"
+    },
+    {
+      "id": "3ae8936e-593e-4fb2-85ee-95dd8a057588",
+      "name": "@cf/black-forest-labs/flux-2-dev",
+      "urlPath": "flux-2-dev",
+      "provider": "black-forest-labs",
+      "task": "text-to-image",
+      "description": "FLUX.2 [dev] is an image model from Black Forest Labs where you can generate highly realistic and detailed images, with multi-reference support.",
+      "capabilities": {
+        "streaming": false,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": true,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": null,
+      "pricing": null,
+      "terms": "https://bfl.ai/legal/terms-of-service",
+      "createdAt": "2025-11-24 15:44:06.050"
+    },
+    {
+      "id": "5cdffa8e-1b1e-48e8-85f1-ab9b943cdd32",
+      "name": "@cf/black-forest-labs/flux-2-klein-4b",
+      "urlPath": "flux-2-klein-4b",
+      "provider": "black-forest-labs",
+      "task": "text-to-image",
+      "description": "FLUX.2 [klein] is an ultra-fast, distilled image model. It unifies image generation and editing in a single model, delivering state-of-the-art quality enabling interactive workflows, real-time previews, and latency-critical applications.",
+      "capabilities": {
+        "streaming": false,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": true,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": null,
+      "pricing": null,
+      "terms": "https://bfl.ai/legal/terms-of-service",
+      "createdAt": "2026-01-14 12:54:55.024"
+    },
+    {
+      "id": "e580c765-810c-4da3-936c-a2808892f14c",
+      "name": "@cf/black-forest-labs/flux-2-klein-9b",
+      "urlPath": "flux-2-klein-9b",
+      "provider": "black-forest-labs",
+      "task": "text-to-image",
+      "description": "FLUX.2 [klein] 9B is a 9 billion parameter model that can generate images from text descriptions and supports multi-reference editing capabilities.",
+      "capabilities": {
+        "streaming": false,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": true,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": null,
+      "pricing": null,
+      "terms": "https://bfl.ai/legal/terms-of-service",
+      "createdAt": "2026-01-14 12:55:54.294"
+    },
+    {
+      "id": "7f797b20-3eb0-44fd-b571-6cbbaa3c423b",
+      "name": "@cf/bytedance/stable-diffusion-xl-lightning",
+      "urlPath": "stable-diffusion-xl-lightning",
+      "provider": "bytedance",
+      "task": "text-to-image",
+      "description": "SDXL-Lightning is a lightning-fast text-to-image generation model. It can generate high-quality 1024px images in a few steps.",
+      "capabilities": {
+        "streaming": false,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": true,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": null,
+      "pricing": [
+        {
+          "unit": "per step",
+          "price": 0,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://huggingface.co/ByteDance/SDXL-Lightning",
+      "createdAt": "2024-02-27 17:41:29.578"
+    },
+    {
+      "id": "ad01ab83-baf8-4e7b-8fed-a0a219d4eb45",
+      "name": "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b",
+      "urlPath": "deepseek-r1-distill-qwen-32b",
+      "provider": "deepseek-ai",
+      "task": "text-generation",
+      "description": "DeepSeek-R1-Distill-Qwen-32B is a model distilled from DeepSeek-R1 based on Qwen2.5. It outperforms OpenAI-o1-mini across various benchmarks, achieving new state-of-the-art results for dense models.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": false,
+        "reasoning": true,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 80000,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.497,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 4.881,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://github.com/deepseek-ai/DeepSeek-R1/blob/main/LICENSE",
+      "createdAt": "2025-01-22 19:48:55.776"
+    },
+    {
+      "id": "7276b330-b4ae-4662-81d1-3a8bea8368f8",
+      "name": "@cf/deepseek-ai/deepseek-v4-flash-0731",
+      "urlPath": "deepseek-v4-flash-0731",
+      "provider": "deepseek-ai",
+      "task": "text-generation",
+      "description": "DeepSeek-V4-Flash-0731 is the official release of DeepSeek-V4-Flash, superseding the preview version, with substantially enhanced agentic capabilities. ",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": true,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": true,
+        "realtime": false,
+        "requireWorkersPaid": true
+      },
+      "contextWindow": 1310720,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.44,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 1.32,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M cached input tokens",
+          "price": 0.014,
+          "currency": "USD"
+        }
+      ],
+      "terms": null,
+      "createdAt": "2026-07-31 14:10:43.440"
+    },
+    {
+      "id": "2d50837b-2dc7-4994-a690-a38e25c16d74",
+      "name": "@cf/deepseek-ai/deepseek-v4-pro-0813",
+      "urlPath": "deepseek-v4-pro-0813",
+      "provider": "deepseek-ai",
+      "task": "text-generation",
+      "description": "DeepSeek V4 Pro is a high-capability reasoning model from DeepSeek with a one million token context window, built for long-horizon agentic workflows and complex, multi-step problem-solving",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": true,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": true
+      },
+      "contextWindow": 1048576,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 1.32,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 3.96,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M cached input tokens",
+          "price": 0.044,
+          "currency": "USD"
+        }
+      ],
+      "terms": null,
+      "createdAt": "2026-08-13 17:15:08.489"
+    },
+    {
+      "id": "e8e8abe4-a372-4c13-815f-4688ba655c8e",
+      "name": "@cf/google/gemma-2b-it-lora",
+      "urlPath": "gemma-2b-it-lora",
+      "provider": "google",
+      "task": "text-generation",
+      "description": "This is a Gemma-2B base model that Cloudflare dedicates for inference with LoRA adapters. Gemma is a family of lightweight, state-of-the-art open models from Google, built from the same research and technology used to create the Gemini models.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": true,
+        "beta": true,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 8192,
+      "pricing": null,
+      "terms": null,
+      "createdAt": "2024-04-02 00:19:34.669"
+    },
+    {
+      "id": "328adb49-4a7d-43e3-a2d5-802ae8100fe7",
+      "name": "@cf/google/gemma-4-26b-a4b-it",
+      "urlPath": "gemma-4-26b-a4b-it",
+      "provider": "google",
+      "task": "text-generation",
+      "description": "Gemma 4 is Google's most intelligent family of open models, built from Gemini 3 research to maximize intelligence-per-parameter.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": true,
+        "vision": true,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": true,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 256000,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.1,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 0.3,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://ai.google.dev/gemma/docs/gemma_4_license",
+      "createdAt": "2026-04-02 15:05:22.642"
+    },
+    {
+      "id": "337170b7-bd2f-4631-9a57-688b579cf6d3",
+      "name": "@cf/google/gemma-7b-it-lora",
+      "urlPath": "gemma-7b-it-lora",
+      "provider": "google",
+      "task": "text-generation",
+      "description": "  This is a Gemma-7B base model that Cloudflare dedicates for inference with LoRA adapters. Gemma is a family of lightweight, state-of-the-art open models from Google, built from the same research and technology used to create the Gemini models.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": true,
+        "beta": true,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 3500,
+      "pricing": null,
+      "terms": null,
+      "createdAt": "2024-04-02 00:20:19.633"
+    },
+    {
+      "id": "7952d0cc-cb00-4e10-be02-667565c2ee0f",
+      "name": "@cf/ibm-granite/granite-4.0-h-micro",
+      "urlPath": "granite-4.0-h-micro",
+      "provider": "ibm-granite",
+      "task": "text-generation",
+      "description": "Granite 4.0 instruct models deliver strong performance across benchmarks, achieving industry-leading results in key agentic tasks like instruction following and function calling. These efficiencies make the models well-suited for a wide range of use cases like retrieval-augmented generation (RAG), multi-agent workflows, and edge deployments.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 131000,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.017,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 0.112,
+          "currency": "USD"
+        }
+      ],
+      "terms": null,
+      "createdAt": "2025-10-07 18:46:29.436"
+    },
+    {
+      "id": "0e372c11-8720-46c9-a02d-666188a22dae",
+      "name": "@cf/leonardo/lucid-origin",
+      "urlPath": "lucid-origin",
+      "provider": "leonardo",
+      "task": "text-to-image",
+      "description": "Lucid Origin from Leonardo.AI is their most adaptable and prompt-responsive model to date. Whether you're generating images with sharp graphic design, stunning full-HD renders, or highly specific creative direction, it adheres closely to your prompts, renders text with accuracy, and supports a wide array of visual styles and aesthetics – from stylized concept art to crisp product mockups.\n",
+      "capabilities": {
+        "streaming": false,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": true,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": null,
+      "pricing": [
+        {
+          "unit": "per 512 by 512 tile",
+          "price": 0.007,
+          "currency": "USD"
+        },
+        {
+          "unit": "per step",
+          "price": 0.000132,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://leonardo.ai/terms-of-service/",
+      "createdAt": "2025-08-25 19:21:28.770"
+    },
+    {
+      "id": "724608fa-983e-495d-b95c-340d6b7e78be",
+      "name": "@cf/leonardo/phoenix-1.0",
+      "urlPath": "phoenix-1.0",
+      "provider": "leonardo",
+      "task": "text-to-image",
+      "description": "Phoenix 1.0 is a model by Leonardo.Ai that generates images with exceptional prompt adherence and coherent text.",
+      "capabilities": {
+        "streaming": false,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": true,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": null,
+      "pricing": [
+        {
+          "unit": "per 512 by 512 tile",
+          "price": 0.00583,
+          "currency": "USD"
+        },
+        {
+          "unit": "per step",
+          "price": 0.00011,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://leonardo.ai/terms-of-service/",
+      "createdAt": "2025-08-25 18:12:18.073"
+    },
+    {
+      "id": "7912c0ab-542e-44b9-b9ee-3113d226a8b5",
+      "name": "@cf/lykon/dreamshaper-8-lcm",
+      "urlPath": "dreamshaper-8-lcm",
+      "provider": "lykon",
+      "task": "text-to-image",
+      "description": "Stable Diffusion model that has been fine-tuned to be better at photorealism without sacrificing range.",
+      "capabilities": {
+        "streaming": false,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": null,
+      "pricing": null,
+      "terms": "https://huggingface.co/Lykon/DreamShaper",
+      "createdAt": "2024-02-27 17:40:38.881"
+    },
+    {
+      "id": "7ed8d8e8-6040-4680-843a-aef402d6b013",
+      "name": "@cf/meta-llama/llama-2-7b-chat-hf-lora",
+      "urlPath": "llama-2-7b-chat-hf-lora",
+      "provider": "meta-llama",
+      "task": "text-generation",
+      "description": "This is a Llama2 base model that Cloudflare dedicated for inference with LoRA adapters. Llama 2 is a collection of pretrained and fine-tuned generative text models ranging in scale from 7 billion to 70 billion parameters. This is the repository for the 7B fine-tuned model, optimized for dialogue use cases and converted for the Hugging Face Transformers format. ",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": true,
+        "beta": true,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 8192,
+      "pricing": null,
+      "terms": null,
+      "createdAt": "2024-04-02 00:17:18.579"
+    },
+    {
+      "id": "9b9c87c6-d4b7-494c-b177-87feab5904db",
+      "name": "@cf/meta/llama-3.1-8b-instruct-fp8",
+      "urlPath": "llama-3.1-8b-instruct-fp8",
+      "provider": "meta",
+      "task": "text-generation",
+      "description": "Llama 3.1 8B quantized to FP8 precision",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 32000,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.152,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 0.287,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/LICENSE",
+      "createdAt": "2024-07-25 17:28:43.328"
+    },
+    {
+      "id": "2cbc033b-ded8-4e02-bbb2-47cf05d5cfe5",
+      "name": "@cf/meta/llama-3.2-11b-vision-instruct",
+      "urlPath": "llama-3.2-11b-vision-instruct",
+      "provider": "meta",
+      "task": "text-generation",
+      "description": " The Llama 3.2-Vision instruction-tuned models are optimized for visual recognition, image reasoning, captioning, and answering general questions about an image.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": true,
+        "lora": true,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 128000,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.0485,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 0.676,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/LICENSE",
+      "createdAt": "2024-09-25 05:36:04.547"
+    },
+    {
+      "id": "906a57fd-b018-4d6c-a43e-a296d4cc5839",
+      "name": "@cf/meta/llama-3.2-1b-instruct",
+      "urlPath": "llama-3.2-1b-instruct",
+      "provider": "meta",
+      "task": "text-generation",
+      "description": "The Llama 3.2 instruction-tuned text only models are optimized for multilingual dialogue use cases, including agentic retrieval and summarization tasks.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 60000,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.027,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 0.201,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/LICENSE",
+      "createdAt": "2024-09-25 21:36:32.050"
+    },
+    {
+      "id": "d9dc8363-66f4-4bb0-8641-464ee7bfc131",
+      "name": "@cf/meta/llama-3.2-3b-instruct",
+      "urlPath": "llama-3.2-3b-instruct",
+      "provider": "meta",
+      "task": "text-generation",
+      "description": "The Llama 3.2 instruction-tuned text only models are optimized for multilingual dialogue use cases, including agentic retrieval and summarization tasks.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": true,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 80000,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.0509,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 0.335,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/LICENSE",
+      "createdAt": "2024-09-25 20:05:43.986"
+    },
+    {
+      "id": "7a143886-c9bb-4a1c-be95-377b1973bc3b",
+      "name": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+      "urlPath": "llama-3.3-70b-instruct-fp8-fast",
+      "provider": "meta",
+      "task": "text-generation",
+      "description": "Llama 3.3 70B quantized to fp8 precision, optimized to be faster.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": true,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 24000,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.293,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 2.253,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_3/LICENSE",
+      "createdAt": "2024-12-06 17:09:18.338"
+    },
+    {
+      "id": "06455e78-19f7-487b-93cd-c05a3dd07813",
+      "name": "@cf/meta/llama-4-scout-17b-16e-instruct",
+      "urlPath": "llama-4-scout-17b-16e-instruct",
+      "provider": "meta",
+      "task": "text-generation",
+      "description": "Meta's Llama 4 Scout is a 17 billion parameter model with 16 experts that is natively multimodal. These models leverage a mixture-of-experts architecture to offer industry-leading performance in text and image understanding.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": false,
+        "vision": true,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": true,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 131000,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.27,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 0.85,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://github.com/meta-llama/llama-models/blob/main/models/llama4/LICENSE",
+      "createdAt": "2025-04-05 20:25:56.137"
+    },
+    {
+      "id": "cc80437b-9a8d-4f1a-9c77-9aaf0d226922",
+      "name": "@cf/meta/llama-guard-3-8b",
+      "urlPath": "llama-guard-3-8b",
+      "provider": "meta",
+      "task": "text-generation",
+      "description": "Llama Guard 3 is a Llama-3.1-8B pretrained model, fine-tuned for content safety classification. Similar to previous versions, it can be used to classify content in both LLM inputs (prompt classification) and in LLM responses (response classification). It acts as an LLM – it generates text in its output that indicates whether a given prompt or response is safe or unsafe, and if unsafe, it also lists the content categories violated.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": true,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 131072,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.484,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 0.03,
+          "currency": "USD"
+        }
+      ],
+      "terms": null,
+      "createdAt": "2025-01-22 23:26:23.495"
+    },
+    {
+      "id": "c58c317b-0c15-4bda-abb6-93e275f282d9",
+      "name": "@cf/mistral/mistral-7b-instruct-v0.2-lora",
+      "urlPath": "mistral-7b-instruct-v0.2-lora",
+      "provider": "mistral",
+      "task": "text-generation",
+      "description": "The Mistral-7B-Instruct-v0.2 Large Language Model (LLM) is an instruct fine-tuned version of the Mistral-7B-v0.2.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": true,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 15000,
+      "pricing": null,
+      "terms": null,
+      "createdAt": "2024-04-01 22:14:40.529"
+    },
+    {
+      "id": "31690291-ebdc-4f98-bcfc-a44844e215b7",
+      "name": "@cf/mistralai/mistral-small-3.1-24b-instruct",
+      "urlPath": "mistral-small-3.1-24b-instruct",
+      "provider": "mistralai",
+      "task": "text-generation",
+      "description": "Building upon Mistral Small 3 (2501), Mistral Small 3.1 (2503) adds state-of-the-art vision understanding and enhances long context capabilities up to 128k tokens without compromising text performance. With 24 billion parameters, this model achieves top-tier capabilities in both text and vision tasks.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 128000,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.351,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 0.555,
+          "currency": "USD"
+        }
+      ],
+      "terms": null,
+      "createdAt": "2025-03-18 03:28:37.890"
+    },
+    {
+      "id": "8a5d00bd-de28-4a28-b37a-ce46d01ebaeb",
+      "name": "@cf/moonshotai/kimi-k2.6",
+      "urlPath": "kimi-k2.6",
+      "provider": "moonshotai",
+      "task": "text-generation",
+      "description": "Kimi K2.6 is a frontier-scale open-source 1T parameter model with a 262.1k context window, multi-turn tool calling, vision inputs, and structured outputs for agentic workloads.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": true,
+        "vision": true,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": true,
+        "realtime": false,
+        "requireWorkersPaid": true
+      },
+      "contextWindow": 262144,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.95,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 4,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M cached input tokens",
+          "price": 0.16,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://huggingface.co/moonshotai/Kimi-K2.6/blob/main/LICENSE",
+      "createdAt": "2026-04-20 01:40:35.001"
+    },
+    {
+      "id": "c29c7295-ff20-4b9b-bdcc-25136c19b21d",
+      "name": "@cf/moonshotai/kimi-k2.7-code",
+      "urlPath": "kimi-k2.7-code",
+      "provider": "moonshotai",
+      "task": "text-generation",
+      "description": "Kimi K2.7 is a frontier-scale open-source 1T parameter model with a 262.1k context window, multi-turn tool calling, vision inputs, and structured outputs for agentic workloads.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": true,
+        "vision": true,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": true
+      },
+      "contextWindow": 262144,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.95,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 4,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M cached input tokens",
+          "price": 0.19,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://huggingface.co/moonshotai/Kimi-K2.7-Code/blob/main/LICENSE",
+      "createdAt": "2026-06-12 11:45:20.582"
+    },
+    {
+      "id": "43dbadb4-2b0a-47e9-8479-34a49b971f1e",
+      "name": "@cf/nvidia/nemotron-3-120b-a12b",
+      "urlPath": "nemotron-3-120b-a12b",
+      "provider": "nvidia",
+      "task": "text-generation",
+      "description": "NVIDIA Nemotron 3 Super is a hybrid MoE model with leading accuracy for multi-agent applications and specialized agentic AI systems.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": true,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 256000,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.5,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 1.5,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-nemotron-open-model-license/",
+      "createdAt": "2026-02-24 23:22:47.215"
+    },
+    {
+      "id": "f9f2250b-1048-4a52-9910-d0bf976616a1",
+      "name": "@cf/openai/gpt-oss-120b",
+      "urlPath": "gpt-oss-120b",
+      "provider": "openai",
+      "task": "text-generation",
+      "description": "OpenAI’s open-weight models designed for powerful reasoning, agentic tasks, and versatile developer use cases – gpt-oss-120b is for production, general purpose, high reasoning use-cases.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": true,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": true,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 128000,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.35,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 0.75,
+          "currency": "USD"
+        }
+      ],
+      "terms": null,
+      "createdAt": "2025-08-05 10:27:29.131"
+    },
+    {
+      "id": "188a4e1e-253e-46d0-9616-0bf8c149763f",
+      "name": "@cf/openai/gpt-oss-20b",
+      "urlPath": "gpt-oss-20b",
+      "provider": "openai",
+      "task": "text-generation",
+      "description": "OpenAI’s open-weight models designed for powerful reasoning, agentic tasks, and versatile developer use cases – gpt-oss-20b is for lower latency, and local or specialized use-cases.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": true,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": true,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 128000,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.2,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 0.3,
+          "currency": "USD"
+        }
+      ],
+      "terms": null,
+      "createdAt": "2025-08-05 10:49:53.265"
+    },
+    {
+      "id": "51b71d5b-8bc0-4489-a107-95e542b69914",
+      "name": "@cf/qwen/qwen2.5-coder-32b-instruct",
+      "urlPath": "qwen2.5-coder-32b-instruct",
+      "provider": "qwen",
+      "task": "text-generation",
+      "description": "Qwen2.5-Coder is the latest series of Code-Specific Qwen large language models (formerly known as CodeQwen). As of now, Qwen2.5-Coder has covered six mainstream model sizes, 0.5, 1.5, 3, 7, 14, 32 billion parameters, to meet the needs of different developers. Qwen2.5-Coder brings the following improvements upon CodeQwen1.5:",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": true,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 32768,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.66,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 1,
+          "currency": "USD"
+        }
+      ],
+      "terms": null,
+      "createdAt": "2025-02-27 00:31:43.829"
+    },
+    {
+      "id": "4090e54c-eee4-4221-b410-10c1c0f92f17",
+      "name": "@cf/qwen/qwen3-30b-a3b-fp8",
+      "urlPath": "qwen3-30b-a3b-fp8",
+      "provider": "qwen",
+      "task": "text-generation",
+      "description": "Qwen3 is the latest generation of large language models in Qwen series, offering a comprehensive suite of dense and mixture-of-experts (MoE) models. Built upon extensive training, Qwen3 delivers groundbreaking advancements in reasoning, instruction-following, agent capabilities, and multilingual support.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": true,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": true,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 32768,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.0509,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 0.335,
+          "currency": "USD"
+        }
+      ],
+      "terms": null,
+      "createdAt": "2025-04-30 21:36:10.009"
+    },
+    {
+      "id": "22338608-b54d-4f04-884e-ab06f3dbbf3e",
+      "name": "@cf/qwen/qwen3.8-27b",
+      "urlPath": "qwen3.8-27b",
+      "provider": "qwen",
+      "task": "text-generation",
+      "description": "Qwen 3.8 27B is a 27-billion-parameter instruction-tuned language model from Alibaba's Qwen family, designed for vision, efficient general-purpose text generation and agentic workloads.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": true,
+        "vision": true,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": true,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 262144,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.45,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 3.2,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M cached input tokens",
+          "price": 0.05,
+          "currency": "USD"
+        }
+      ],
+      "terms": null,
+      "createdAt": "2026-08-17 07:13:11.641"
+    },
+    {
+      "id": "02c16efa-29f5-4304-8e6c-3d188889f875",
+      "name": "@cf/qwen/qwq-32b",
+      "urlPath": "qwq-32b",
+      "provider": "qwen",
+      "task": "text-generation",
+      "description": "QwQ is the reasoning model of the Qwen series. Compared with conventional instruction-tuned models, QwQ, which is capable of thinking and reasoning, can achieve significantly enhanced performance in downstream tasks, especially hard problems. QwQ-32B is the medium-sized reasoning model, which is capable of achieving competitive performance against state-of-the-art reasoning models, e.g., DeepSeek-R1, o1-mini.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": false,
+        "reasoning": true,
+        "vision": false,
+        "lora": true,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 24000,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.66,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 1,
+          "currency": "USD"
+        }
+      ],
+      "terms": null,
+      "createdAt": "2025-03-05 21:52:40.974"
+    },
+    {
+      "id": "a9abaef0-3031-47ad-8790-d311d8684c6c",
+      "name": "@cf/runwayml/stable-diffusion-v1-5-inpainting",
+      "urlPath": "stable-diffusion-v1-5-inpainting",
+      "provider": "runwayml",
+      "task": "text-to-image",
+      "description": "Stable Diffusion Inpainting is a latent text-to-image diffusion model capable of generating photo-realistic images given any text input, with the extra capability of inpainting the pictures by using a mask.",
+      "capabilities": {
+        "streaming": false,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": true,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": null,
+      "pricing": [
+        {
+          "unit": "per step",
+          "price": 0,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://github.com/runwayml/stable-diffusion/blob/main/LICENSE",
+      "createdAt": "2024-02-27 17:23:57.528"
+    },
+    {
+      "id": "6d52253a-b731-4a03-b203-cde2d4fae871",
+      "name": "@cf/stabilityai/stable-diffusion-xl-base-1.0",
+      "urlPath": "stable-diffusion-xl-base-1.0",
+      "provider": "stabilityai",
+      "task": "text-to-image",
+      "description": "Diffusion-based text-to-image generative model by Stability AI. Generates and modify images based on text prompts.",
+      "capabilities": {
+        "streaming": false,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": true,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": null,
+      "pricing": [
+        {
+          "unit": "per step",
+          "price": 0,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/blob/main/LICENSE.md",
+      "createdAt": "2023-11-10 10:54:43.694"
+    },
+    {
+      "id": "86b3e51a-4b05-43fa-a403-0f27821919d2",
+      "name": "@cf/zai-org/glm-4.7-flash",
+      "urlPath": "glm-4.7-flash",
+      "provider": "zai-org",
+      "task": "text-generation",
+      "description": "GLM-4.7-Flash is a fast and efficient multilingual text generation model with a 131,072 token context window. Optimized for dialogue, instruction-following, and multi-turn tool calling across 100+ languages.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": true,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 131072,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.0605,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 0.4,
+          "currency": "USD"
+        }
+      ],
+      "terms": null,
+      "createdAt": "2026-01-28 16:04:39.346"
+    },
+    {
+      "id": "4edc7dfe-de78-4156-890c-85b79227694e",
+      "name": "@cf/zai-org/glm-5.2",
+      "urlPath": "glm-5.2",
+      "provider": "zai-org",
+      "task": "text-generation",
+      "description": "Z.ai's flagship agentic coding model",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": true,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": true
+      },
+      "contextWindow": 262144,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 1.4,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 4.4,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M cached input tokens",
+          "price": 0.26,
+          "currency": "USD"
+        }
+      ],
+      "terms": null,
+      "createdAt": "2026-06-15 09:51:05.921"
+    },
+    {
+      "id": "c05fea67-c5a9-49ca-a7ab-446a0d62cb7a",
+      "name": "@cf/zai-org/glm-5.3",
+      "urlPath": "glm-5.3",
+      "provider": "zai-org",
+      "task": "text-generation",
+      "description": "GLM-5.3 is Z.ai's flagship agentic coding model, pairing a 1M-token context window with reasoning, function calling, and structured outputs to power multi-step, tool-driven development workflows.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": true,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": true
+      },
+      "contextWindow": 1310720,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 1.4,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 4.4,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M cached input tokens",
+          "price": 0.26,
+          "currency": "USD"
+        }
+      ],
+      "terms": null,
+      "createdAt": "2026-08-14 12:07:32.346"
+    },
+    {
+      "id": "95666467-f984-4211-b48a-7c246dd4adb7",
+      "name": "@cf/zai-org/glm-5.3-flash",
+      "urlPath": "glm-5.3-flash",
+      "provider": "zai-org",
+      "task": "text-generation",
+      "description": "The first natively multimodal model in the GLM-5 series. With 320B total parameters and just 18B active parameters, it outperforms GLM-5.2 across benchmarks and real-world workloads at one-tenth the price, while approaching Claude Opus 4.8 on coding and agentic benchmarks.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": true,
+        "vision": true,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": true
+      },
+      "contextWindow": 1310720,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.15,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M output tokens",
+          "price": 0.5,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M cached input tokens",
+          "price": 0.03,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://huggingface.co/zai-org/GLM-5.3-Flash/blob/main/LICENSE",
+      "createdAt": "2026-08-26 14:21:42.917"
+    }
+  ]
+}

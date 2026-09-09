@@ -1,0 +1,2572 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-11T09:17:20.273Z",
+  "traits": {
+    "@cf/moonshotai/kimi-k2.6": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "audio": {},
+        "frequency_penalty": {
+          "default": 0
+        },
+        "logit_bias": {},
+        "logprobs": {
+          "default": false
+        },
+        "top_logprobs": {},
+        "max_tokens": {},
+        "max_completion_tokens": {},
+        "metadata": {},
+        "modalities": {},
+        "n": {
+          "default": 1
+        },
+        "parallel_tool_calls": {
+          "type": "boolean",
+          "default": true
+        },
+        "prediction": {},
+        "presence_penalty": {
+          "default": 0
+        },
+        "reasoning_effort": {},
+        "chat_template_kwargs": {
+          "type": "object"
+        },
+        "chat_template_kwargs.thinking": {
+          "type": "boolean",
+          "default": true
+        },
+        "chat_template_kwargs.clear_thinking": {
+          "type": "boolean",
+          "default": false
+        },
+        "response_format": {},
+        "seed": {},
+        "service_tier": {
+          "default": "auto"
+        },
+        "stop": {},
+        "store": {
+          "default": false
+        },
+        "stream": {
+          "default": false
+        },
+        "stream_options": {},
+        "temperature": {
+          "default": 1
+        },
+        "tool_choice": {},
+        "tools": {
+          "type": "array"
+        },
+        "top_p": {
+          "default": 1
+        },
+        "user": {
+          "type": "string"
+        },
+        "web_search_options": {},
+        "function_call": {},
+        "functions": {
+          "type": "array"
+        },
+        "messages": {
+          "type": "array"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/black-forest-labs/flux-1-schnell": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "steps": {
+          "type": "integer",
+          "max": 8,
+          "default": 4
+        }
+      },
+      "output": "json",
+      "multipart": false
+    },
+    "@cf/ibm-granite/granite-4.0-h-micro": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "lora": {
+          "type": "string"
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/zai-org/glm-5.3-flash": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "audio": {},
+        "frequency_penalty": {
+          "default": 0
+        },
+        "logit_bias": {},
+        "logprobs": {
+          "default": false
+        },
+        "top_logprobs": {},
+        "max_tokens": {},
+        "max_completion_tokens": {},
+        "metadata": {},
+        "modalities": {},
+        "n": {
+          "default": 1
+        },
+        "parallel_tool_calls": {
+          "type": "boolean",
+          "default": true
+        },
+        "prediction": {},
+        "presence_penalty": {
+          "default": 0
+        },
+        "reasoning_effort": {},
+        "chat_template_kwargs": {
+          "type": "object"
+        },
+        "chat_template_kwargs.enable_thinking": {
+          "type": "boolean",
+          "default": true
+        },
+        "chat_template_kwargs.clear_thinking": {
+          "type": "boolean",
+          "default": false
+        },
+        "response_format": {},
+        "seed": {},
+        "service_tier": {
+          "default": "auto"
+        },
+        "stop": {},
+        "store": {
+          "default": false
+        },
+        "stream": {
+          "default": false
+        },
+        "stream_options": {},
+        "temperature": {
+          "default": 1
+        },
+        "tool_choice": {},
+        "tools": {
+          "type": "array"
+        },
+        "top_p": {
+          "default": 1
+        },
+        "user": {
+          "type": "string"
+        },
+        "web_search_options": {},
+        "function_call": {},
+        "functions": {
+          "type": "array"
+        },
+        "messages": {
+          "type": "array"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/meta/llama-4-scout-17b-16e-instruct": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "guided_json": {
+          "type": "object"
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.15
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/qwen/qwen3-30b-a3b-fp8": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "lora": {
+          "type": "string"
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 2000
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/qwen/qwen3.8-27b": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "audio": {},
+        "frequency_penalty": {
+          "default": 0
+        },
+        "logit_bias": {},
+        "logprobs": {
+          "default": false
+        },
+        "top_logprobs": {},
+        "max_tokens": {},
+        "max_completion_tokens": {},
+        "metadata": {},
+        "modalities": {},
+        "n": {
+          "default": 1
+        },
+        "parallel_tool_calls": {
+          "type": "boolean",
+          "default": true
+        },
+        "prediction": {},
+        "presence_penalty": {
+          "default": 0
+        },
+        "reasoning_effort": {},
+        "chat_template_kwargs": {
+          "type": "object"
+        },
+        "chat_template_kwargs.enable_thinking": {
+          "type": "boolean",
+          "default": true
+        },
+        "chat_template_kwargs.clear_thinking": {
+          "type": "boolean",
+          "default": false
+        },
+        "response_format": {},
+        "seed": {},
+        "service_tier": {
+          "default": "auto"
+        },
+        "stop": {},
+        "store": {
+          "default": false
+        },
+        "stream": {
+          "default": false
+        },
+        "stream_options": {},
+        "temperature": {
+          "default": 1
+        },
+        "tool_choice": {},
+        "tools": {
+          "type": "array"
+        },
+        "top_p": {
+          "default": 1
+        },
+        "user": {
+          "type": "string"
+        },
+        "web_search_options": {},
+        "function_call": {},
+        "functions": {
+          "type": "array"
+        },
+        "messages": {
+          "type": "array"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/aisingapore/gemma-sea-lion-v4-27b-it": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "lora": {
+          "type": "string"
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 2000
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/google/gemma-7b-it-lora": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "lora": {
+          "type": "string"
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/google/gemma-2b-it-lora": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "lora": {
+          "type": "string"
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/leonardo/phoenix-1.0": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "guidance": {
+          "type": "number",
+          "min": 2,
+          "max": 10,
+          "default": 2
+        },
+        "seed": {
+          "type": "integer",
+          "min": 0
+        },
+        "height": {
+          "type": "integer",
+          "min": 0,
+          "max": 2048,
+          "default": 1024
+        },
+        "width": {
+          "type": "integer",
+          "min": 0,
+          "max": 2048,
+          "default": 1024
+        },
+        "num_steps": {
+          "type": "integer",
+          "min": 1,
+          "max": 50,
+          "default": 25
+        },
+        "negative_prompt": {
+          "type": "string"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/runwayml/stable-diffusion-v1-5-inpainting": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "negative_prompt": {
+          "type": "string"
+        },
+        "height": {
+          "type": "integer",
+          "min": 256,
+          "max": 2048
+        },
+        "width": {
+          "type": "integer",
+          "min": 256,
+          "max": 2048
+        },
+        "image": {
+          "type": "array"
+        },
+        "image_b64": {
+          "type": "string"
+        },
+        "mask": {
+          "type": "array"
+        },
+        "num_steps": {
+          "type": "integer",
+          "max": 20,
+          "default": 20
+        },
+        "strength": {
+          "type": "number",
+          "default": 1
+        },
+        "guidance": {
+          "type": "number",
+          "default": 7.5
+        },
+        "seed": {
+          "type": "integer"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/meta/llama-3.2-3b-instruct": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "lora": {
+          "type": "string"
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/nvidia/nemotron-3-120b-a12b": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "audio": {},
+        "frequency_penalty": {
+          "default": 0
+        },
+        "logit_bias": {},
+        "logprobs": {
+          "default": false
+        },
+        "top_logprobs": {},
+        "max_tokens": {},
+        "max_completion_tokens": {},
+        "metadata": {},
+        "modalities": {},
+        "n": {
+          "default": 1
+        },
+        "parallel_tool_calls": {
+          "type": "boolean",
+          "default": true
+        },
+        "prediction": {},
+        "presence_penalty": {
+          "default": 0
+        },
+        "reasoning_effort": {},
+        "chat_template_kwargs": {
+          "type": "object"
+        },
+        "chat_template_kwargs.enable_thinking": {
+          "type": "boolean",
+          "default": true
+        },
+        "chat_template_kwargs.clear_thinking": {
+          "type": "boolean",
+          "default": false
+        },
+        "response_format": {},
+        "seed": {},
+        "service_tier": {
+          "default": "auto"
+        },
+        "stop": {},
+        "store": {
+          "default": false
+        },
+        "stream": {
+          "default": false
+        },
+        "stream_options": {},
+        "temperature": {
+          "default": 1
+        },
+        "tool_choice": {},
+        "tools": {
+          "type": "array"
+        },
+        "top_p": {
+          "default": 1
+        },
+        "user": {
+          "type": "string"
+        },
+        "web_search_options": {},
+        "function_call": {},
+        "functions": {
+          "type": "array"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/meta/llama-3.2-1b-instruct": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "lora": {
+          "type": "string"
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/meta/llama-3.2-11b-vision-instruct": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "image": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "lora": {
+          "type": "string"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/deepseek-ai/deepseek-v4-flash-0731": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "audio": {},
+        "frequency_penalty": {
+          "default": 0
+        },
+        "logit_bias": {},
+        "logprobs": {
+          "default": false
+        },
+        "top_logprobs": {},
+        "max_tokens": {},
+        "max_completion_tokens": {},
+        "metadata": {},
+        "modalities": {},
+        "n": {
+          "default": 1
+        },
+        "parallel_tool_calls": {
+          "type": "boolean",
+          "default": true
+        },
+        "prediction": {},
+        "presence_penalty": {
+          "default": 0
+        },
+        "reasoning_effort": {},
+        "chat_template_kwargs": {
+          "type": "object"
+        },
+        "chat_template_kwargs.enable_thinking": {
+          "type": "boolean",
+          "default": true
+        },
+        "chat_template_kwargs.clear_thinking": {
+          "type": "boolean",
+          "default": false
+        },
+        "response_format": {},
+        "seed": {},
+        "service_tier": {
+          "default": "auto"
+        },
+        "stop": {},
+        "store": {
+          "default": false
+        },
+        "stream": {
+          "default": false
+        },
+        "stream_options": {},
+        "temperature": {
+          "default": 1
+        },
+        "tool_choice": {},
+        "tools": {
+          "type": "array"
+        },
+        "top_p": {
+          "default": 1
+        },
+        "user": {
+          "type": "string"
+        },
+        "web_search_options": {},
+        "function_call": {},
+        "functions": {
+          "type": "array"
+        },
+        "messages": {
+          "type": "array"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/lykon/dreamshaper-8-lcm": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "negative_prompt": {
+          "type": "string"
+        },
+        "height": {
+          "type": "integer",
+          "min": 256,
+          "max": 2048
+        },
+        "width": {
+          "type": "integer",
+          "min": 256,
+          "max": 2048
+        },
+        "image": {
+          "type": "array"
+        },
+        "image_b64": {
+          "type": "string"
+        },
+        "mask": {
+          "type": "array"
+        },
+        "num_steps": {
+          "type": "integer",
+          "max": 20,
+          "default": 20
+        },
+        "strength": {
+          "type": "number",
+          "default": 1
+        },
+        "guidance": {
+          "type": "number",
+          "default": 7.5
+        },
+        "seed": {
+          "type": "integer"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/deepseek-ai/deepseek-v4-pro-0813": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "audio": {},
+        "frequency_penalty": {
+          "default": 0
+        },
+        "logit_bias": {},
+        "logprobs": {
+          "default": false
+        },
+        "top_logprobs": {},
+        "max_tokens": {},
+        "max_completion_tokens": {},
+        "metadata": {},
+        "modalities": {},
+        "n": {
+          "default": 1
+        },
+        "parallel_tool_calls": {
+          "type": "boolean",
+          "default": true
+        },
+        "prediction": {},
+        "presence_penalty": {
+          "default": 0
+        },
+        "reasoning_effort": {},
+        "chat_template_kwargs": {
+          "type": "object"
+        },
+        "chat_template_kwargs.enable_thinking": {
+          "type": "boolean",
+          "default": true
+        },
+        "chat_template_kwargs.clear_thinking": {
+          "type": "boolean",
+          "default": false
+        },
+        "response_format": {},
+        "seed": {},
+        "service_tier": {
+          "default": "auto"
+        },
+        "stop": {},
+        "store": {
+          "default": false
+        },
+        "stream": {
+          "default": false
+        },
+        "stream_options": {},
+        "temperature": {
+          "default": 1
+        },
+        "tool_choice": {},
+        "tools": {
+          "type": "array"
+        },
+        "top_p": {
+          "default": 1
+        },
+        "user": {
+          "type": "string"
+        },
+        "web_search_options": {},
+        "function_call": {},
+        "functions": {
+          "type": "array"
+        },
+        "messages": {
+          "type": "array"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/meta-llama/llama-2-7b-chat-hf-lora": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "lora": {
+          "type": "string"
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/zai-org/glm-4.7-flash": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "audio": {},
+        "frequency_penalty": {
+          "default": 0
+        },
+        "logit_bias": {},
+        "logprobs": {
+          "default": false
+        },
+        "top_logprobs": {},
+        "max_tokens": {},
+        "max_completion_tokens": {},
+        "metadata": {},
+        "modalities": {},
+        "n": {
+          "default": 1
+        },
+        "parallel_tool_calls": {
+          "type": "boolean",
+          "default": true
+        },
+        "prediction": {},
+        "presence_penalty": {
+          "default": 0
+        },
+        "reasoning_effort": {},
+        "chat_template_kwargs": {
+          "type": "object"
+        },
+        "chat_template_kwargs.enable_thinking": {
+          "type": "boolean",
+          "default": true
+        },
+        "chat_template_kwargs.clear_thinking": {
+          "type": "boolean",
+          "default": false
+        },
+        "response_format": {},
+        "seed": {},
+        "service_tier": {
+          "default": "auto"
+        },
+        "stop": {},
+        "store": {
+          "default": false
+        },
+        "stream": {
+          "default": false
+        },
+        "stream_options": {},
+        "temperature": {
+          "default": 1
+        },
+        "tool_choice": {},
+        "tools": {
+          "type": "array"
+        },
+        "top_p": {
+          "default": 1
+        },
+        "user": {
+          "type": "string"
+        },
+        "web_search_options": {},
+        "function_call": {},
+        "functions": {
+          "type": "array"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/bytedance/stable-diffusion-xl-lightning": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "negative_prompt": {
+          "type": "string"
+        },
+        "height": {
+          "type": "integer",
+          "min": 256,
+          "max": 2048
+        },
+        "width": {
+          "type": "integer",
+          "min": 256,
+          "max": 2048
+        },
+        "image": {
+          "type": "array"
+        },
+        "image_b64": {
+          "type": "string"
+        },
+        "mask": {
+          "type": "array"
+        },
+        "num_steps": {
+          "type": "integer",
+          "max": 20,
+          "default": 20
+        },
+        "strength": {
+          "type": "number",
+          "default": 1
+        },
+        "guidance": {
+          "type": "number",
+          "default": 7.5
+        },
+        "seed": {
+          "type": "integer"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/moonshotai/kimi-k2.7-code": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "audio": {},
+        "frequency_penalty": {
+          "default": 0
+        },
+        "logit_bias": {},
+        "logprobs": {
+          "default": false
+        },
+        "top_logprobs": {},
+        "max_tokens": {},
+        "max_completion_tokens": {},
+        "metadata": {},
+        "modalities": {},
+        "n": {
+          "default": 1
+        },
+        "parallel_tool_calls": {
+          "type": "boolean",
+          "default": true
+        },
+        "prediction": {},
+        "presence_penalty": {
+          "default": 0
+        },
+        "reasoning_effort": {},
+        "chat_template_kwargs": {
+          "type": "object"
+        },
+        "chat_template_kwargs.enable_thinking": {
+          "type": "boolean",
+          "default": true
+        },
+        "chat_template_kwargs.clear_thinking": {
+          "type": "boolean",
+          "default": false
+        },
+        "response_format": {},
+        "seed": {},
+        "service_tier": {
+          "default": "auto"
+        },
+        "stop": {},
+        "store": {
+          "default": false
+        },
+        "stream": {
+          "default": false
+        },
+        "stream_options": {},
+        "temperature": {
+          "default": 1
+        },
+        "tool_choice": {},
+        "tools": {
+          "type": "array"
+        },
+        "top_p": {
+          "default": 1
+        },
+        "user": {
+          "type": "string"
+        },
+        "web_search_options": {},
+        "function_call": {},
+        "functions": {
+          "type": "array"
+        },
+        "messages": {
+          "type": "array"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/google/gemma-4-26b-a4b-it": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "skip_special_tokens": {
+          "type": "boolean",
+          "default": false
+        },
+        "model": {
+          "type": "string"
+        },
+        "audio": {},
+        "frequency_penalty": {
+          "default": 0
+        },
+        "logit_bias": {},
+        "logprobs": {
+          "default": false
+        },
+        "top_logprobs": {},
+        "max_tokens": {},
+        "max_completion_tokens": {},
+        "metadata": {},
+        "modalities": {},
+        "n": {
+          "default": 1
+        },
+        "parallel_tool_calls": {
+          "type": "boolean",
+          "default": true
+        },
+        "prediction": {},
+        "presence_penalty": {
+          "default": 0
+        },
+        "reasoning_effort": {},
+        "chat_template_kwargs": {
+          "type": "object"
+        },
+        "chat_template_kwargs.enable_thinking": {
+          "type": "boolean",
+          "default": true
+        },
+        "chat_template_kwargs.clear_thinking": {
+          "type": "boolean",
+          "default": false
+        },
+        "response_format": {},
+        "seed": {},
+        "service_tier": {
+          "default": "auto"
+        },
+        "stop": {},
+        "store": {
+          "default": false
+        },
+        "stream": {
+          "default": false
+        },
+        "stream_options": {},
+        "temperature": {
+          "default": 1
+        },
+        "tool_choice": {},
+        "tools": {
+          "type": "array"
+        },
+        "top_p": {
+          "default": 1
+        },
+        "user": {
+          "type": "string"
+        },
+        "web_search_options": {},
+        "function_call": {},
+        "functions": {
+          "type": "array"
+        },
+        "messages": {
+          "type": "array"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/mistralai/mistral-small-3.1-24b-instruct": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "guided_json": {
+          "type": "object"
+        },
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.15
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "lora": {
+          "type": "string"
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/qwen/qwq-32b": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "guided_json": {
+          "type": "object"
+        },
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.15
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/meta/llama-3.1-8b-instruct-fp8": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "lora": {
+          "type": "string"
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/leonardo/lucid-origin": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "guidance": {
+          "type": "number",
+          "min": 0,
+          "max": 10,
+          "default": 4.5
+        },
+        "seed": {
+          "type": "integer",
+          "min": 0
+        },
+        "height": {
+          "type": "integer",
+          "min": 0,
+          "max": 2500,
+          "default": 1120
+        },
+        "width": {
+          "type": "integer",
+          "min": 0,
+          "max": 2500,
+          "default": 1120
+        },
+        "num_steps": {
+          "type": "integer",
+          "min": 1,
+          "max": 40
+        },
+        "steps": {
+          "type": "integer",
+          "min": 1,
+          "max": 40
+        }
+      },
+      "output": "json",
+      "multipart": false
+    },
+    "@cf/black-forest-labs/flux-2-klein-4b": {
+      "params": {
+        "multipart": {
+          "type": "object"
+        },
+        "multipart.body": {
+          "type": "object"
+        },
+        "multipart.contentType": {
+          "type": "string"
+        }
+      },
+      "output": "json",
+      "multipart": true
+    },
+    "@cf/meta/llama-guard-3-8b": {
+      "params": {},
+      "output": "json",
+      "multipart": false
+    },
+    "@cf/black-forest-labs/flux-2-klein-9b": {
+      "params": {
+        "multipart": {
+          "type": "object"
+        },
+        "multipart.body": {
+          "type": "object"
+        },
+        "multipart.contentType": {
+          "type": "string"
+        }
+      },
+      "output": "json",
+      "multipart": true
+    },
+    "@cf/mistral/mistral-7b-instruct-v0.2-lora": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "lora": {
+          "type": "string"
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/openai/gpt-oss-120b": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "lora": {
+          "type": "string"
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        },
+        "messages": {
+          "type": "array"
+        },
+        "functions": {
+          "type": "array"
+        },
+        "tools": {
+          "type": "array"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/qwen/qwen2.5-coder-32b-instruct": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "lora": {
+          "type": "string"
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/openai/gpt-oss-20b": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "lora": {
+          "type": "string"
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        },
+        "messages": {
+          "type": "array"
+        },
+        "functions": {
+          "type": "array"
+        },
+        "tools": {
+          "type": "array"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/zai-org/glm-5.2": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "audio": {},
+        "frequency_penalty": {
+          "default": 0
+        },
+        "logit_bias": {},
+        "logprobs": {
+          "default": false
+        },
+        "top_logprobs": {},
+        "max_tokens": {},
+        "max_completion_tokens": {},
+        "metadata": {},
+        "modalities": {},
+        "n": {
+          "default": 1
+        },
+        "parallel_tool_calls": {
+          "type": "boolean",
+          "default": true
+        },
+        "prediction": {},
+        "presence_penalty": {
+          "default": 0
+        },
+        "reasoning_effort": {},
+        "chat_template_kwargs": {
+          "type": "object"
+        },
+        "chat_template_kwargs.enable_thinking": {
+          "type": "boolean",
+          "default": true
+        },
+        "chat_template_kwargs.clear_thinking": {
+          "type": "boolean",
+          "default": false
+        },
+        "response_format": {},
+        "seed": {},
+        "service_tier": {
+          "default": "auto"
+        },
+        "stop": {},
+        "store": {
+          "default": false
+        },
+        "stream": {
+          "default": false
+        },
+        "stream_options": {},
+        "temperature": {
+          "default": 1
+        },
+        "tool_choice": {},
+        "tools": {
+          "type": "array"
+        },
+        "top_p": {
+          "default": 1
+        },
+        "user": {
+          "type": "string"
+        },
+        "web_search_options": {},
+        "function_call": {},
+        "functions": {
+          "type": "array"
+        },
+        "messages": {
+          "type": "array"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/meta/llama-3.3-70b-instruct-fp8-fast": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "lora": {
+          "type": "string"
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": [
+            "json_object",
+            "json_schema"
+          ]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/black-forest-labs/flux-2-dev": {
+      "params": {
+        "multipart": {
+          "type": "object"
+        },
+        "multipart.body": {
+          "type": "object"
+        },
+        "multipart.contentType": {
+          "type": "string"
+        },
+        "required": {}
+      },
+      "output": "json",
+      "multipart": true
+    },
+    "@cf/zai-org/glm-5.3": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "audio": {},
+        "frequency_penalty": {
+          "default": 0
+        },
+        "logit_bias": {},
+        "logprobs": {
+          "default": false
+        },
+        "top_logprobs": {},
+        "max_tokens": {},
+        "max_completion_tokens": {},
+        "metadata": {},
+        "modalities": {},
+        "n": {
+          "default": 1
+        },
+        "parallel_tool_calls": {
+          "type": "boolean",
+          "default": true
+        },
+        "prediction": {},
+        "presence_penalty": {
+          "default": 0
+        },
+        "reasoning_effort": {},
+        "chat_template_kwargs": {
+          "type": "object"
+        },
+        "chat_template_kwargs.enable_thinking": {
+          "type": "boolean",
+          "default": true
+        },
+        "chat_template_kwargs.clear_thinking": {
+          "type": "boolean",
+          "default": false
+        },
+        "response_format": {},
+        "seed": {},
+        "stop": {},
+        "store": {
+          "default": false
+        },
+        "stream": {
+          "default": false
+        },
+        "stream_options": {},
+        "temperature": {
+          "default": 1
+        },
+        "tool_choice": {},
+        "tools": {
+          "type": "array"
+        },
+        "top_p": {
+          "default": 1
+        },
+        "user": {
+          "type": "string"
+        },
+        "web_search_options": {},
+        "function_call": {},
+        "functions": {
+          "type": "array"
+        },
+        "messages": {
+          "type": "array"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    },
+    "@cf/stabilityai/stable-diffusion-xl-base-1.0": {
+      "params": {
+        "prompt": {
+          "type": "string"
+        },
+        "negative_prompt": {
+          "type": "string"
+        },
+        "height": {
+          "type": "integer",
+          "min": 256,
+          "max": 2048
+        },
+        "width": {
+          "type": "integer",
+          "min": 256,
+          "max": 2048
+        },
+        "image": {
+          "type": "array"
+        },
+        "image_b64": {
+          "type": "string"
+        },
+        "mask": {
+          "type": "array"
+        },
+        "num_steps": {
+          "type": "integer",
+          "max": 20,
+          "default": 20
+        },
+        "strength": {
+          "type": "number",
+          "default": 1
+        },
+        "guidance": {
+          "type": "number",
+          "default": 7.5
+        },
+        "seed": {
+          "type": "integer"
+        }
+      },
+      "output": "image/png",
+      "multipart": false
+    }
+  }
+}
