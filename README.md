@@ -2,7 +2,7 @@
 
 A streaming AI chat webapp built on **Cloudflare Workers AI**, with a **Vue 3 + shadcn-vue** frontend and a **Hono** API server.
 
-[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/Karsten-Zhou/workers-ai-chat)
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/Karsten-Zhou/acfb-ai-studio)
 
 ## Features
 

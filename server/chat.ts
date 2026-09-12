@@ -8,13 +8,6 @@ import {
 import { acceptsParam } from "@shared/generated/traits";
 import { errorResponse, upstreamError } from "./errors";
 
-/**
- * Product-level default. This is a UX choice about which model new
- * conversations start with, not a property of any particular model, so it
- * deliberately lives outside the generated catalogue.
- */
-const DEFAULT_MODEL_ID = "@cf/zai-org/glm-4.7-flash";
-
 const app = new Hono<{ Bindings: Env }>();
 
 app.post("/", zValidator("json", chatRequestSchema), async ({ env, req }) => {
@@ -66,7 +59,7 @@ app.post("/", zValidator("json", chatRequestSchema), async ({ env, req }) => {
       { status: 400 },
     );
   } else if (acceptsParam(known.name, "max_completion_tokens")) {
-    cfParams.max_completion_tokens = known.contextWindow;
+    cfParams.max_completion_tokens = Infinity;
   } else if (acceptsParam(known.name, "max_tokens") && known.contextWindow) {
     cfParams.max_tokens = known.contextWindow - contextUsed;
   }
@@ -133,7 +126,6 @@ app.post("/", zValidator("json", chatRequestSchema), async ({ env, req }) => {
 app.get("/models", (c) =>
   c.json({
     models: FREE_TEXT_GENERATION_MODELS,
-    default: DEFAULT_MODEL_ID,
     generatedAt: MODELS_GENERATED_AT,
   }),
 );

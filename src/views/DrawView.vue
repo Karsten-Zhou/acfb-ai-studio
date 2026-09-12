@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { Square, Sparkles, TriangleAlert } from "@lucide/vue";
 import {
@@ -77,12 +77,9 @@ const showNegative = computed(() =>
 
 /** Most recent image. */
 const latestImage = ref<GalleryItem | null>(null);
-watch(
-  () => drawStore.gallery,
-  (gallery) => {
-    latestImage.value = gallery.length ? gallery[0] : null;
-  },
-);
+drawStore.onGenerationSuccess(() => {
+  latestImage.value = drawStore.gallery[0] ?? null;
+});
 
 /** Clamp to declared bounds. Missing bounds mean "unbounded on that side". */
 function clampNum(value: number, bounds: ParamBounds | undefined): number {

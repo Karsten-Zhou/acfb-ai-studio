@@ -1,6 +1,6 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "workers-ai-chat",
+	"name": "acfb-ai-studio",
 	"main": "server/index.ts",
 	"compatibility_date": "2026-09-09",
 	"assets": {

@@ -233,7 +233,9 @@ const gallery = computed(() => drawStore.gallery);
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>{{ t("nav.clearImageHistory") }}</AlertDialogTitle>
+                <AlertDialogTitle>{{
+                  t("nav.clearImageHistory")
+                }}</AlertDialogTitle>
                 <AlertDialogDescription>
                   {{ t("nav.clearImageHistoryDescription") }}
                 </AlertDialogDescription>
@@ -248,46 +250,69 @@ const gallery = computed(() => drawStore.gallery);
           </AlertDialog>
         </SidebarGroupLabel>
         <SidebarGroupContent>
-          <ScrollArea v-if="gallery.length">
+          <ScrollArea>
             <SidebarMenu>
-              <SidebarMenuItem v-for="item in gallery" :key="item.id">
+              <!-- new image -->
+              <RouterLink to="/draw" as-child>
+                <SidebarMenuButton @click="emit('new')">
+                  <Plus />
+                  {{ t("nav.newImage") }}
+                </SidebarMenuButton>
+              </RouterLink>
+              <!-- <SidebarMenuItem>
                 <Item as-child variant="outline" class="p-2">
-                  <RouterLink :to="`/draw/${item.id}`">
+                  <RouterLink to="/draw">
                     <ItemHeader>
-                      <img
-                        :src="item.image"
-                        :alt="item.prompt"
-                        class="aspect-square w-full rounded-sm object-cover"
-                      />
-                    </ItemHeader>
-                    <ItemContent>
-                      <ItemTitle class="line-clamp-2">
-                        {{ item.prompt }}
-                      </ItemTitle>
-                      <ItemDescription>
-                        {{ item.model }}
-                      </ItemDescription>
-                    </ItemContent>
-                    <ItemActions>
-                      <Button
-                        :title="t('common.delete')"
-                        variant="ghost"
-                        @click="drawStore.deleteGalleryItem(item.id)"
+                      <div
+                        class="flex aspect-square w-full items-center justify-center rounded-sm border border-dashed"
                       >
-                        <Trash2 class="size-4" />
-                      </Button>
-                    </ItemActions>
+                        <Plus class="size-6 shrink-0" />
+                      </div>
+                    </ItemHeader>
                   </RouterLink>
                 </Item>
-              </SidebarMenuItem>
+              </SidebarMenuItem> -->
+              <!-- image list -->
+              <template v-if="gallery.length">
+                <SidebarMenuItem v-for="item in gallery" :key="item.id">
+                  <Item as-child variant="outline" class="p-2">
+                    <RouterLink :to="`/draw/${item.id}`">
+                      <ItemHeader>
+                        <img
+                          :src="item.image"
+                          :alt="item.prompt"
+                          class="aspect-square w-full rounded-sm object-cover"
+                        />
+                      </ItemHeader>
+                      <ItemContent>
+                        <ItemTitle class="line-clamp-2">
+                          {{ item.prompt }}
+                        </ItemTitle>
+                        <ItemDescription>
+                          {{ item.model }}
+                        </ItemDescription>
+                      </ItemContent>
+                      <ItemActions>
+                        <Button
+                          :title="t('common.delete')"
+                          variant="ghost"
+                          @click="drawStore.deleteGalleryItem(item.id)"
+                        >
+                          <Trash2 class="size-4" />
+                        </Button>
+                      </ItemActions>
+                    </RouterLink>
+                  </Item>
+                </SidebarMenuItem>
+              </template>
+              <Empty v-else class="border border-dashed">
+                <EmptyHeader>
+                  <EmptyDescription>{{ t("nav.noImages") }}</EmptyDescription>
+                </EmptyHeader>
+              </Empty>
             </SidebarMenu>
             <ScrollBar />
           </ScrollArea>
-          <Empty v-else class="border border-dashed">
-            <EmptyHeader>
-              <EmptyDescription>{{ t("nav.noImages") }}</EmptyDescription>
-            </EmptyHeader>
-          </Empty>
         </SidebarGroupContent>
       </SidebarGroup>
     </SidebarContent>
@@ -302,9 +327,6 @@ const gallery = computed(() => drawStore.gallery);
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
-      <span class="px-2 text-xs text-muted-foreground">
-        {{ t("nav.poweredBy") }}
-      </span>
     </SidebarFooter>
 
     <SidebarRail />

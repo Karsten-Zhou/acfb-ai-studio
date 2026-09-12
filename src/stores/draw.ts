@@ -219,6 +219,7 @@ export const useDrawStore = defineStore("draw", () => {
         createdAt: Date.now(),
       };
       gallery.value.unshift(item);
+      onGenerationSuccessFn.value();
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") {
         toastError(t("common.stopped"), t("common.stoppedByYou"), {
@@ -234,6 +235,12 @@ export const useDrawStore = defineStore("draw", () => {
       controller = null;
       generating.value = false;
     }
+  }
+
+  /** On generation success */
+  const onGenerationSuccessFn = ref<() => void>(() => {});
+  function onGenerationSuccess(fn: () => void): void {
+    onGenerationSuccessFn.value = fn;
   }
 
   // -------------------------------------------------------------------------
@@ -265,5 +272,6 @@ export const useDrawStore = defineStore("draw", () => {
     generateImage,
     deleteGalleryItem,
     clearGallery,
+    onGenerationSuccess,
   };
 });
