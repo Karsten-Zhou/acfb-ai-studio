@@ -1,15 +1,11 @@
 <script setup lang="ts">
 import AppSidebar from "@/components/AppSidebar.vue";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import {
-  chatStore,
-  deleteConversation,
-  startNewConversation,
-  switchConversation,
-} from "@/composables/chat";
+import { useChatStore } from "@/stores/chat";
 import { useSyncEngine } from "@/composables/sync";
 import { useTitle } from "@vueuse/core";
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import "vue-sonner/style.css";
 import { Toaster } from "@/components/ui/sonner";
@@ -18,14 +14,16 @@ import { Toaster } from "@/components/ui/sonner";
 // devices and uploads local edits.
 useSyncEngine();
 
+const chatStore = useChatStore();
+const { t } = useI18n({ useScope: "global" });
 const route = useRoute();
 const title = computed(() => {
   if (route.name === "chat") {
-    return "Workers AI Chat";
+    return t("app.titleChat");
   } else if (route.name === "draw") {
-    return "Workers AI Draw";
+    return t("app.titleDraw");
   } else {
-    return "Workers AI";
+    return t("app.title");
   }
 });
 useTitle(title);
@@ -36,9 +34,9 @@ useTitle(title);
     <AppSidebar
       :conversations="chatStore.conversations"
       :active-id="chatStore.activeId"
-      @select="switchConversation"
-      @new="startNewConversation"
-      @delete="deleteConversation"
+      @select="chatStore.switchConversation"
+      @new="chatStore.startNewConversation"
+      @delete="chatStore.deleteConversation"
     />
     <SidebarInset class="h-dvh">
       <RouterView />

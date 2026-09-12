@@ -1,9 +1,10 @@
 // Client-side persistence of default chat options.
 //
 // These are the *defaults* used for new conversations: the selected model,
-// reasoning effort, and generation params. The user can change them freely
-// and we remember them across reloads. Conversations themselves are handled by
-// `composables/chat.ts`; this module owns just the defaults.
+// reasoning effort, and generation parameters. The user can change them freely
+// and we remember them across reloads. Conversations themselves are owned by
+// the chat store; this module owns just the defaults — a persistence adapter,
+// deliberately not a store.
 
 import { reactive } from "vue";
 import { useStorage, throttleFilter } from "@vueuse/core";

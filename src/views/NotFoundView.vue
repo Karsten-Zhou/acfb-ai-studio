@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
 import {
   Empty,
   EmptyContent,
@@ -8,14 +9,16 @@ import {
 } from "@/components/ui/empty";
 import { Button } from "@/components/ui/button";
 import { MessageSquareText, Image } from "@lucide/vue";
+
+const { t } = useI18n({ useScope: "global" });
 </script>
 
 <template>
   <Empty>
     <EmptyHeader>
-      <EmptyTitle>404 - Not Found</EmptyTitle>
+      <EmptyTitle>{{ t("notFound.title") }}</EmptyTitle>
       <EmptyDescription>
-        The page you're looking for doesn't exist.
+        {{ t("notFound.description") }}
       </EmptyDescription>
     </EmptyHeader>
     <EmptyContent>
@@ -23,13 +26,13 @@ import { MessageSquareText, Image } from "@lucide/vue";
         <RouterLink to="/chat">
           <Button size="sm">
             <MessageSquareText />
-            Chat
+            {{ t("nav.chat") }}
           </Button>
         </RouterLink>
         <RouterLink to="/draw">
           <Button size="sm">
             <Image />
-            Draw
+            {{ t("nav.draw") }}
           </Button>
         </RouterLink>
       </div>

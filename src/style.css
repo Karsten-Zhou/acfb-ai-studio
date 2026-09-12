@@ -126,5 +126,5 @@
 }
 
 pre.shiki {
-  @apply border
+  @apply border w-full
 }

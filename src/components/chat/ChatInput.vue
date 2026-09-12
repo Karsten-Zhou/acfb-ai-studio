@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { ArrowUp, Square, ChevronsUpDown, Brain } from "@lucide/vue";
 import type { FreeTextModel } from "@shared/generated/models";
 import type { GenerationParams, ReasoningEffort } from "@shared/chat";
@@ -23,8 +24,11 @@ const props = defineProps<{
   reasoningEffort: ReasoningEffort;
 }>();
 
+const { t } = useI18n({ useScope: "global" });
+
+/** Undefined until the user (or the catalog default) picks a model. */
 const selectedModel = computed(() =>
-  props.models.find((m) => m.name === props.model)!,
+  props.models.find((m) => m.name === props.model),
 );
 
 const emit = defineEmits<{
@@ -41,7 +45,7 @@ const currentModel = computed(() => {
   const found = props.models.find((m) => m.name === props.model);
   return found
     ? FREE_TEXT_GENERATION_MODEL_LABELS[found.name]
-    : props.model || "Choose model";
+    : props.model || t("chat.chooseModel");
 });
 
 function submit() {
@@ -59,13 +63,13 @@ function onKeydown(e: KeyboardEvent) {
 }
 
 // reasoning efforts
-const efforts: { value: ReasoningEffort; label: string }[] = [
-  { value: "off", label: "Off" },
-  { value: "minimal", label: "Minimal" },
-  { value: "low", label: "Low" },
-  { value: "medium", label: "Medium" },
-  { value: "high", label: "High" },
-];
+const efforts = computed<{ value: ReasoningEffort; label: string }[]>(() => [
+  { value: "off", label: t("chat.effortOff") },
+  { value: "minimal", label: t("chat.effortMinimal") },
+  { value: "low", label: t("chat.effortLow") },
+  { value: "medium", label: t("chat.effortMedium") },
+  { value: "high", label: t("chat.effortHigh") },
+]);
 </script>
 
 <template>
@@ -76,7 +80,7 @@ const efforts: { value: ReasoningEffort; label: string }[] = [
       <Textarea
         v-model="draft"
         :rows="1"
-        placeholder="Message the model…  (Enter to send, Shift+Enter for newline)"
+        :placeholder="t('chat.inputPlaceholder')"
         class="max-h-40 min-h-6 w-full resize-none border-0 bg-transparent px-1 text-sm shadow-none outline-none placeholder:text-muted-foreground focus-visible:ring-0"
         :disabled="streaming"
         @keydown="onKeydown"
@@ -117,21 +121,21 @@ const efforts: { value: ReasoningEffort; label: string }[] = [
               variant="ghost"
               size="sm"
               :disabled="
-                !selectedModel.capabilities.reasoning ||
+                !selectedModel?.capabilities.reasoning ||
                 !acceptsParam(model, 'reasoning_effort')
               "
             >
               <Brain />
-              <template v-if="!selectedModel.capabilities.reasoning">
-                Off
+              <template v-if="!selectedModel?.capabilities.reasoning">
+                {{ t("chat.effortOff") }}
               </template>
               <template v-else-if="!acceptsParam(model, 'reasoning_effort')">
-                Fixed
+                {{ t("chat.fixed") }}
               </template>
               <template v-else>
                 {{
                   efforts.find((e) => e.value === reasoningEffort)?.label ??
-                  "Reasoning"
+                  t("chat.reasoning")
                 }}
               </template>
               <ChevronsUpDown class="text-muted-foreground" />
@@ -168,7 +172,7 @@ const efforts: { value: ReasoningEffort; label: string }[] = [
           @click="emit('stop')"
         >
           <Square class="size-4 fill-current" />
-          <span class="sr-only">Stop generating</span>
+          <span class="sr-only">{{ t("chat.stopGenerating") }}</span>
         </Button>
         <Button
           v-else
@@ -178,7 +182,7 @@ const efforts: { value: ReasoningEffort; label: string }[] = [
           @click="submit"
         >
           <ArrowUp class="size-4" />
-          <span class="sr-only">Send</span>
+          <span class="sr-only">{{ t("chat.send") }}</span>
         </Button>
       </div>
     </div>

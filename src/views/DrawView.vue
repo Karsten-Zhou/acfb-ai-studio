@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { Square, Sparkles, TriangleAlert } from "@lucide/vue";
 import {
   FREE_TEXT_TO_IMAGE_MODELS,
@@ -11,14 +12,8 @@ import {
   getDefault,
   type ParamBounds,
 } from "@shared/generated/traits";
-import {
-  drawStore,
-  generateImage,
-  stopGenerating,
-  setDrawModel,
-  setDrawOptions,
-} from "@/composables/draw";
-import { storageUsage } from "@/composables/sync-state";
+import { useDrawStore, type GalleryItem } from "@/stores/draw";
+import { useSyncStore } from "@/stores/sync";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,8 +22,10 @@ import { Label } from "@/components/ui/label";
 import { Empty, EmptyHeader, EmptyDescription } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import AppHeader from "@/components/AppHeader.vue";
-import { type GalleryItem } from "@/composables/draw";
 
+const { t } = useI18n({ useScope: "global" });
+const drawStore = useDrawStore();
+const sync = useSyncStore();
 const models = FREE_TEXT_TO_IMAGE_MODELS;
 
 /** Currently selected model. `drawStore.options.model` holds the slug (@cf/...). */
@@ -106,14 +103,14 @@ function toSize(value: unknown): number | undefined {
 function sizePlaceholder(key: "width" | "height"): string {
   const name = currentModel.value?.name;
   const declared = name ? getDefault(name, key) : undefined;
-  return typeof declared === "number" ? String(declared) : "auto";
+  return typeof declared === "number" ? String(declared) : t("draw.auto");
 }
 
 /** Fallback display name until `displayName` lands in the catalogue. */
 function label(m: FreeImageModel): string {
   const fallback = m.name.replace(/^@cf\//, "");
   return `${(m as { displayName?: string }).displayName ?? fallback}${
-    m.capabilities.beta ? " (beta)" : ""
+    m.capabilities.beta ? ` (${t("draw.beta")})` : ""
   }`;
 }
 
@@ -121,13 +118,13 @@ const prompt = ref("");
 const negativePrompt = ref("");
 const loading = computed(() => drawStore.generating);
 
-const storageBlocked = computed(() => storageUsage.value.blocked);
+const storageBlocked = computed(() => sync.storageUsage.blocked);
 
 const width = computed<number | undefined>({
   get: () => drawStore.options.width,
   set: (v) => {
     const n = toSize(v);
-    setDrawOptions({
+    drawStore.setDrawOptions({
       width: n === undefined ? undefined : clampNum(n, widthBounds.value),
     });
   },
@@ -136,7 +133,7 @@ const height = computed<number | undefined>({
   get: () => drawStore.options.height,
   set: (v) => {
     const n = toSize(v);
-    setDrawOptions({
+    drawStore.setDrawOptions({
       height: n === undefined ? undefined : clampNum(n, heightBounds.value),
     });
   },
@@ -147,7 +144,9 @@ const steps = computed({
     return clampNum(drawStore.options.numSteps ?? b?.min ?? 1, b);
   },
   set: (v) =>
-    setDrawOptions({ numSteps: clampNum(Number(v), stepsBounds.value) }),
+    drawStore.setDrawOptions({
+      numSteps: clampNum(Number(v), stepsBounds.value),
+    }),
 });
 const guidance = computed({
   get: () =>
@@ -156,13 +155,15 @@ const guidance = computed({
       guidanceBounds.value,
     ),
   set: (v) =>
-    setDrawOptions({ guidance: clampNum(Number(v), guidanceBounds.value) }),
+    drawStore.setDrawOptions({
+      guidance: clampNum(Number(v), guidanceBounds.value),
+    }),
 });
 
 function submit() {
   const text = prompt.value.trim();
   if (!text || loading.value) return;
-  generateImage(text, negativePrompt.value.trim() || undefined);
+  drawStore.generateImage(text, negativePrompt.value.trim() || undefined);
 }
 
 function onKeydown(e: KeyboardEvent) {
@@ -182,17 +183,20 @@ function stepFor(bounds: ParamBounds | undefined): number | undefined {
 <template>
   <div class="flex h-dvh flex-col">
     <!-- Top bar -->
-    <app-header title="Workers AI Draw" />
+    <app-header :title="t('app.titleDraw')" />
 
     <div class="flex flex-row flex-wrap flex-1 gap-2 p-4">
       <!-- Composer (left/up) -->
       <div class="flex min-w-sm flex-1 flex-col gap-3 overflow-y-auto p-2">
         <div class="flex flex-col gap-1.5">
-          <Label>Model</Label>
+          <Label>{{ t("draw.model") }}</Label>
           <select
             :value="drawStore.options.model"
             class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            @change="(e) => setDrawModel((e.target as HTMLSelectElement).value)"
+            @change="
+              (e) =>
+                drawStore.setDrawModel((e.target as HTMLSelectElement).value)
+            "
           >
             <option v-for="m in models" :key="m.name" :value="m.name">
               {{ label(m) }}
@@ -205,7 +209,7 @@ function stepFor(bounds: ParamBounds | undefined): number | undefined {
 
         <div v-if="showSize" class="grid grid-cols-2 gap-2">
           <div class="flex flex-col gap-1">
-            <Label>Width</Label>
+            <Label>{{ t("draw.width") }}</Label>
             <Input
               v-model.number="width"
               type="number"
@@ -216,7 +220,7 @@ function stepFor(bounds: ParamBounds | undefined): number | undefined {
             />
           </div>
           <div class="flex flex-col gap-1">
-            <Label>Height</Label>
+            <Label>{{ t("draw.height") }}</Label>
             <Input
               v-model.number="height"
               type="number"
@@ -229,28 +233,28 @@ function stepFor(bounds: ParamBounds | undefined): number | undefined {
         </div>
 
         <div class="flex flex-col gap-1">
-          <Label>Prompt</Label>
+          <Label>{{ t("draw.prompt") }}</Label>
           <Textarea
             v-model="prompt"
             :rows="4"
-            placeholder="A photorealistic sunset over the alps…"
+            :placeholder="t('draw.promptPlaceholder')"
             class="resize-none"
             @keydown="onKeydown"
           />
         </div>
 
         <div v-if="showNegative" class="flex flex-col gap-1">
-          <Label>Negative prompt</Label>
+          <Label>{{ t("draw.negativePrompt") }}</Label>
           <Textarea
             v-model="negativePrompt"
             :rows="2"
-            placeholder="blurry, low quality, text"
+            :placeholder="t('draw.negativePromptPlaceholder')"
             class="resize-none"
           />
         </div>
 
         <div v-if="showSteps" class="flex flex-col gap-1">
-          <Label>Steps</Label>
+          <Label>{{ t("draw.steps") }}</Label>
           <Input
             v-model.number="steps"
             type="number"
@@ -261,7 +265,7 @@ function stepFor(bounds: ParamBounds | undefined): number | undefined {
         </div>
 
         <div v-if="showGuidance" class="flex flex-col gap-1">
-          <Label>Guidance</Label>
+          <Label>{{ t("draw.guidance") }}</Label>
           <Input
             v-model.number="guidance"
             type="number"
@@ -273,10 +277,9 @@ function stepFor(bounds: ParamBounds | undefined): number | undefined {
 
         <Alert v-if="storageBlocked" variant="destructive">
           <TriangleAlert />
-          <AlertTitle>Sync storage is nearly full</AlertTitle>
+          <AlertTitle>{{ t("draw.storageFullTitle") }}</AlertTitle>
           <AlertDescription>
-            Delete some images (or conversations) from the sidebar to free up
-            room, then generate again.
+            {{ t("draw.storageFullDescription") }}
           </AlertDescription>
         </Alert>
 
@@ -288,14 +291,14 @@ function stepFor(bounds: ParamBounds | undefined): number | undefined {
           >
             <Sparkles v-if="!loading" class="size-4" />
             <Square v-else class="size-4 fill-current" />
-            {{ loading ? "Generating…" : "Generate" }}
+            {{ loading ? t("draw.generating") : t("draw.generate") }}
           </Button>
           <Button
             v-if="loading"
             size="icon"
             variant="secondary"
-            aria-label="Stop generating"
-            @click="stopGenerating"
+            :aria-label="t('draw.stopGenerating')"
+            @click="drawStore.stopGenerating"
           >
             <Square class="size-4 fill-current" />
           </Button>
@@ -310,8 +313,7 @@ function stepFor(bounds: ParamBounds | undefined): number | undefined {
         >
           <EmptyHeader>
             <EmptyDescription>
-              Images you generate will appear here. Pick a model, enter a
-              prompt, and click "Generate" to create your first image.
+              {{ t("draw.emptyDescription") }}
             </EmptyDescription>
           </EmptyHeader>
         </Empty>

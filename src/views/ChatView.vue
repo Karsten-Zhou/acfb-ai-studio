@@ -1,18 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import { Sparkles } from "@lucide/vue";
 import type { ChatMessage as ChatMessageType } from "@shared/chat";
-import {
-  chatStore,
-  sendMessage,
-  editAndResend,
-  retryAt,
-  switchSibling,
-  stopStreaming,
-} from "@/composables/chat";
+import { useChatStore } from "@/stores/chat";
 import { activeThread, childrenOf } from "@/lib/conversation-tree";
 import { FREE_TEXT_GENERATION_MODELS } from "@shared/generated/models";
-import { defaultOptions } from "@/composables/settings";
 import ChatMessage from "@/components/chat/ChatMessage.vue";
 import ChatInput from "@/components/chat/ChatInput.vue";
 import {
@@ -32,13 +25,9 @@ import {
 } from "@/components/ui/empty";
 import AppHeader from "@/components/AppHeader.vue";
 
+const { t } = useI18n({ useScope: "global" });
+const chatStore = useChatStore();
 const models = FREE_TEXT_GENERATION_MODELS;
-
-// Ensure a sane default model before first render, preferring the persisted
-// default (falling back to the catalog default on a fresh install).
-if (!chatStore.model) {
-  chatStore.model = defaultOptions.model;
-}
 
 const activeConv = computed(() =>
   chatStore.conversations.find((c) => c.id === chatStore.activeId),
@@ -70,36 +59,36 @@ const thread = computed(() => {
 const lastIndex = computed(() => thread.value.length - 1);
 
 async function handleSend(content: string) {
-  await sendMessage(content);
+  await chatStore.sendMessage(content);
 }
 
 function handleStop() {
-  stopStreaming();
+  chatStore.stopStreaming();
 }
 
 function handleEdit(messageId: string, content: string) {
   const conv = activeConv.value;
   if (!conv) return;
-  void editAndResend(conv.id, messageId, content);
+  void chatStore.editAndResend(conv.id, messageId, content);
 }
 
 function handleRetry(messageId: string) {
   const conv = activeConv.value;
   if (!conv) return;
-  void retryAt(conv.id, messageId);
+  void chatStore.retryAt(conv.id, messageId);
 }
 
 function handleSwitchSibling(messageId: string, direction: -1 | 1) {
   const conv = activeConv.value;
   if (!conv) return;
-  switchSibling(conv.id, messageId, direction);
+  chatStore.switchSibling(conv.id, messageId, direction);
 }
 </script>
 
 <template>
   <div class="flex h-dvh flex-col">
     <!-- Top bar -->
-    <app-header title="Workers AI Chat" />
+    <app-header :title="t('app.titleChat')" />
 
     <!-- Message scroller -->
     <MessageScrollerProvider
@@ -129,7 +118,7 @@ function handleSwitchSibling(messageId: string, direction: -1 | 1) {
               />
             </MessageScrollerItem>
             <p class="mb-2 text-center text-xs text-muted-foreground">
-              Workers AI can make mistakes. Check important info.
+              {{ t("chat.disclaimer") }}
             </p>
           </MessageScrollerContent>
         </MessageScrollerViewport>
@@ -143,10 +132,9 @@ function handleSwitchSibling(messageId: string, direction: -1 | 1) {
         <EmptyMedia variant="icon">
           <Sparkles />
         </EmptyMedia>
-        <EmptyTitle>I'm powered by Workers AI</EmptyTitle>
+        <EmptyTitle>{{ t("chat.emptyTitle") }}</EmptyTitle>
         <EmptyDescription>
-          Ask a question, paste code, or explore a topic. Pick a model and tune
-          generation settings from the composer below.
+          {{ t("chat.emptyDescription") }}
         </EmptyDescription>
       </EmptyHeader>
     </Empty>

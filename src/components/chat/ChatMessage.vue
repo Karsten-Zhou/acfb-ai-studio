@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { nextTick, ref, watch } from "vue";
+import { storeToRefs } from "pinia";
+import { useI18n } from "vue-i18n";
+import { usePreferencesStore } from "@/stores/preferences";
 import {
   Brain,
   Check,
@@ -51,6 +54,14 @@ const emit = defineEmits<{
   (e: "switchSibling", messageId: string, direction: -1 | 1): void;
 }>();
 
+const { t } = useI18n({ useScope: "global" });
+
+/**
+ * Syntax highlighting follows the *app* theme, not the OS: a user who picks
+ * "Light" on a dark desktop must still get light code blocks.
+ */
+const { isDark } = storeToRefs(usePreferencesStore());
+
 const editing = ref(false);
 const draft = ref("");
 const copied = ref(false);
@@ -59,9 +70,6 @@ const editArea = ref<InstanceType<typeof Textarea> | null>(null);
 
 const html = ref("");
 const reasoningHtml = ref("");
-const isDark = ref(false);
-
-let mediaQuery: MediaQueryList | undefined;
 
 watch(
   [
@@ -103,21 +111,6 @@ watch(
   },
   { immediate: true },
 );
-
-onMounted(() => {
-  mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-  isDark.value = mediaQuery.matches;
-
-  const handleChange = (event: MediaQueryListEvent) => {
-    isDark.value = event.matches;
-  };
-
-  mediaQuery.addEventListener?.("change", handleChange);
-
-  onUnmounted(() => {
-    mediaQuery?.removeEventListener?.("change", handleChange);
-  });
-});
 
 function startEdit() {
   draft.value = props.message.content;
@@ -184,10 +177,10 @@ async function copy() {
                 @click="sendEdit"
               >
                 <Send class="size-3.5" />
-                Send
+                {{ t("chat.send") }}
               </Button>
               <Button size="sm" variant="ghost" @click="cancelEdit">
-                Cancel
+                {{ t("common.cancel") }}
               </Button>
             </div>
           </template>
@@ -208,11 +201,13 @@ async function copy() {
                   size="sm"
                   class="text-muted-foreground"
                   :aria-label="
-                    reasoningOpen ? 'Hide reasoning' : 'Show reasoning'
+                    reasoningOpen
+                      ? t('chat.hideReasoning')
+                      : t('chat.showReasoning')
                   "
                 >
                   <Brain />
-                  <span>Reasoning</span>
+                  <span>{{ t("chat.reasoning") }}</span>
                   <ChevronRight
                     class="transition-transform"
                     :class="{ 'rotate-90': reasoningOpen }"
@@ -235,9 +230,9 @@ async function copy() {
               variant="destructive"
             >
               <AlertCircleIcon />
-              <AlertTitle>Generation failed</AlertTitle>
+              <AlertTitle>{{ t("chat.generationFailed") }}</AlertTitle>
               <AlertDescription class="line-clamp-4">
-              {{ message.error }}
+                {{ message.error }}
               </AlertDescription>
             </Alert>
 
@@ -248,7 +243,9 @@ async function copy() {
               <MarkerIcon>
                 <Spinner />
               </MarkerIcon>
-              <MarkerContent class="shimmer"> Thinking </MarkerContent>
+              <MarkerContent class="shimmer">
+                {{ t("chat.thinking") }}
+              </MarkerContent>
             </Marker>
 
             <!-- eslint-disable vue/no-v-html -- Html is sanitized by DOMPurify -->
@@ -270,8 +267,8 @@ async function copy() {
         <Button
           variant="ghost"
           size="icon-sm"
-          :aria-label="copied ? 'Copied' : 'Copy message'"
-          title="Copy"
+          :aria-label="copied ? t('common.copied') : t('chat.copyMessage')"
+          :title="t('common.copy')"
           @click="copy"
         >
           <Check v-if="copied" class="size-3.5" />
@@ -282,8 +279,8 @@ async function copy() {
           v-if="message.role === 'user'"
           variant="ghost"
           size="icon-sm"
-          aria-label="Edit message"
-          title="Edit"
+          :aria-label="t('chat.editMessage')"
+          :title="t('common.edit')"
           :disabled="streaming"
           @click="startEdit"
         >
@@ -294,8 +291,8 @@ async function copy() {
           v-else
           variant="ghost"
           size="icon-sm"
-          aria-label="Try again"
-          title="Try again"
+          :aria-label="t('common.tryAgain')"
+          :title="t('common.tryAgain')"
           :disabled="streaming"
           @click="emit('retry', message.id)"
         >
@@ -307,7 +304,7 @@ async function copy() {
           <Button
             variant="ghost"
             size="icon-sm"
-            aria-label="Previous version"
+            :aria-label="t('chat.previousVersion')"
             :disabled="streaming || siblingIndex <= 1"
             @click="emit('switchSibling', message.id, -1)"
           >
@@ -319,7 +316,7 @@ async function copy() {
           <Button
             variant="ghost"
             size="icon-sm"
-            aria-label="Next version"
+            :aria-label="t('chat.nextVersion')"
             :disabled="streaming || siblingIndex >= siblingCount"
             @click="emit('switchSibling', message.id, 1)"
           >

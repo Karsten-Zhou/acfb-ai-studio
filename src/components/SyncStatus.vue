@@ -2,57 +2,55 @@
 import { computed } from "vue";
 import { AlertCircle, Check, CloudOff, HardDrive, RefreshCw } from "@lucide/vue";
 import { useNow } from "@vueuse/core";
+import { useI18n } from "vue-i18n";
 import { Button } from "@/components/ui/button";
 import { requestSync, resetSyncState } from "@/composables/sync";
-import { localMeta, storageUsage, syncState } from "@/composables/sync-state";
+import { useSyncStore } from "@/stores/sync";
+import { formatRelativeTime } from "@/lib/i18n";
+
+const { t } = useI18n({ useScope: "global" });
+const sync = useSyncStore();
 
 /** Ticks so "synced 2m ago" stays truthful without re-rendering constantly. */
 const now = useNow({ interval: 15_000 });
-
-function relative(ts: number | null): string {
-  if (!ts) return "not yet";
-  const seconds = Math.max(0, Math.round((now.value.getTime() - ts) / 1000));
-  if (seconds < 10) return "just now";
-  if (seconds < 60) return `${seconds}s ago`;
-  const minutes = Math.round(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.round(hours / 24)}d ago`;
-}
 
 function megabytes(bytes: number): string {
   return (bytes / 1024 / 1024).toFixed(1);
 }
 
 const status = computed(() => {
-  if (syncState.error) {
+  if (sync.error) {
     return {
       icon: AlertCircle,
-      label: syncState.error.message,
+      label: sync.error.message,
       tone: "text-destructive",
       spin: false,
     };
   }
-  if (syncState.phase === "syncing") {
+  if (sync.phase === "syncing") {
     return {
       icon: RefreshCw,
-      label: "Syncing…",
+      label: t("sync.syncing"),
       tone: "text-muted-foreground",
       spin: true,
     };
   }
-  if (localMeta.value.dirty) {
+  if (sync.localMeta.dirty) {
     return {
       icon: CloudOff,
-      label: "Saved locally, waiting to sync…",
+      label: t("sync.pending"),
       tone: "text-muted-foreground",
       spin: false,
     };
   }
   return {
     icon: Check,
-    label: `Synced ${relative(syncState.lastSyncedAt ?? localMeta.value.lastSyncedAt)}`,
+    label: t("sync.synced", {
+      time: formatRelativeTime(
+        sync.lastSyncedAt ?? sync.localMeta.lastSyncedAt,
+        now.value.getTime(),
+      ),
+    }),
     tone: "text-muted-foreground",
     spin: false,
   };
@@ -60,20 +58,17 @@ const status = computed(() => {
 
 /** The single KV entry fills up predictably, so show how much room is left. */
 const percent = computed(() =>
-  Math.min(100, Math.round(storageUsage.value.ratio * 100)),
+  Math.min(100, Math.round(sync.storageUsage.ratio * 100)),
 );
 
 const barTone = computed(() => {
-  if (storageUsage.value.blocked) return "bg-destructive";
+  if (sync.storageUsage.blocked) return "bg-destructive";
   if (percent.value > 50) return "bg-amber-500";
   return "bg-primary";
 });
 
 async function onReset() {
-  const ok = window.confirm(
-    "Replace the synced copy on the server with this device's history? Other devices will pick up this device's state on their next sync.",
-  );
-  if (!ok) return;
+  if (!window.confirm(t("sync.resetConfirm"))) return;
   await resetSyncState();
 }
 </script>
@@ -99,8 +94,8 @@ async function onReset() {
         size="icon-sm"
         variant="ghost"
         class="h-6 w-6"
-        aria-label="Sync now"
-        :disabled="syncState.phase === 'syncing'"
+        :aria-label="t('sync.syncNow')"
+        :disabled="sync.phase === 'syncing'"
         @click="requestSync"
       >
         <RefreshCw class="size-3.5" />
@@ -115,7 +110,10 @@ async function onReset() {
         :aria-valuenow="percent"
         aria-valuemin="0"
         aria-valuemax="100"
-        :title="`${megabytes(storageUsage.bytes)} MB of ${megabytes(storageUsage.max)} MB used`"
+        :title="t('sync.usage', {
+          used: megabytes(sync.storageUsage.bytes),
+          total: megabytes(sync.storageUsage.max),
+        })"
       >
         <div
           class="h-full rounded-full transition-all"
@@ -124,18 +122,21 @@ async function onReset() {
         />
       </div>
       <span class="shrink-0 text-[10px] tabular-nums text-muted-foreground">
-        {{ megabytes(storageUsage.bytes) }}/{{ megabytes(storageUsage.max) }} MB
+        {{ megabytes(sync.storageUsage.bytes) }}/{{
+          megabytes(sync.storageUsage.max)
+        }}
+        MB
       </span>
     </div>
 
     <Button
-      v-if="syncState.error?.corrupt"
+      v-if="sync.error?.corrupt"
       size="sm"
       variant="outline"
       class="h-7 w-full text-xs"
       @click="onReset"
     >
-      Reset synced copy
+      {{ t("sync.reset") }}
     </Button>
   </div>
 </template>

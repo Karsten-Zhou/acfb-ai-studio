@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import {
   MessageSquareText,
@@ -7,10 +8,12 @@ import {
   Trash2,
   Image as ImageIcon,
   ChevronsUpDown,
+  Settings,
 } from "@lucide/vue";
 import type { Conversation } from "@shared/chat";
-import { drawStore, deleteGalleryItem, clearGallery } from "@/composables/draw";
+import { useDrawStore } from "@/stores/draw";
 import SyncStatus from "@/components/SyncStatus.vue";
+import SettingsModal from "@/components/settings/SettingsModal.vue";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
@@ -67,34 +70,39 @@ const emit = defineEmits<{
   (e: "delete", id: string): void;
 }>();
 
+const { t } = useI18n({ useScope: "global" });
+const drawStore = useDrawStore();
 const { isMobile } = useSidebar();
 const route = useRoute();
 const router = useRouter();
+
+/** Open state of the settings modal (rendered at the end of the template). */
+const settingsOpen = ref(false);
 
 /**
  * The two top-level user "modes": chat with models vs. generate images. The
  * active one drives both the header switcher and which content the sidebar
  * shows.
  */
-const modes = [
+const modes = computed(() => [
   {
     key: "chat",
-    name: "Workers AI Chat",
-    description: "Talk to a text model",
+    name: t("app.titleChat"),
+    description: t("nav.chatDescription"),
     icon: MessageSquareText,
     to: "/chat",
   },
   {
     key: "draw",
-    name: "Workers AI Draw",
-    description: "Generate images from text",
+    name: t("app.titleDraw"),
+    description: t("nav.drawDescription"),
     icon: ImageIcon,
     to: "/draw",
   },
-];
+]);
 
 const activeMode = computed(
-  () => modes.find((m) => route.path.startsWith(m.to)) || modes[0],
+  () => modes.value.find((m) => route.path.startsWith(m.to)) || modes.value[0],
 );
 
 const sorted = computed(() => [...props.conversations]);
@@ -138,7 +146,7 @@ const gallery = computed(() => drawStore.gallery);
               :side-offset="4"
             >
               <DropdownMenuLabel class="text-xs text-muted-foreground">
-                Modes
+                {{ t("nav.modes") }}
               </DropdownMenuLabel>
               <DropdownMenuItem
                 v-for="mode in modes"
@@ -167,13 +175,13 @@ const gallery = computed(() => drawStore.gallery);
     <SidebarContent>
       <!-- Conversation list is chat-only -->
       <SidebarGroup v-if="activeMode.key === 'chat'">
-        <SidebarGroupLabel>Conversations</SidebarGroupLabel>
+        <SidebarGroupLabel>{{ t("nav.conversations") }}</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton @click="emit('new')">
                 <Plus />
-                New Conversation
+                {{ t("nav.newConversation") }}
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem v-for="conv in sorted" :key="conv.id">
@@ -181,15 +189,15 @@ const gallery = computed(() => drawStore.gallery);
                 :is-active="conv.id === activeId"
                 @click="emit('select', conv.id)"
               >
-                <span>{{ conv.title || "Untitled" }}</span>
+                <span>{{ conv.title || t("common.untitled") }}</span>
               </SidebarMenuButton>
               <SidebarMenuAction
                 show-on-hover
-                title="Delete"
+                :title="t('common.delete')"
                 @click="emit('delete', conv.id)"
               >
                 <Trash2 />
-                <span class="sr-only">Delete</span>
+                <span class="sr-only">{{ t("common.delete") }}</span>
               </SidebarMenuAction>
             </SidebarMenuItem>
 
@@ -198,7 +206,9 @@ const gallery = computed(() => drawStore.gallery);
               class="border border-dashed"
             >
               <EmptyHeader>
-                <EmptyDescription> No conversations yet </EmptyDescription>
+                <EmptyDescription>
+                  {{ t("nav.noConversations") }}
+                </EmptyDescription>
               </EmptyHeader>
             </Empty>
           </SidebarMenu>
@@ -208,7 +218,7 @@ const gallery = computed(() => drawStore.gallery);
       <!-- Generated-image history is draw-only -->
       <SidebarGroup v-else-if="activeMode.key === 'draw'">
         <SidebarGroupLabel class="flex items-center justify-between">
-          <span>Images ({{ gallery.length }})</span>
+          <span>{{ t("nav.images", { count: gallery.length }) }}</span>
           <!-- Delete all images -->
           <AlertDialog>
             <AlertDialogTrigger>
@@ -216,23 +226,22 @@ const gallery = computed(() => drawStore.gallery);
                 v-if="gallery.length"
                 size="icon-xs"
                 variant="ghost"
-                aria-label="Clear image history"
+                :aria-label="t('nav.clearImageHistory')"
               >
                 <Trash2 />
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Clear Image History</AlertDialogTitle>
+                <AlertDialogTitle>{{ t("nav.clearImageHistory") }}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove your datas.
+                  {{ t("nav.clearImageHistoryDescription") }}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction @click.stop="clearGallery">
-                  Continue
+                <AlertDialogCancel>{{ t("common.cancel") }}</AlertDialogCancel>
+                <AlertDialogAction @click.stop="drawStore.clearGallery">
+                  {{ t("nav.clearImageHistoryAction") }}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -261,9 +270,9 @@ const gallery = computed(() => drawStore.gallery);
                     </ItemContent>
                     <ItemActions>
                       <Button
-                        title="Delete"
+                        :title="t('common.delete')"
                         variant="ghost"
-                        @click="deleteGalleryItem(item.id)"
+                        @click="drawStore.deleteGalleryItem(item.id)"
                       >
                         <Trash2 class="size-4" />
                       </Button>
@@ -276,7 +285,7 @@ const gallery = computed(() => drawStore.gallery);
           </ScrollArea>
           <Empty v-else class="border border-dashed">
             <EmptyHeader>
-              <EmptyDescription> No images yet </EmptyDescription>
+              <EmptyDescription>{{ t("nav.noImages") }}</EmptyDescription>
             </EmptyHeader>
           </Empty>
         </SidebarGroupContent>
@@ -285,11 +294,21 @@ const gallery = computed(() => drawStore.gallery);
 
     <SidebarFooter>
       <SyncStatus />
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton @click="settingsOpen = true">
+            <Settings />
+            {{ t("common.settings") }}
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
       <span class="px-2 text-xs text-muted-foreground">
-        Powered by Workers AI
+        {{ t("nav.poweredBy") }}
       </span>
     </SidebarFooter>
 
     <SidebarRail />
+
+    <SettingsModal v-model:open="settingsOpen" />
   </Sidebar>
 </template>

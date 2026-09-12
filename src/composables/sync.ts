@@ -25,20 +25,16 @@ import {
 } from "@shared/sync";
 import { CORRUPT_STATE } from "@shared/errors";
 import { readApiError } from "@/lib/api-error";
-import { chatStore } from "./chat";
-import { drawStore } from "./draw";
-import { defaultOptions } from "./settings";
+import { t } from "@/lib/i18n";
+import { defaultOptions } from "@/composables/chat-defaults";
+import { useChatStore } from "@/stores/chat";
+import { useDrawStore } from "@/stores/draw";
 import {
   SYNC_META_QUERY_KEY,
   SYNC_STATE_QUERY_KEY,
-  bumpStoreStamp,
-  localMeta,
-  markDirty,
-  setPayloadCollector,
-  setPushScheduler,
-  syncState,
+  useSyncStore,
   type SyncError,
-} from "./sync-state";
+} from "@/stores/sync";
 
 /** How often we ask whether another device wrote something. */
 const META_POLL_MS = 10_000;
@@ -119,9 +115,7 @@ async function request(url: string, init?: RequestInit): Promise<Response> {
   try {
     return await fetch(url, init);
   } catch {
-    throw new SyncRequestError(
-      "Can't reach the sync server. Changes are saved on this device and will sync when the connection returns.",
-    );
+    throw new SyncRequestError(t("sync.offline"));
   }
 }
 
@@ -132,7 +126,7 @@ async function fetchMeta(): Promise<SyncMeta> {
   if (!res.ok) throw await httpError(res);
   const body = await readJson<SyncMeta>(res);
   if (!body) {
-    throw new SyncRequestError("Sync metadata could not be parsed.");
+    throw new SyncRequestError(t("sync.metaParseFailed"));
   }
   return body;
 }
@@ -144,9 +138,9 @@ async function fetchState(): Promise<SyncStateResponse> {
   if (!res.ok) throw await httpError(res);
   const body = await readJson<StateEnvelope>(res);
   if (!body) {
-    throw new SyncRequestError("Sync state could not be parsed.");
+    throw new SyncRequestError(t("sync.stateParseFailed"));
   }
-  if (!body.payload) throw new SyncRequestError("Sync state is empty.");
+  if (!body.payload) throw new SyncRequestError(t("sync.emptyState"));
   return { payload: body.payload, revision: body.revision, bytes: body.bytes };
 }
 
@@ -160,7 +154,7 @@ async function putState(body: string): Promise<SyncStateResponse> {
   if (res.status === 409) {
     const conflict = await readJson<SyncConflictResponse>(res);
     if (!conflict) {
-      throw new SyncRequestError("Sync conflict could not be parsed.");
+      throw new SyncRequestError(t("sync.conflictParseFailed"));
     }
     throw new SyncConflictError(conflict);
   }
@@ -168,7 +162,7 @@ async function putState(body: string): Promise<SyncStateResponse> {
 
   const result = await readJson<SyncStateResponse>(res);
   if (!result) {
-    throw new SyncRequestError("Sync response could not be parsed.");
+    throw new SyncRequestError(t("sync.responseParseFailed"));
   }
   return result;
 }
@@ -181,15 +175,18 @@ async function putState(body: string): Promise<SyncStateResponse> {
 let applying = false;
 
 function collectPayload(): SyncPayload {
+  const chat = useChatStore();
+  const draw = useDrawStore();
+  const sync = useSyncStore();
   return {
     version: SYNC_VERSION,
-    revision: localMeta.value.baseRevision,
+    revision: sync.localMeta.baseRevision,
     updatedAt: Date.now(),
-    conversations: chatStore.conversations,
-    gallery: drawStore.gallery,
+    conversations: chat.conversations,
+    gallery: draw.gallery,
     defaults: defaultOptions,
-    defaultsUpdatedAt: localMeta.value.defaultsUpdatedAt,
-    deletions: localMeta.value.deletions,
+    defaultsUpdatedAt: sync.localMeta.defaultsUpdatedAt,
+    deletions: sync.localMeta.deletions,
   };
 }
 
@@ -207,7 +204,9 @@ function emptyPayload(): SyncPayload {
 }
 
 function hasLocalContent(): boolean {
-  return chatStore.conversations.length > 0 || drawStore.gallery.length > 0;
+  const chat = useChatStore();
+  const draw = useDrawStore();
+  return chat.conversations.length > 0 || draw.gallery.length > 0;
 }
 
 /**
@@ -219,7 +218,9 @@ function hasLocalContent(): boolean {
  * stream appeared to work.
  */
 function isBusy(): boolean {
-  return chatStore.streaming || drawStore.generating;
+  const chat = useChatStore();
+  const draw = useDrawStore();
+  return chat.streaming || draw.generating;
 }
 
 /**
@@ -236,23 +237,27 @@ function isBusy(): boolean {
 async function applyPayload(payload: SyncPayload): Promise<boolean> {
   if (isBusy()) return false;
 
+  const chat = useChatStore();
+  const draw = useDrawStore();
+  const sync = useSyncStore();
+
   applying = true;
   try {
-    chatStore.conversations = payload.conversations;
+    chat.conversations = payload.conversations;
     // Only clear a selection that no longer exists; never move the user to a
     // different thread on their behalf.
-    if (!payload.conversations.some((c) => c.id === chatStore.activeId)) {
-      chatStore.activeId = null;
+    if (!payload.conversations.some((c) => c.id === chat.activeId)) {
+      chat.activeId = null;
     }
-    drawStore.gallery = payload.gallery;
+    draw.gallery = payload.gallery;
     Object.assign(defaultOptions, payload.defaults);
-    localMeta.value.deletions = { ...payload.deletions };
-    localMeta.value.defaultsUpdatedAt = payload.defaultsUpdatedAt;
+    sync.localMeta.deletions = { ...payload.deletions };
+    sync.localMeta.defaultsUpdatedAt = payload.defaultsUpdatedAt;
   } finally {
     await nextTick();
     applying = false;
     // The stores changed behind the watchers' backs, so invalidate the size cache.
-    bumpStoreStamp();
+    sync.bumpStoreStamp();
   }
   return true;
 }
@@ -263,7 +268,10 @@ function formatMb(bytes: number): string {
 
 function tooLargeError(bytes: number): SyncRequestError {
   return new SyncRequestError(
-    `History is ${formatMb(bytes)}, over the ${formatMb(SYNC_MAX_BYTES)} limit for a single synced entry. Delete some conversations or images to resume syncing.`,
+    t("sync.tooLarge", {
+      size: formatMb(bytes),
+      limit: formatMb(SYNC_MAX_BYTES),
+    }),
   );
 }
 
@@ -277,6 +285,9 @@ function tooLargeError(bytes: number): SyncRequestError {
  */
 export function useSyncEngine(): void {
   const queryClient = useQueryClient();
+  const sync = useSyncStore();
+  const chat = useChatStore();
+  const draw = useDrawStore();
 
   let running = false;
 
@@ -294,15 +305,15 @@ export function useSyncEngine(): void {
   const debouncedSync = useDebounceFn(() => void reconcile(), PUSH_DEBOUNCE_MS);
 
   function settle(): void {
-    syncState.phase = "synced";
-    syncState.error = null;
-    syncState.lastSyncedAt = Date.now();
-    localMeta.value.lastSyncedAt = syncState.lastSyncedAt;
+    sync.phase = "synced";
+    sync.error = null;
+    sync.lastSyncedAt = Date.now();
+    sync.localMeta.lastSyncedAt = sync.lastSyncedAt;
   }
 
   function fail(err: unknown): void {
-    syncState.phase = "error";
-    syncState.error = toSyncError(err);
+    sync.phase = "error";
+    sync.error = toSyncError(err);
   }
 
   /**
@@ -323,9 +334,7 @@ export function useSyncEngine(): void {
           issues,
           payload,
         );
-        throw new SyncRequestError(
-          `Local state can't be synced (${issues}).`,
-        );
+        throw new SyncRequestError(t("sync.invalidPayload", { issues }));
       }
 
       // The wire format is the compare-and-swap envelope; only `payload` is
@@ -336,9 +345,9 @@ export function useSyncEngine(): void {
 
       try {
         const result = await pushMutation.mutateAsync(body);
-        localMeta.value.baseRevision = result.revision;
-        localMeta.value.dirty = false;
-        syncState.bytes = result.bytes;
+        sync.localMeta.baseRevision = result.revision;
+        sync.localMeta.dirty = false;
+        sync.bytes = result.bytes;
         queryClient.setQueryData(SYNC_STATE_QUERY_KEY, result);
         return;
       } catch (err) {
@@ -357,21 +366,19 @@ export function useSyncEngine(): void {
 
         // Only adopt the winner's revision once our state reflects the merge.
         base = conflict.revision;
-        localMeta.value.baseRevision = base;
+        sync.localMeta.baseRevision = base;
 
         if (!merged.changedRemote) {
           // Converged: the server already holds exactly this state.
-          localMeta.value.dirty = false;
-          syncState.bytes = conflict.bytes;
+          sync.localMeta.dirty = false;
+          sync.bytes = conflict.bytes;
           return;
         }
         payload = merged.payload;
       }
     }
 
-    throw new Error(
-      "Sync kept conflicting after several attempts. Try again in a moment.",
-    );
+    throw new Error(t("sync.conflictRetries"));
   }
 
   /**
@@ -380,19 +387,19 @@ export function useSyncEngine(): void {
    */
   async function pull(meta: SyncMeta): Promise<void> {
     if (meta.empty) {
-      syncState.bytes = 0;
-      localMeta.value.baseRevision = 0;
+      sync.bytes = 0;
+      sync.localMeta.baseRevision = 0;
       if (hasLocalContent()) {
         // Storage was cleared behind our back; republish what we hold.
         await push(0, collectPayload());
       } else {
-        localMeta.value.dirty = false;
+        sync.localMeta.dirty = false;
       }
       return;
     }
 
-    if (meta.revision === localMeta.value.baseRevision) {
-      syncState.bytes = meta.bytes;
+    if (meta.revision === sync.localMeta.baseRevision) {
+      sync.bytes = meta.bytes;
       return;
     }
 
@@ -406,15 +413,15 @@ export function useSyncEngine(): void {
       return;
     }
 
-    localMeta.value.baseRevision = remote.revision;
+    sync.localMeta.baseRevision = remote.revision;
 
     if (merged.changedLocal) await applyPayload(merged.payload);
 
     if (merged.changedRemote) {
       await push(remote.revision, merged.payload);
     } else {
-      localMeta.value.dirty = false;
-      syncState.bytes = remote.bytes;
+      sync.localMeta.dirty = false;
+      sync.bytes = remote.bytes;
     }
   }
 
@@ -441,13 +448,13 @@ export function useSyncEngine(): void {
     if (isBusy()) return;
 
     running = true;
-    syncState.phase = "syncing";
+    sync.phase = "syncing";
     try {
-      if (localMeta.value.dirty) {
+      if (sync.localMeta.dirty) {
         // Cloud-first: the PUT response already carries the authoritative state,
         // so a local change costs exactly one round trip. If another device got
         // there first, compare-and-swap returns 409 and `push` merges + retries.
-        await push(localMeta.value.baseRevision, collectPayload());
+        await push(sync.localMeta.baseRevision, collectPayload());
       } else {
         await pull(known ?? (await fetchMetaOnce()));
       }
@@ -462,15 +469,15 @@ export function useSyncEngine(): void {
   syncNow = () => reconcile();
 
   // Let the stores report changes, and let byte accounting serialize state.
-  setPushScheduler(() => debouncedSync());
-  setPayloadCollector(() => collectPayload());
+  sync.setPushScheduler(() => debouncedSync());
+  sync.setPayloadCollector(() => collectPayload());
 
   // Local conversation/gallery changes mark the state as needing an upload.
   watch(
-    [() => chatStore.conversations, () => drawStore.gallery],
+    [() => chat.conversations, () => draw.gallery],
     () => {
       if (applying) return;
-      markDirty();
+      sync.markDirty();
     },
     { deep: true },
   );
@@ -480,8 +487,8 @@ export function useSyncEngine(): void {
     defaultOptions,
     () => {
       if (applying) return;
-      localMeta.value.defaultsUpdatedAt = Date.now();
-      markDirty();
+      sync.localMeta.defaultsUpdatedAt = Date.now();
+      sync.markDirty();
     },
     { deep: true },
   );
@@ -498,7 +505,7 @@ export function useSyncEngine(): void {
   // A long generation stream suppresses pushes; this bounds how long local
   // changes can stay unsynced once the stream ends.
   useIntervalFn(() => {
-    if (localMeta.value.dirty) void reconcile();
+    if (sync.localMeta.dirty) void reconcile();
   }, MAX_LATENCY_MS);
 
   watch(
@@ -509,17 +516,18 @@ export function useSyncEngine(): void {
   );
 
   onScopeDispose(() => {
-    setPushScheduler(null);
-    setPayloadCollector(null);
+    sync.setPushScheduler(null);
+    sync.setPayloadCollector(null);
     syncNow = null;
   });
 }
 
 /** Forget the server copy and re-upload this device's state. */
 export async function resetSyncState(): Promise<void> {
+  const sync = useSyncStore();
   const res = await request("/api/sync", { method: "DELETE" });
   if (!res.ok) throw await httpError(res);
-  localMeta.value.baseRevision = 0;
-  localMeta.value.dirty = true;
+  sync.localMeta.baseRevision = 0;
+  sync.localMeta.dirty = true;
   syncNow?.();
 }

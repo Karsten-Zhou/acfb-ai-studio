@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { drawStore } from "@/composables/draw";
+import { useDrawStore } from "@/stores/draw";
 import { computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 
+const { t } = useI18n({ useScope: "global" });
+const draw = useDrawStore();
 const route = useRoute();
 const galleryItem = computed(() =>
-  drawStore.gallery.find((item) => item.id === route.params.id),
+  draw.gallery.find((item) => item.id === route.params.id),
 );
 const router = useRouter();
 watch(galleryItem, (newVal) => {
@@ -21,7 +24,7 @@ watch(galleryItem, (newVal) => {
     <div v-if="galleryItem" class="flex justify-center">
       <img
         :src="galleryItem.image"
-        alt="Generated Image"
+        :alt="t('draw.generatedImage')"
         class="max-w-full max-h-[80vh] rounded-md"
       />
     </div>
