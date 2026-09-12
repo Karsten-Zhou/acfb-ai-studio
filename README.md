@@ -85,6 +85,13 @@ bun install
 bunx wrangler login
 ```
 
+3. **Sync the latest Cloudflare AI models and Shiki themes:**
+
+```bash
+bun run sync-cf-model-list
+bun run sync-shiki-themes
+```
+
 3. **Start the local development server:**
 
 ```bash

@@ -20,7 +20,8 @@
     "typecheck:node": "tsc --build --force tsconfig.node.json",
     "lint": "eslint .",
     "format": "prettier . --write",
-    "sync-cf-model-list": "bun scripts/sync-cloudflare-models.ts"
+    "sync-cf-model-list": "bun scripts/sync-cloudflare-models.ts",
+    "sync-shiki-themes": "bun scripts/sync-shiki-themes.ts"
   },
   "dependencies": {
     "@formatjs/intl-localematcher": "^0.8.14",
