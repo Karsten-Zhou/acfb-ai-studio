@@ -19,7 +19,9 @@ watch(galleryItem, (newVal) => {
 });
 </script>
 <template>
-  <div class="flex flex-col gap-2 m-auto h-full items-center justify-center p-4" >
+  <div
+    class="flex flex-col gap-2 m-auto h-full items-center justify-center p-4"
+  >
     <!-- Image -->
     <div v-if="galleryItem" class="flex justify-center">
       <img

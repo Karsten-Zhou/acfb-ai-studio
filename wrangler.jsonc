@@ -1,23 +1,21 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "acfb-ai-studio",
-	"main": "server/index.ts",
-	"compatibility_date": "2026-09-09",
-	"assets": {
-		"not_found_handling": "single-page-application",
-		"run_worker_first": [
-			"/api/*"
-		]
-	},
-	"observability": {
-		"enabled": true
-	},
-	"kv_namespaces": [
-		{
-			"binding": "SYNC_KV",
-		}
-	],
-	"ai": {
-		"binding": "AI",
-	},
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "acfb-ai-studio",
+  "main": "server/index.ts",
+  "compatibility_date": "2026-09-09",
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"],
+  },
+  "observability": {
+    "enabled": true,
+  },
+  "kv_namespaces": [
+    {
+      "binding": "SYNC_KV",
+    },
+  ],
+  "ai": {
+    "binding": "AI",
+  },
 }

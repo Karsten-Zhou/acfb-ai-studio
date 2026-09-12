@@ -1,0 +1,5 @@
+# Ignore generated UI components
+src/components/ui/**
+
+# Ignore Cloudflare Worker configuration
+server/worker-configuration.d.ts

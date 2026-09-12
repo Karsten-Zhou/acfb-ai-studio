@@ -49,7 +49,8 @@ type Paths<T, P extends string = ""> = {
 
 export type MessageKey = Paths<typeof en>;
 
-export type MessageParams = Record<string, string | number> | Array<string | number>;
+export type MessageParams =
+  Record<string, string | number> | Array<string | number>;
 
 // Missing keys fall back to `en`, then to the raw key. Correctness is enforced
 // by the `MessageKey` type instead of runtime warnings (which would spam the
@@ -106,7 +107,9 @@ export function t(key: MessageKey, params?: MessageParams): string {
  */
 export function languageLabel(locale: Locale): string {
   try {
-    const names = new Intl.DisplayNames([currentLocale()], { type: "language" });
+    const names = new Intl.DisplayNames([currentLocale()], {
+      type: "language",
+    });
     return names.of(locale) ?? locale;
   } catch {
     return locale;

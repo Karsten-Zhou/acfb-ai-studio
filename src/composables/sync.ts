@@ -320,7 +320,10 @@ export function useSyncEngine(): void {
    * Upload the local state, resolving compare-and-swap conflicts by merging the
    * winner's state in and retrying.
    */
-  async function push(baseRevision: number, initial: SyncPayload): Promise<void> {
+  async function push(
+    baseRevision: number,
+    initial: SyncPayload,
+  ): Promise<void> {
     let base = baseRevision;
     let payload = initial;
 
@@ -356,7 +359,10 @@ export function useSyncEngine(): void {
         // Another device got there first. Adopt its revision, merge, and retry
         // so neither side's work is dropped.
         const conflict = err.conflict;
-        const merged = mergePayloads(payload, conflict.payload ?? emptyPayload());
+        const merged = mergePayloads(
+          payload,
+          conflict.payload ?? emptyPayload(),
+        );
 
         if (merged.changedLocal && !(await applyPayload(merged.payload))) {
           // A turn started while the conflict was being resolved. Leave the

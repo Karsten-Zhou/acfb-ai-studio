@@ -1,11 +1,7 @@
 import { Hono } from "hono";
 import { imageRequestSchema, type ImageRequest } from "@shared/api";
 import { zValidator } from "@hono/zod-validator";
-import {
-  errorResponse,
-  upstreamError,
-  UserFacingError,
-} from "./errors";
+import { errorResponse, upstreamError, UserFacingError } from "./errors";
 import {
   dimensionsOfBase64,
   dimensionsOfBytes,

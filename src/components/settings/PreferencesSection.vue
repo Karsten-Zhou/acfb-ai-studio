@@ -32,18 +32,20 @@ const themes = computed<
 ]);
 
 /** "Automatic (English)" plus every supported language, named in the current UI language. */
-const localeOptions = computed<{ value: LocaleSetting; label: string }[]>(() => [
-  {
-    value: "auto",
-    label: t("settings.languageAuto", {
-      language: languageLabel(resolveBrowserLocale()),
-    }),
-  },
-  ...supportedLocales.map((locale) => ({
-    value: locale as LocaleSetting,
-    label: languageLabel(locale),
-  })),
-]);
+const localeOptions = computed<{ value: LocaleSetting; label: string }[]>(
+  () => [
+    {
+      value: "auto",
+      label: t("settings.languageAuto", {
+        language: languageLabel(resolveBrowserLocale()),
+      }),
+    },
+    ...supportedLocales.map((locale) => ({
+      value: locale as LocaleSetting,
+      label: languageLabel(locale),
+    })),
+  ],
+);
 </script>
 
 <template>
@@ -71,7 +73,10 @@ const localeOptions = computed<{ value: LocaleSetting; label: string }[]>(() => 
     </div>
 
     <div class="space-y-2">
-      <Label for="settings-language" class="flex items-center gap-1.5 text-muted-foreground">
+      <Label
+        for="settings-language"
+        class="flex items-center gap-1.5 text-muted-foreground"
+      >
         <Languages class="size-3.5" />
         {{ t("settings.language") }}
       </Label>

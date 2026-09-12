@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { AlertCircle, Check, CloudOff, HardDrive, RefreshCw } from "@lucide/vue";
+import {
+  AlertCircle,
+  Check,
+  CloudOff,
+  HardDrive,
+  RefreshCw,
+} from "@lucide/vue";
 import { useNow } from "@vueuse/core";
 import { useI18n } from "vue-i18n";
 import { Button } from "@/components/ui/button";
@@ -110,10 +116,12 @@ async function onReset() {
         :aria-valuenow="percent"
         aria-valuemin="0"
         aria-valuemax="100"
-        :title="t('sync.usage', {
-          used: megabytes(sync.storageUsage.bytes),
-          total: megabytes(sync.storageUsage.max),
-        })"
+        :title="
+          t('sync.usage', {
+            used: megabytes(sync.storageUsage.bytes),
+            total: megabytes(sync.storageUsage.max),
+          })
+        "
       >
         <div
           class="h-full rounded-full transition-all"

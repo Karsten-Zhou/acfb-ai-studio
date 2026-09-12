@@ -2,10 +2,7 @@
   "servers": {
     "shadcnVue": {
       "command": "npx",
-      "args": [
-        "shadcn-vue@latest",
-        "mcp"
-      ]
+      "args": ["shadcn-vue@latest", "mcp"]
     },
     "cloudflare": {
       "url": "https://mcp.cloudflare.com/mcp"

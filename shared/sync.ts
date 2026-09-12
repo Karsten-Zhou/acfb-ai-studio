@@ -134,11 +134,8 @@ export interface SyncPayload {
 
 // Compile-time guard that the runtime schema and the interface above stay in
 // step: if a field is added or retyped in one place only, this stops building.
-type SchemaMatchesPayload = z.infer<
-  typeof syncPayloadSchema
-> extends SyncPayload
-  ? true
-  : never;
+type SchemaMatchesPayload =
+  z.infer<typeof syncPayloadSchema> extends SyncPayload ? true : never;
 const _schemaMatchesPayload: SchemaMatchesPayload = true;
 void _schemaMatchesPayload;
 
@@ -210,8 +207,7 @@ export const syncPushRequestSchema = z.object({
 });
 
 export type ParsedSyncPushRequest =
-  | { ok: true; request: SyncPushRequest }
-  | { ok: false; issues: string };
+  { ok: true; request: SyncPushRequest } | { ok: false; issues: string };
 
 /**
  * Parse the body of `PUT /api/sync`.
@@ -347,7 +343,8 @@ function mergeItems<T>(
     changedLocal:
       items.length !== local.length || local.some((item) => !present.has(item)),
     changedRemote:
-      items.length !== remote.length || remote.some((item) => !present.has(item)),
+      items.length !== remote.length ||
+      remote.some((item) => !present.has(item)),
   };
 }
 

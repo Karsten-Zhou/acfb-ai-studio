@@ -7,7 +7,10 @@
       "@server/*": ["./server/*"],
       "@shared/*": ["./shared/*"]
     },
-    "types": ["@cloudflare/workers-types", "./server/worker-configuration.d.ts"],
+    "types": [
+      "@cloudflare/workers-types",
+      "./server/worker-configuration.d.ts"
+    ],
     "lib": ["ES2022"],
     "module": "ESNext",
     "moduleResolution": "Bundler",

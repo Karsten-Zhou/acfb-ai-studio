@@ -50,7 +50,8 @@ export const usePreferencesStore = defineStore("preferences", () => {
   // Reads are validated: a hand-edited or foreign localStorage value must not
   // put the app in a state it cannot render.
   const theme = computed<ThemeSetting>({
-    get: () => (isThemeSetting(stored.value.theme) ? stored.value.theme : "auto"),
+    get: () =>
+      isThemeSetting(stored.value.theme) ? stored.value.theme : "auto",
     set: (value) => {
       stored.value = { ...stored.value, theme: value };
     },

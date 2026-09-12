@@ -61,7 +61,10 @@ app.put("/", async (c) => {
   // Cheap early guard: UTF-8 byte length is always >= the UTF-16 string length,
   // so a string longer than the cap is guaranteed to be over it.
   if (raw.length > SYNC_MAX_BYTES) {
-    return c.json({ error: tooLargeMessage(raw.length), bytes: raw.length }, 413);
+    return c.json(
+      { error: tooLargeMessage(raw.length), bytes: raw.length },
+      413,
+    );
   }
 
   let body: unknown;

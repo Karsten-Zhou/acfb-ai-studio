@@ -19,7 +19,7 @@
     "typecheck:server": "tsc --build --force tsconfig.server.json",
     "typecheck:node": "tsc --build --force tsconfig.node.json",
     "lint": "eslint .",
-    "format": "prettier .",
+    "format": "prettier . --write",
     "sync-cf-model-list": "bun scripts/sync-cloudflare-models.ts"
   },
   "dependencies": {

@@ -27,7 +27,11 @@ const isDesktop = useMediaQuery("(min-width: 768px)");
 </script>
 
 <template>
-  <Dialog v-if="isDesktop" :open="open" @update:open="(value) => (open = value)">
+  <Dialog
+    v-if="isDesktop"
+    :open="open"
+    @update:open="(value) => (open = value)"
+  >
     <DialogContent class="sm:max-w-lg">
       <DialogHeader>
         <DialogTitle>{{ t("settings.title") }}</DialogTitle>

@@ -111,10 +111,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -264,10 +261,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -335,10 +329,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -488,10 +479,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -559,10 +547,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -630,10 +615,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -788,10 +770,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -938,10 +917,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -1281,10 +1257,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -1706,10 +1679,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -1837,10 +1807,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -1984,10 +1951,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -2055,10 +2019,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -2135,10 +2096,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -2206,10 +2164,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -2368,10 +2323,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {

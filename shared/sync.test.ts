@@ -151,7 +151,11 @@ describe("mergePayloads", () => {
   });
 
   it("ignores equal defaults even when the objects differ by identity", () => {
-    const defaults = { model: "m", reasoningEffort: "medium" as const, params: {} };
+    const defaults = {
+      model: "m",
+      reasoningEffort: "medium" as const,
+      params: {},
+    };
     const result = mergePayloads(
       payload({ defaults: { ...defaults, params: {} } }),
       payload({ defaults: { ...defaults, params: {} } }),
@@ -257,7 +261,9 @@ describe("parseSyncPayload", () => {
   it("rejects values that are missing required fields", () => {
     expect(parseSyncPayload(null)).toBeNull();
     expect(parseSyncPayload({})).toBeNull();
-    expect(parseSyncPayload({ ...payload(), conversations: "nope" })).toBeNull();
+    expect(
+      parseSyncPayload({ ...payload(), conversations: "nope" }),
+    ).toBeNull();
     expect(parseSyncPayload({ ...payload(), deletions: [1, 2] })).toBeNull();
   });
 
