@@ -32,6 +32,7 @@ import { Marker, MarkerContent, MarkerIcon } from "@/components/ui/marker";
 import { Spinner } from "@/components/ui/spinner";
 import { AlertCircleIcon } from "@lucide/vue";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { formatNumber } from "@/lib/i18n";
 
 const props = defineProps<{
   message: ChatMessage;
@@ -311,7 +312,7 @@ async function copy() {
             <ChevronLeft class="size-3.5" />
           </Button>
           <span class="text-xs tabular-nums text-muted-foreground">
-            {{ siblingIndex }}/{{ siblingCount }}
+            {{ formatNumber(siblingIndex) }}/{{ formatNumber(siblingCount) }}
           </span>
           <Button
             variant="ghost"

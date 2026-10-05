@@ -16,6 +16,7 @@ import type { Conversation } from "@shared/chat";
 
 import { useChatStore } from "@/stores/chat";
 import { useDrawStore } from "@/stores/draw";
+import { formatNumber } from "@/lib/i18n";
 import SyncStatus from "@/components/SyncStatus.vue";
 import SettingsModal from "@/components/settings/SettingsModal.vue";
 
@@ -368,7 +369,9 @@ const deleteActionLabel = computed(() =>
       <!-- Generated images -->
       <SidebarGroup v-else-if="activeMode.key === 'draw'">
         <SidebarGroupLabel class="flex items-center justify-between">
-          <span>{{ t("nav.images", { count: gallery.length }) }}</span>
+          <span>
+            {{ t("nav.images", { count: formatNumber(gallery.length) }) }}
+          </span>
 
           <Button
             v-if="gallery.length"

@@ -13,12 +13,6 @@
     "copy": "Kopieren",
     "delete": "Löschen",
     "edit": "Bearbeiten",
-    "justNow": "gerade eben",
-    "daysAgo": "vor {count} T.",
-    "hoursAgo": "vor {count} Std.",
-    "minutesAgo": "vor {count} Min.",
-    "notYet": "noch nicht",
-    "secondsAgo": "vor {count} Sek.",
     "settings": "Einstellungen",
     "stopped": "Gestoppt",
     "stoppedByYou": "Von dir gestoppt.",
@@ -95,8 +89,10 @@
     "notEnoughSpaceTitle": "Nicht genug Sync-Speicher",
     "prompt": "Prompt",
     "promptPlaceholder": "Ein fotorealistischer Sonnenuntergang über den Alpen …",
+    "seed": "Seed",
     "stopGenerating": "Generierung stoppen",
     "storageFullDescription": "Lösche einige Bilder oder Unterhaltungen in der Seitenleiste, um Platz zu schaffen, und generiere dann erneut.",
+    "storageFullMessage": "Der Verlauf belegt {used} von {total} des Sync-Limits. Lösche einige Bilder oder Unterhaltungen, bevor du weitere generierst.",
     "storageFullTitle": "Der Sync-Speicher ist fast voll",
     "steps": "Schritte",
     "width": "Breite"
@@ -122,6 +118,7 @@
     "emptyState": "Der Sync-Zustand ist leer.",
     "invalidPayload": "Der lokale Zustand kann nicht synchronisiert werden ({issues}).",
     "metaParseFailed": "Sync-Metadaten konnten nicht gelesen werden.",
+    "neverSynced": "Noch nicht synchronisiert",
     "offline": "Der Sync-Server ist nicht erreichbar. Änderungen bleiben auf diesem Gerät und werden synchronisiert, sobald die Verbindung wiederhergestellt ist.",
     "pending": "Lokal gespeichert, wartet auf Sync …",
     "reset": "Synchronisierte Kopie zurücksetzen",
@@ -132,6 +129,6 @@
     "synced": "Synchronisiert {time}",
     "syncing": "Synchronisierung …",
     "tooLarge": "Der Verlauf ist {size} groß und überschreitet das Limit von {limit} für einen einzelnen Sync-Eintrag. Lösche einige Unterhaltungen oder Bilder, um die Synchronisierung fortzusetzen.",
-    "usage": "{used} MB von {total} MB belegt"
+    "usage": "{used} von {total} belegt"
   }
 }

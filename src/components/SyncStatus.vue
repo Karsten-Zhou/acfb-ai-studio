@@ -12,7 +12,7 @@ import { useI18n } from "vue-i18n";
 import { Button } from "@/components/ui/button";
 import { requestSync, resetSyncState } from "@/composables/sync";
 import { useSyncStore } from "@/stores/sync";
-import { formatRelativeTime } from "@/lib/i18n";
+import { formatMegabytes, formatRelativeTime } from "@/lib/i18n";
 
 const { t } = useI18n({ useScope: "global" });
 const sync = useSyncStore();
@@ -22,9 +22,9 @@ const now = useNow({
   scheduler: (cb) => useIntervalFn(cb, 15_000),
 });
 
-function megabytes(bytes: number): string {
-  return (bytes / 1024 / 1024).toFixed(1);
-}
+const lastSyncedAt = computed(
+  () => sync.lastSyncedAt ?? sync.localMeta.lastSyncedAt,
+);
 
 const status = computed(() => {
   if (sync.error) {
@@ -53,12 +53,11 @@ const status = computed(() => {
   }
   return {
     icon: Check,
-    label: t("sync.synced", {
-      time: formatRelativeTime(
-        sync.lastSyncedAt ?? sync.localMeta.lastSyncedAt,
-        now.value.getTime(),
-      ),
-    }),
+    label: lastSyncedAt.value
+      ? t("sync.synced", {
+          time: formatRelativeTime(lastSyncedAt.value, now.value.getTime()),
+        })
+      : t("sync.neverSynced"),
     tone: "text-muted-foreground",
     spin: false,
   };
@@ -67,6 +66,18 @@ const status = computed(() => {
 /** The single KV entry fills up predictably, so show how much room is left. */
 const percent = computed(() =>
   Math.min(100, Math.round(sync.storageUsage.ratio * 100)),
+);
+
+const usageLabel = computed(() =>
+  t("sync.usage", {
+    used: formatMegabytes(sync.storageUsage.bytes),
+    total: formatMegabytes(sync.storageUsage.max),
+  }),
+);
+
+const usageCompact = computed(
+  () =>
+    `${formatMegabytes(sync.storageUsage.bytes)}/${formatMegabytes(sync.storageUsage.max)}`,
 );
 
 const barTone = computed(() => {
@@ -118,12 +129,7 @@ async function onReset() {
         :aria-valuenow="percent"
         aria-valuemin="0"
         aria-valuemax="100"
-        :title="
-          t('sync.usage', {
-            used: megabytes(sync.storageUsage.bytes),
-            total: megabytes(sync.storageUsage.max),
-          })
-        "
+        :title="usageLabel"
       >
         <div
           class="h-full rounded-full transition-all"
@@ -132,10 +138,7 @@ async function onReset() {
         />
       </div>
       <span class="shrink-0 text-[10px] tabular-nums text-muted-foreground">
-        {{ megabytes(sync.storageUsage.bytes) }}/{{
-          megabytes(sync.storageUsage.max)
-        }}
-        MB
+        {{ usageCompact }}
       </span>
     </div>
 

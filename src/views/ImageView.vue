@@ -4,6 +4,7 @@ import { useDrawStore } from "@/stores/draw";
 import { computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
+import { formatNumber } from "@/lib/i18n";
 
 const { t } = useI18n({ useScope: "global" });
 const draw = useDrawStore();
@@ -38,8 +39,8 @@ watch(galleryItem, (newVal) => {
       {{ galleryItem?.prompt }}
     </p>
     <p class="text-xs text-center truncate text-muted-foreground text-wrap">
-      {{ galleryItem?.width }} x {{ galleryItem?.height }} |
-      {{ galleryItem?.model }}
+      {{ formatNumber(galleryItem?.width) }} x
+      {{ formatNumber(galleryItem?.height) }} | {{ galleryItem?.model }}
     </p>
   </div>
 </template>

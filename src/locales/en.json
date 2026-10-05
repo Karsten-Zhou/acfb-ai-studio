@@ -13,12 +13,6 @@
     "copy": "Copy",
     "delete": "Delete",
     "edit": "Edit",
-    "justNow": "just now",
-    "daysAgo": "{count}d ago",
-    "hoursAgo": "{count}h ago",
-    "minutesAgo": "{count}m ago",
-    "notYet": "not yet",
-    "secondsAgo": "{count}s ago",
     "settings": "Settings",
     "stopped": "Stopped",
     "stoppedByYou": "Stopped by you.",
@@ -95,8 +89,10 @@
     "notEnoughSpaceTitle": "Not enough sync space",
     "prompt": "Prompt",
     "promptPlaceholder": "A photorealistic sunset over the Alps…",
+    "seed": "seed",
     "stopGenerating": "Stop generating",
     "storageFullDescription": "Delete some images or conversations from the sidebar to free up space, then try again.",
+    "storageFullMessage": "History is using {used} of the {total} sync limit. Delete some images or conversations before generating more.",
     "storageFullTitle": "Sync storage is nearly full",
     "steps": "Steps",
     "width": "Width"
@@ -122,6 +118,7 @@
     "emptyState": "Sync state is empty.",
     "invalidPayload": "Local state can't be synced ({issues}).",
     "metaParseFailed": "Couldn't parse the sync metadata.",
+    "neverSynced": "Not synced yet",
     "offline": "Can't reach the sync server. Changes are saved on this device and will sync when the connection returns.",
     "pending": "Saved locally, waiting to sync…",
     "reset": "Reset synced copy",
@@ -132,6 +129,6 @@
     "synced": "Synced {time}",
     "syncing": "Syncing…",
     "tooLarge": "History is {size}, which is over the {limit} limit for a single synced entry. Delete some conversations or images to resume syncing.",
-    "usage": "{used} MB of {total} MB used"
+    "usage": "{used} of {total} used"
   }
 }

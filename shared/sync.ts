@@ -247,12 +247,7 @@ export function formatMb(bytes: number): string {
   return (bytes / 1024 / 1024).toFixed(1);
 }
 
-/**
- * Why new images are refused once the soft limit is reached.
- *
- * Shared so the client's local precheck and the worker's authoritative one say
- * exactly the same thing.
- */
+/** Why new images are refused once the soft limit is reached (worker-side). */
 export function softLimitMessage(bytes: number): string {
   return (
     `History is using ${formatMb(bytes)} MB of the ${formatMb(SYNC_MAX_BYTES)} MB ` +

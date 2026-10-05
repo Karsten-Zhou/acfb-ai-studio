@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Empty, EmptyHeader, EmptyDescription } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import AppHeader from "@/components/AppHeader.vue";
+import { formatNumber } from "@/lib/i18n";
 
 const { t } = useI18n({ useScope: "global" });
 const drawStore = useDrawStore();
@@ -331,10 +332,12 @@ function stepFor(bounds: ParamBounds | undefined): number | undefined {
             <p class="text-xs text-muted-foreground">
               {{ latestImage.model }}
               <template v-if="latestImage.width && latestImage.height">
-                · {{ latestImage.width }}×{{ latestImage.height }}
+                {{
+                  ` · ${formatNumber(latestImage.width)}×${formatNumber(latestImage.height)}`
+                }}
               </template>
               <template v-if="latestImage.seed">
-                · seed {{ latestImage.seed }}
+                {{ ` · ${t("draw.seed")} ${latestImage.seed}` }}
               </template>
             </p>
           </div>

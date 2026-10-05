@@ -106,7 +106,7 @@ bun run deploy
 
 ## TODO
 
-- [ ] Optimise datetime and filesize formats for different locales.
+- [x] Optimise datetime and filesize formats for different locales.
 - [ ] Add more language translations.
 - [ ] Image & audio attchment support for multimodal chatting AIs.
 - [ ] Migration from `wrangler` to `cf`.
@@ -122,6 +122,7 @@ bun run deploy
 - [ ] Llama cpp compatible conversation backup.
 - [ ] Fix the incorrect layout in mid-width screens (e.g., 1024px). 
 - [ ] Incorrect layout when viewing images in mobile devices (e.g., 375px width).
+- [ ] Configurable title generation and system prompt for chatting AIs.
 
 ## My Other Projects
 

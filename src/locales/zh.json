@@ -13,12 +13,6 @@
     "copy": "复制",
     "delete": "删除",
     "edit": "编辑",
-    "justNow": "刚刚",
-    "daysAgo": "{count} 天前",
-    "hoursAgo": "{count} 小时前",
-    "minutesAgo": "{count} 分钟前",
-    "notYet": "尚未同步",
-    "secondsAgo": "{count} 秒前",
     "settings": "设置",
     "stopped": "已停止",
     "stoppedByYou": "已被你停止",
@@ -95,8 +89,10 @@
     "notEnoughSpaceTitle": "同步空间不足",
     "prompt": "提示词",
     "promptPlaceholder": "阿尔卑斯山上写实的日落…",
+    "seed": "种子",
     "stopGenerating": "停止生成",
     "storageFullDescription": "请在侧边栏删除一些图片或会话以释放空间，然后重新生成。",
+    "storageFullMessage": "记录已占用 {used}（上限 {total}）。请先删除一些会话或图片，再继续生成。",
     "storageFullTitle": "同步存储空间即将用尽",
     "steps": "步数",
     "width": "宽度"
@@ -122,6 +118,7 @@
     "emptyState": "同步状态为空。",
     "invalidPayload": "本地状态无法同步（{issues}）。",
     "metaParseFailed": "无法解析同步元数据。",
+    "neverSynced": "尚未同步",
     "offline": "无法连接到同步服务器。更改已保存在此设备上，网络恢复后会自动同步。",
     "pending": "已保存在本地，等待同步…",
     "reset": "重置同步副本",
@@ -129,9 +126,9 @@
     "responseParseFailed": "无法解析同步响应。",
     "stateParseFailed": "无法解析同步状态。",
     "syncNow": "立即同步",
-    "synced": "已于 {time} 同步",
+    "synced": "{time}已同步",
     "syncing": "同步中…",
     "tooLarge": "记录大小为 {size}，超过单条同步条目的上限 {limit}。请删除一些会话或图片以恢复同步。",
-    "usage": "已使用 {used} MB / {total} MB"
+    "usage": "已使用 {used}/{total}"
   }
 }

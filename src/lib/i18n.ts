@@ -126,18 +126,39 @@ export function formatDateTime(value: string | number | Date): string {
   }).format(date);
 }
 
-/** Short relative stamp ("42s ago" / "3m ago" / "2h ago" / "4d ago"). */
+/** A number in the app locale; `null`/`undefined` render as an empty string. */
+export function formatNumber(value: number | null | undefined): string {
+  if (value === null || value === undefined || Number.isNaN(value)) return "";
+  return new Intl.NumberFormat(currentLocale()).format(value);
+}
+
+const BYTES_PER_MB = 1024 * 1024;
+
+/** A byte count in the locale's megabyte unit (e.g. `18,4 MB`). */
+export function formatMegabytes(bytes: number): string {
+  return new Intl.NumberFormat(currentLocale(), {
+    style: "unit",
+    unit: "megabyte",
+    unitDisplay: "short",
+    maximumFractionDigits: 1,
+  }).format(bytes / BYTES_PER_MB);
+}
+
+/** Short relative stamp ("42s ago" / "3m ago" / "yesterday"). */
 export function formatRelativeTime(
-  timestamp: number | null,
+  timestamp: number,
   now: number = Date.now(),
 ): string {
-  if (!timestamp) return t("common.notYet");
+  const format = new Intl.RelativeTimeFormat(currentLocale(), {
+    numeric: "auto",
+    style: "narrow",
+  });
   const seconds = Math.max(0, Math.round((now - timestamp) / 1000));
-  if (seconds < 10) return t("common.justNow");
-  if (seconds < 60) return t("common.secondsAgo", { count: seconds });
+  if (seconds < 10) return format.format(0, "second");
+  if (seconds < 60) return format.format(-seconds, "second");
   const minutes = Math.round(seconds / 60);
-  if (minutes < 60) return t("common.minutesAgo", { count: minutes });
+  if (minutes < 60) return format.format(-minutes, "minute");
   const hours = Math.round(minutes / 60);
-  if (hours < 24) return t("common.hoursAgo", { count: hours });
-  return t("common.daysAgo", { count: Math.round(hours / 24) });
+  if (hours < 24) return format.format(-hours, "hour");
+  return format.format(-Math.round(hours / 24), "day");
 }

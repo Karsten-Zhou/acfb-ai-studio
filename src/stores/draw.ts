@@ -20,11 +20,11 @@ import {
   getBounds,
   type ParamBounds,
 } from "@shared/generated/traits";
-import { SYNC_SOFT_LIMIT_BYTES, softLimitMessage } from "@shared/sync";
+import { SYNC_MAX_BYTES, SYNC_SOFT_LIMIT_BYTES } from "@shared/sync";
 import type { ImageRequest, ImageResult } from "@shared/api";
 import type { GalleryItem } from "@shared/draw";
 import { readApiError } from "@/lib/api-error";
-import { t } from "@/lib/i18n";
+import { formatMegabytes, t } from "@/lib/i18n";
 import { toastError } from "@/lib/toast";
 import { autoTitle, generateTitle } from "@/lib/titles";
 
@@ -187,7 +187,13 @@ export const useDrawStore = defineStore("draw", () => {
     // stored in KV.
     const usedBytes = sync.refreshBytes();
     if (usedBytes >= SYNC_SOFT_LIMIT_BYTES) {
-      toastError(t("draw.notEnoughSpaceTitle"), softLimitMessage(usedBytes));
+      toastError(
+        t("draw.notEnoughSpaceTitle"),
+        t("draw.storageFullMessage", {
+          used: formatMegabytes(usedBytes),
+          total: formatMegabytes(SYNC_MAX_BYTES),
+        }),
+      );
       return;
     }
 
