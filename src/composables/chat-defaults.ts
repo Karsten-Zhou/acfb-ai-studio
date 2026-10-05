@@ -24,7 +24,7 @@ function fallbackDefaults(): DefaultOptionsState {
   return {
     model: "",
     reasoningEffort: "medium",
-    params: { temperature: 0.7, topP: 0.9, stream: true },
+    params: { stream: true },
   };
 }
 

@@ -106,10 +106,22 @@ bun run deploy
 
 ## TODO
 
-- [ ] Toolcalling for text generation models.
 - [ ] Optimise datetime and filesize formats for different locales.
 - [ ] Add more language translations.
-- [ ] Daily quota usage tracking.
+- [ ] Image & audio attchment support for multimodal chatting AIs.
+- [ ] Migration from `wrangler` to `cf`.
+- [ ] MCP support for chatting AIs.
+- [ ] Why `shared\chat.ts` exists since zod schemas are used.
+- [ ] Routed conversations and images; rerouting after deleting a thread or image.
+- [ ] Optimise the code location between frontend and backend; currently, some code is misplaced.
+- [ ] Integration of Cloudflare AI Search API.
+- [ ] Max height for user messages in chat
+- [ ] Copiable code snippets in chat messages
+- [ ] Split the code for the sidebar
+- [ ] Custom OpenAI compatible endpoint support for chatting AIs
+- [ ] Llama cpp compatible conversation backup.
+- [ ] Fix the incorrect layout in mid-width screens (e.g., 1024px). 
+- [ ] Incorrect layout when viewing images in mobile devices (e.g., 375px width).
 
 ## My Other Projects
 

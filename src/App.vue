@@ -37,6 +37,7 @@ useTitle(title);
       @select="chatStore.switchConversation"
       @new="chatStore.startNewConversation"
       @delete="chatStore.deleteConversation"
+      @rename="chatStore.renameConversation"
     />
     <SidebarInset class="h-dvh">
       <RouterView />

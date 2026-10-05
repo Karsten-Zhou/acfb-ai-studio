@@ -7,7 +7,7 @@ import {
   HardDrive,
   RefreshCw,
 } from "@lucide/vue";
-import { useNow } from "@vueuse/core";
+import { useIntervalFn, useNow } from "@vueuse/core";
 import { useI18n } from "vue-i18n";
 import { Button } from "@/components/ui/button";
 import { requestSync, resetSyncState } from "@/composables/sync";
@@ -18,7 +18,9 @@ const { t } = useI18n({ useScope: "global" });
 const sync = useSyncStore();
 
 /** Ticks so "synced 2m ago" stays truthful without re-rendering constantly. */
-const now = useNow({ interval: 15_000 });
+const now = useNow({
+  scheduler: (cb) => useIntervalFn(cb, 15_000),
+});
 
 function megabytes(bytes: number): string {
   return (bytes / 1024 / 1024).toFixed(1);

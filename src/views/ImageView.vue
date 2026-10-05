@@ -31,7 +31,10 @@ watch(galleryItem, (newVal) => {
       />
     </div>
     <!-- Info -->
-    <p class="text-xs text-center truncate text-muted-foreground text-wrap">
+    <p class="text-sm text-center text-wrap">
+      {{ galleryItem?.title || galleryItem?.prompt }}
+    </p>
+    <p class="text-xs text-center text-wrap text-muted-foreground">
       {{ galleryItem?.prompt }}
     </p>
     <p class="text-xs text-center truncate text-muted-foreground text-wrap">

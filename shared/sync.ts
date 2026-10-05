@@ -82,6 +82,7 @@ const conversationSchema = z.looseObject({
 
 const galleryItemSchema = z.looseObject({
   id: z.string().min(1),
+  title: z.string().optional(),
   prompt: z.string(),
   negativePrompt: z.string().optional(),
   model: z.string(),
@@ -90,6 +91,7 @@ const galleryItemSchema = z.looseObject({
   seed: z.number().optional(),
   image: z.string(),
   createdAt: z.number(),
+  updatedAt: z.number().optional(),
 });
 
 const defaultsSchema = z.looseObject({
@@ -376,7 +378,7 @@ export function mergePayloads(
     local.gallery,
     remote.gallery,
     (g) => g.id,
-    (g) => g.createdAt,
+    (g) => g.updatedAt ?? g.createdAt,
     deletions,
   );
 

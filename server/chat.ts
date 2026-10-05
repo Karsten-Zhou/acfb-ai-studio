@@ -7,6 +7,7 @@ import {
 } from "@shared/generated/models";
 import { acceptsParam } from "@shared/generated/traits";
 import { errorResponse, upstreamError } from "./errors";
+import { readInferenceResult } from "./inference";
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -92,8 +93,7 @@ app.post("/", zValidator("json", chatRequestSchema), async ({ env, req }) => {
       const result = await env.AI.run(known.name, cfParams);
       return Response.json({
         conversationId,
-        content: result.response ?? "",
-        reasoning: result.reasoning ?? "",
+        ...readInferenceResult(result),
         model: known.name,
       });
     } catch (err) {

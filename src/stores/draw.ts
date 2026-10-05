@@ -12,6 +12,7 @@ import { defaultOptions, setDefaults } from "@/composables/chat-defaults";
 import { useSyncStore } from "@/stores/sync";
 import {
   FREE_MODEL_BY_NAME,
+  FREE_TEXT_GENERATION_MODELS,
   FREE_TEXT_TO_IMAGE_MODELS,
 } from "@shared/generated/models";
 import {
@@ -25,6 +26,7 @@ import type { GalleryItem } from "@shared/draw";
 import { readApiError } from "@/lib/api-error";
 import { t } from "@/lib/i18n";
 import { toastError } from "@/lib/toast";
+import { autoTitle, generateTitle } from "@/lib/titles";
 
 const GALLERY_KEY = "draw:gallery:v1";
 
@@ -88,9 +90,36 @@ export const useDrawStore = defineStore("draw", () => {
   });
 
   const generating = ref(false);
+  /**
+   * Gallery items whose AI title is being generated. The sidebar shimmers those
+   * titles, so a placeholder does not read as a finished title.
+   */
+  const titlesPendingIds = ref(new Set<string>());
 
   /** In-flight request, so the user can stop it. Transient, not app state. */
   let controller: AbortController | null = null;
+
+  /**
+   * Ask the draw default model for a title, marking `itemId` as pending for the
+   * whole round trip so the sidebar shimmers its placeholder meanwhile.
+   *
+   * A title describes the prompt, not the image, so this is deliberately able
+   * to run while the image is still generating — callers start it early.
+   */
+  async function generateItemTitle(
+    itemId: string,
+    subject: string,
+  ): Promise<string | null> {
+    const model = defaultOptions.model || FREE_TEXT_GENERATION_MODELS[0]?.name;
+    if (!model) return null;
+
+    titlesPendingIds.value.add(itemId);
+    try {
+      return await generateTitle(model, subject);
+    } finally {
+      titlesPendingIds.value.delete(itemId);
+    }
+  }
 
   // -------------------------------------------------------------------------
   // Options
@@ -192,6 +221,12 @@ export const useDrawStore = defineStore("draw", () => {
       payload.guidance = clampNum(guidance, getBounds(model, "guidance"));
     }
 
+    // Naming the image does not depend on the image, so the title is requested
+    // alongside the generation rather than after it. The item only reaches the
+    // gallery once the image is back, which is where the title gets applied.
+    const itemId = crypto.randomUUID();
+    const title = generateItemTitle(itemId, prompt);
+
     try {
       const res = await fetch("/api/draw", {
         method: "POST",
@@ -206,7 +241,9 @@ export const useDrawStore = defineStore("draw", () => {
       const data = (await res.json()) as ImageResult;
 
       const item: GalleryItem = {
-        id: crypto.randomUUID(),
+        id: itemId,
+        title: autoTitle(prompt),
+        titleSource: "fallback",
         prompt,
         negativePrompt,
         model: data.model,
@@ -217,8 +254,20 @@ export const useDrawStore = defineStore("draw", () => {
         seed: data.seed,
         image: data.image,
         createdAt: Date.now(),
+        updatedAt: Date.now(),
       };
       gallery.value.unshift(item);
+
+      const generatedTitle = await title;
+      // Write through the gallery, like `renameGalleryItem` does: the object
+      // pushed above is not the proxy the view and the storage watcher observe,
+      // so mutating it would neither re-render nor persist.
+      const stored = gallery.value.find((entry) => entry.id === itemId);
+      if (generatedTitle && stored && stored.titleSource !== "user") {
+        stored.title = generatedTitle;
+        stored.titleSource = "ai";
+        stored.updatedAt = Date.now();
+      }
       onGenerationSuccessFn.value();
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") {
@@ -235,6 +284,15 @@ export const useDrawStore = defineStore("draw", () => {
       controller = null;
       generating.value = false;
     }
+  }
+
+  function renameGalleryItem(id: string, title: string): void {
+    const item = gallery.value.find((entry) => entry.id === id);
+    const nextTitle = autoTitle(title);
+    if (!item || !nextTitle) return;
+    item.title = nextTitle;
+    item.titleSource = "user";
+    item.updatedAt = Date.now();
   }
 
   /** On generation success */
@@ -266,11 +324,13 @@ export const useDrawStore = defineStore("draw", () => {
     gallery,
     options,
     generating,
+    titlesPendingIds,
     setDrawOptions,
     setDrawModel,
     stopGenerating,
     generateImage,
     deleteGalleryItem,
+    renameGalleryItem,
     clearGallery,
     onGenerationSuccess,
   };

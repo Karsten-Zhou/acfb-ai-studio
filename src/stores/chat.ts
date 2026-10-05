@@ -17,7 +17,7 @@ import { defaultOptions, setDefaults } from "@/composables/chat-defaults";
 import { useSyncStore } from "@/stores/sync";
 import { readApiError } from "@/lib/api-error";
 import { t } from "@/lib/i18n";
-import { toastError } from "@/lib/toast";
+import { autoTitle, generateTitle } from "@/lib/titles";
 import {
   activeThread,
   childrenOf,
@@ -60,6 +60,11 @@ export const useChatStore = defineStore("chat", () => {
   const params = ref<GenerationParams>({ ...defaultOptions.params });
   /** Whether a stream is currently in flight (disables send button). */
   const streaming = ref(false);
+  /**
+   * Conversations whose AI title is being generated. The sidebar shimmers those
+   * titles, so a placeholder does not read as a finished title.
+   */
+  const titlesPendingIds = ref(new Set<string>());
 
   /** In-flight request, so the user can stop it. Transient, not app state. */
   let activeController: AbortController | null = null;
@@ -123,6 +128,7 @@ export const useChatStore = defineStore("chat", () => {
       id: crypto.randomUUID(),
       title: t("chat.newChat"),
       model: model.value,
+      titleSource: "fallback",
       createdAt: Date.now(),
       updatedAt: Date.now(),
       messages: [],
@@ -144,7 +150,12 @@ export const useChatStore = defineStore("chat", () => {
 
   function renameConversation(id: string, title: string): void {
     const conv = conversationById(id);
-    if (conv) conv.title = title;
+    if (!conv) return;
+    const nextTitle = autoTitle(title);
+    if (!nextTitle) return;
+    conv.title = nextTitle;
+    conv.titleSource = "user";
+    touch(conv);
   }
 
   function switchConversation(id: string): void {
@@ -190,7 +201,7 @@ export const useChatStore = defineStore("chat", () => {
   async function streamAssistantReply(
     conv: Conversation,
     replyTo: ChatMessage,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const conversationId = conv.id;
     conv.model = model.value;
 
@@ -246,6 +257,7 @@ export const useChatStore = defineStore("chat", () => {
       const { live, msg } = currentTurn();
       if (msg) msg.content = msg.content.trimEnd();
       if (live) touch(live);
+      return true;
     } catch (err) {
       const { live, msg } = currentTurn();
       // Keep the failed turn in the tree rather than deleting it: this
@@ -256,7 +268,7 @@ export const useChatStore = defineStore("chat", () => {
         msg.error = describeChatError(err);
         touch(live);
       }
-      reportChatError(err);
+      return false;
     } finally {
       activeController = null;
       streaming.value = false;
@@ -314,6 +326,34 @@ export const useChatStore = defineStore("chat", () => {
   // Entry points (send / edit / retry / navigate)
   // -------------------------------------------------------------------------
 
+  /**
+   * Ask the model for a title and apply it, marking the conversation as pending
+   * for the whole round trip so the sidebar shimmers its placeholder meanwhile.
+   *
+   * A title describes the user's text, not the reply, so this is deliberately
+   * able to run while the reply is still streaming — callers fire and forget it.
+   */
+  async function applyGeneratedTitle(
+    conversationId: string,
+    subject: string,
+  ): Promise<void> {
+    titlesPendingIds.value.add(conversationId);
+    try {
+      const title = await generateTitle(model.value, subject);
+      // Re-resolve before writing, like the stream deltas above: adopting
+      // remote state replaces the conversation objects, so the conversation
+      // looked up earlier may be detached by now.
+      const live = conversationById(conversationId);
+      if (title && live && live.titleSource !== "user") {
+        live.title = title;
+        live.titleSource = "ai";
+        touch(live);
+      }
+    } finally {
+      titlesPendingIds.value.delete(conversationId);
+    }
+  }
+
   /** Send from the composer: continues the active branch or starts a new one. */
   async function sendMessage(content: string): Promise<void> {
     if (streaming.value) return;
@@ -327,7 +367,11 @@ export const useChatStore = defineStore("chat", () => {
     touch(conv);
 
     if (conv.messages.length === 1) {
-      conv.title = content.slice(0, 40) || t("chat.newChat");
+      conv.title = autoTitle(content) || t("chat.newChat");
+      conv.titleSource = "fallback";
+      // Naming a conversation does not depend on the reply, so the title is
+      // requested alongside the stream rather than after it.
+      void applyGeneratedTitle(conv.id, content);
     }
 
     await streamAssistantReply(conv, userMsg);
@@ -457,21 +501,6 @@ export const useChatStore = defineStore("chat", () => {
         : String(err);
   }
 
-  /**
-   * Report a failed turn.
-   * One-shot: the failure is shown once and forgotten, so nothing is kept in
-   * store state. The failed bubble itself stays in the thread (see
-   * `streamAssistantReply`).
-   */
-  function reportChatError(err: unknown): void {
-    const message = describeChatError(err);
-    if (err instanceof DOMException && err.name === "AbortError") {
-      toastError(t("common.stopped"), message, { duration: 4_000 });
-      return;
-    }
-    toastError(t("chat.failedTitle"), message);
-  }
-
   return {
     conversations,
     activeId,
@@ -479,6 +508,7 @@ export const useChatStore = defineStore("chat", () => {
     reasoningEffort,
     params,
     streaming,
+    titlesPendingIds,
     startNewConversation,
     createConversation,
     deleteConversation,

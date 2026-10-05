@@ -48,6 +48,8 @@ export interface ChatMessage extends WireChatMessage {
 export interface Conversation {
   id: string;
   title: string;
+  /** Whether the title is a fallback, AI-generated, or user-owned value. */
+  titleSource?: "fallback" | "ai" | "user";
   model: string;
   createdAt: number;
   updatedAt: number;

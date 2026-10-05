@@ -5,6 +5,10 @@
 /** A single generated image, as persisted in the local gallery / sync state. */
 export interface GalleryItem {
   id: string;
+  /** Short user-facing name; older records fall back to `prompt`. */
+  title?: string;
+  /** Whether the title is a fallback, AI-generated, or user-owned value. */
+  titleSource?: "fallback" | "ai" | "user";
   prompt: string;
   negativePrompt?: string;
   model: string;
@@ -19,4 +23,6 @@ export interface GalleryItem {
   /** Data URL (e.g. `data:image/png;base64,...`) ready for an `<img>` src. */
   image: string;
   createdAt: number;
+  /** Last metadata mutation, used to propagate renames through sync. */
+  updatedAt?: number;
 }
