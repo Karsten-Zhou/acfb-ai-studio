@@ -102,10 +102,16 @@
     "title": "404 – Nicht gefunden"
   },
   "settings": {
-    "description": "Darstellung, Sprache und Build-Informationen.",
+    "autoTitle": "Unterhaltungstitel generieren",
+    "autoTitleDescription": "Lass das Modell neue Unterhaltungen automatisch benennen.",
+    "chat": "Chat",
+    "description": "Darstellung, Sprache, Chat und Build-Informationen.",
     "language": "Sprache",
     "languageAuto": "Automatisch ({language})",
     "preferences": "Voreinstellungen",
+    "systemPrompt": "System-Prompt",
+    "systemPromptDescription": "Wird vor jeder Nachricht einer Unterhaltung an das Modell gesendet. Leer lassen zum Deaktivieren.",
+    "systemPromptPlaceholder": "z. B. Du bist ein präziser, hilfsbereiter Assistent, der in der Sprache des Nutzers antwortet.",
     "theme": "Darstellung",
     "themeAuto": "System",
     "themeDark": "Dunkel",

@@ -102,10 +102,16 @@
     "title": "404 – Not found"
   },
   "settings": {
-    "description": "Theme, language and build information.",
+    "autoTitle": "Generate conversation titles",
+    "autoTitleDescription": "Ask the model to name new conversations automatically.",
+    "chat": "Chat",
+    "description": "Theme, language, chat and build information.",
     "language": "Language",
     "languageAuto": "Automatic ({language})",
     "preferences": "Preferences",
+    "systemPrompt": "System prompt",
+    "systemPromptDescription": "Sent to the model before every message in a conversation. Leave empty to disable.",
+    "systemPromptPlaceholder": "e.g. You are a concise, helpful assistant that answers in the user's language.",
     "theme": "Theme",
     "themeAuto": "System",
     "themeDark": "Dark",

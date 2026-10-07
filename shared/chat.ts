@@ -83,6 +83,18 @@ export interface DefaultChatOptions {
   params: GenerationParams;
   /** Default text-to-image model id for the Workers AI Draw page. */
   drawModel?: string;
+  /**
+   * Whether new conversations ask the selected model for a title. When off,
+   * conversations keep their fallback title (the first user message). Missing
+   * (old persisted blobs) is treated as enabled.
+   */
+  autoTitle?: boolean;
+  /**
+   * Global system prompt sent before every chat request. Empty or missing
+   * disables it. Never applied to title-generation requests, which need their
+   * own instructions.
+   */
+  systemPrompt?: string;
 }
 
 /** Schema (tag) objects emitted over the SSE stream. */

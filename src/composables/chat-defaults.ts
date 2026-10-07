@@ -25,6 +25,8 @@ function fallbackDefaults(): DefaultOptionsState {
     model: "",
     reasoningEffort: "medium",
     params: { stream: true },
+    autoTitle: true,
+    systemPrompt: "",
   };
 }
 

@@ -221,6 +221,14 @@ export const useChatStore = defineStore("chat", () => {
 
     const requestMessages = toWireMessages(conv, replyTo);
 
+    // The user's global system prompt (settings) leads every request. It is
+    // prepended here — not in `toWireMessages` — so it is never coalesced with
+    // a same-role turn and stays the first thing the model sees.
+    const systemPrompt = defaultOptions.systemPrompt?.trim();
+    if (systemPrompt) {
+      requestMessages.unshift({ role: "system", content: systemPrompt });
+    }
+
     streaming.value = true;
     const controller = new AbortController();
     activeController = controller;
@@ -370,8 +378,11 @@ export const useChatStore = defineStore("chat", () => {
       conv.title = autoTitle(content) || t("chat.newChat");
       conv.titleSource = "fallback";
       // Naming a conversation does not depend on the reply, so the title is
-      // requested alongside the stream rather than after it.
-      void applyGeneratedTitle(conv.id, content);
+      // requested alongside the stream rather than after it — unless the user
+      // disabled automatic title generation in the settings.
+      if (defaultOptions.autoTitle !== false) {
+        void applyGeneratedTitle(conv.id, content);
+      }
     }
 
     await streamAssistantReply(conv, userMsg);

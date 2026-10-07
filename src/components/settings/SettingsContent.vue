@@ -2,12 +2,14 @@
 // Body of the settings modal: one section per concern, so adding a settings
 // group means adding a component here rather than another block of markup.
 import PreferencesSection from "@/components/settings/PreferencesSection.vue";
+import ChatSettingsSection from "@/components/settings/ChatSettingsSection.vue";
 import AboutSection from "@/components/settings/AboutSection.vue";
 </script>
 
 <template>
   <div class="space-y-6">
     <PreferencesSection />
+    <ChatSettingsSection />
     <AboutSection />
   </div>
 </template>

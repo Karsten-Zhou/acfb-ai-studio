@@ -6,9 +6,9 @@ import { useMediaQuery } from "@vueuse/core";
 import { useI18n } from "vue-i18n";
 import {
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogScrollContent,
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
@@ -32,13 +32,13 @@ const isDesktop = useMediaQuery("(min-width: 768px)");
     :open="open"
     @update:open="(value) => (open = value)"
   >
-    <DialogContent class="sm:max-w-lg">
+    <DialogScrollContent class="sm:max-w-lg">
       <DialogHeader>
         <DialogTitle>{{ t("settings.title") }}</DialogTitle>
         <DialogDescription>{{ t("settings.description") }}</DialogDescription>
       </DialogHeader>
       <SettingsContent />
-    </DialogContent>
+    </DialogScrollContent>
   </Dialog>
 
   <Drawer v-else :open="open" @update:open="(value) => (open = value)">

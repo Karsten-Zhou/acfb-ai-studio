@@ -99,6 +99,8 @@ const defaultsSchema = z.looseObject({
   reasoningEffort: reasoningEffortSchema,
   params: generationParamsSchema,
   drawModel: z.string().optional(),
+  autoTitle: z.boolean().optional(),
+  systemPrompt: z.string().optional(),
 });
 
 export const syncPayloadSchema = z.looseObject({

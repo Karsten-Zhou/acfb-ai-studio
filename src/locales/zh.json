@@ -102,10 +102,16 @@
     "title": "404 - 找不到页面"
   },
   "settings": {
-    "description": "主题、语言和构建信息。",
+    "autoTitle": "自动生成会话标题",
+    "autoTitleDescription": "让模型自动为新会话命名。",
+    "chat": "对话",
+    "description": "主题、语言、对话和构建信息。",
     "language": "语言",
     "languageAuto": "自动（{language}）",
     "preferences": "偏好设置",
+    "systemPrompt": "系统提示词",
+    "systemPromptDescription": "每次对话都会在消息前发送给模型。留空则禁用。",
+    "systemPromptPlaceholder": "例如：你是一位简洁、乐于助人的助手，始终使用用户的语言回答。",
     "theme": "主题",
     "themeAuto": "跟随系统",
     "themeDark": "深色",
