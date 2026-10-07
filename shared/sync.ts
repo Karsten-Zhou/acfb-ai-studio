@@ -12,8 +12,13 @@
 // that still holds a copy.
 
 import z from "zod";
-import type { Conversation, DefaultChatOptions } from "./chat";
-import type { GalleryItem } from "./draw";
+import {
+  chatMessageSchema,
+  conversationSchema,
+  defaultsSchema,
+  generationParamsSchema,
+} from "./chat";
+import { galleryItemSchema } from "./draw";
 
 /** KV key holding the whole synced state. */
 export const SYNC_KEY = "state";
@@ -40,76 +45,34 @@ export const SYNC_SOFT_LIMIT_BYTES = Math.floor(
 // Runtime validation
 // ---------------------------------------------------------------------------
 //
-// Validation is intentionally *loose* (`looseObject` keeps unknown keys rather
-// than stripping them) so an older server never silently drops fields written
-// by a newer client. Walking the arrays is cheap: the large strings (image data
-// URLs) are only type-checked, never inspected.
-
-const reasoningEffortSchema = z.enum([
-  "off",
-  "minimal",
-  "low",
-  "medium",
-  "high",
-]);
-
-const generationParamsSchema = z.looseObject({
-  temperature: z.number().optional(),
-  topP: z.number().optional(),
-  stream: z.boolean().optional(),
+// Validation is *loose* (`looseObject` keeps unknown keys rather than stripping
+// them) so the stored KV value round-trips through validation unrewritten — a
+// field dropped from the schema in a later release is preserved instead of being
+// destroyed on the next read. Field definitions are reused from the canonical
+// schemas in `chat.ts`/`draw.ts`; only the keep-unknown-keys behavior differs,
+// and the nested `messages` array is loose so branch metadata survives.
+const looseChatMessageSchema = z.looseObject({
+  ...chatMessageSchema.shape,
 });
-
-const chatMessageSchema = z.looseObject({
-  id: z.string().min(1),
-  parentId: z.string().nullable(),
-  role: z.enum(["user", "assistant", "system"]),
-  content: z.string(),
-  createdAt: z.number(),
-  reasoning: z.string().optional(),
-  activeChildId: z.string().optional(),
-  error: z.string().optional(),
+const looseConversationSchema = z.looseObject({
+  ...conversationSchema.shape,
+  messages: z.array(looseChatMessageSchema),
 });
-
-const conversationSchema = z.looseObject({
-  id: z.string().min(1),
-  title: z.string(),
-  model: z.string(),
-  createdAt: z.number(),
-  updatedAt: z.number(),
-  messages: z.array(chatMessageSchema),
-  leafId: z.string().nullable(),
+const looseGalleryItemSchema = z.looseObject({
+  ...galleryItemSchema.shape,
 });
-
-const galleryItemSchema = z.looseObject({
-  id: z.string().min(1),
-  title: z.string().optional(),
-  prompt: z.string(),
-  negativePrompt: z.string().optional(),
-  model: z.string(),
-  width: z.number().optional(),
-  height: z.number().optional(),
-  seed: z.number().optional(),
-  image: z.string(),
-  createdAt: z.number(),
-  updatedAt: z.number().optional(),
-});
-
-const defaultsSchema = z.looseObject({
-  model: z.string(),
-  reasoningEffort: reasoningEffortSchema,
-  params: generationParamsSchema,
-  drawModel: z.string().optional(),
-  autoTitle: z.boolean().optional(),
-  systemPrompt: z.string().optional(),
+const looseDefaultsSchema = z.looseObject({
+  ...defaultsSchema.shape,
+  params: z.looseObject({ ...generationParamsSchema.shape }),
 });
 
 export const syncPayloadSchema = z.looseObject({
   version: z.number().int(),
   revision: z.number().int().nonnegative(),
   updatedAt: z.number(),
-  conversations: z.array(conversationSchema),
-  gallery: z.array(galleryItemSchema),
-  defaults: defaultsSchema,
+  conversations: z.array(looseConversationSchema),
+  gallery: z.array(looseGalleryItemSchema),
+  defaults: looseDefaultsSchema,
   defaultsUpdatedAt: z.number(),
   /**
    * Tombstones: item id -> deletion time (ms). Retained indefinitely because a
@@ -120,28 +83,7 @@ export const syncPayloadSchema = z.looseObject({
 });
 
 /** The whole synced state, as stored in KV. */
-export interface SyncPayload {
-  version: number;
-  revision: number;
-  updatedAt: number;
-  conversations: Conversation[];
-  gallery: GalleryItem[];
-  defaults: DefaultChatOptions;
-  defaultsUpdatedAt: number;
-  /**
-   * Tombstones: item id -> deletion time (ms). Retained indefinitely because a
-   * device may be offline for an arbitrary time and would otherwise resurrect
-   * deleted items. They are ~60 bytes each, so growth is negligible.
-   */
-  deletions: Record<string, number>;
-}
-
-// Compile-time guard that the runtime schema and the interface above stay in
-// step: if a field is added or retyped in one place only, this stops building.
-type SchemaMatchesPayload =
-  z.infer<typeof syncPayloadSchema> extends SyncPayload ? true : never;
-const _schemaMatchesPayload: SchemaMatchesPayload = true;
-void _schemaMatchesPayload;
+export type SyncPayload = z.infer<typeof syncPayloadSchema>;
 
 /** Cheap description of the stored value, used to poll without downloading. */
 export interface SyncMeta {

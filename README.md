@@ -110,7 +110,7 @@ bun run deploy
 - [ ] Image & audio attchment support for multimodal chatting AIs.
 - [ ] Migration from `wrangler` to `cf`.
 - [ ] MCP support for chatting AIs.
-- [ ] Why `shared\chat.ts` exists since zod schemas are used.
+- [ ] Refactor the API exchanges by enforcing Zod validation.
 - [ ] Routed conversations and images; rerouting after deleting a thread or image.
 - [ ] Optimise the code location between frontend and backend; currently, some code is misplaced.
 - [ ] Integration of Cloudflare AI Search API.
@@ -118,7 +118,7 @@ bun run deploy
 - [ ] Split the code for the sidebar
 - [ ] Custom OpenAI compatible endpoint support for chatting AIs
 - [ ] Llama cpp compatible conversation backup.
-- [ ] Fix the incorrect layout in mid-width screens (e.g., 1024px). 
+- [ ] Fix the incorrect layout in mid-width screens (e.g., 1024px).
 - [ ] Incorrect layout when viewing images in mobile devices (e.g., 375px width).
 
 ## My Other Projects

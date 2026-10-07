@@ -1,7 +1,13 @@
 // Markdown → marked → hooks (AST math + code-block extraction) → DOMPurify.
 // The Marked instance and extensions are configured once; only the per-render
 // context changes. Parsing is synchronous, so the shared context can't interleave.
-import { Lexer, Marked, type HooksObject, type Token, type TokensList } from "marked";
+import {
+  Lexer,
+  Marked,
+  type HooksObject,
+  type Token,
+  type TokensList,
+} from "marked";
 import markedKatex from "marked-katex-extension";
 import type { MarkedKatexOptions } from "marked-katex-extension";
 import katex from "katex";
@@ -166,7 +172,10 @@ function transformInlineMath(tokens: Token[]): Token[] {
     out.push({
       type: "html",
       raw,
-      text: katex.renderToString(math, { ...KATEX_OPTIONS, displayMode: display }),
+      text: katex.renderToString(math, {
+        ...KATEX_OPTIONS,
+        displayMode: display,
+      }),
     } as Token);
     i = j + 1;
   }
@@ -206,7 +215,11 @@ function collectCodeBlocks(tokens: Token[], ctx: RenderContext): void {
       const code = token as unknown as MutableToken;
       const normalized = firstLangTag(code.lang ?? "") || "text";
 
-      if (normalized === "latex" || normalized === "math" || normalized === "tex") {
+      if (
+        normalized === "latex" ||
+        normalized === "math" ||
+        normalized === "tex"
+      ) {
         try {
           code.type = "html";
           code.text = katex.renderToString(code.text, {
