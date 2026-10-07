@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { nextTick, ref, watch } from "vue";
-import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
-import { usePreferencesStore } from "@/stores/preferences";
 import {
   Brain,
   Check,
@@ -14,7 +12,6 @@ import {
   Send,
 } from "@lucide/vue";
 import type { ChatMessage } from "@shared/chat";
-import { cachedMarkdown } from "@/lib/markdown";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -33,6 +30,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { AlertCircleIcon } from "@lucide/vue";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { formatNumber } from "@/lib/i18n";
+import MarkdownContent from "./MarkdownContent.vue";
 
 const props = defineProps<{
   message: ChatMessage;
@@ -57,51 +55,11 @@ const emit = defineEmits<{
 
 const { t } = useI18n({ useScope: "global" });
 
-/**
- * Syntax highlighting follows the *app* theme, not the OS: a user who picks
- * "Light" on a dark desktop must still get light code blocks.
- */
-const { isDark } = storeToRefs(usePreferencesStore());
-
 const editing = ref(false);
 const draft = ref("");
 const copied = ref(false);
 const reasoningOpen = ref(false);
 const editArea = ref<InstanceType<typeof Textarea> | null>(null);
-
-const html = ref("");
-const reasoningHtml = ref("");
-
-watch(
-  [
-    () => (props.message.role === "assistant" ? props.message.content : ""),
-    isDark,
-  ],
-  async ([source]) => {
-    if (!source) {
-      html.value = "";
-      return;
-    }
-    html.value = await cachedMarkdown(source, isDark.value);
-  },
-  { immediate: true },
-);
-
-watch(
-  [
-    () =>
-      props.message.role === "assistant" ? (props.message.reasoning ?? "") : "",
-    isDark,
-  ],
-  async ([source]) => {
-    if (!source) {
-      reasoningHtml.value = "";
-      return;
-    }
-    reasoningHtml.value = await cachedMarkdown(source, isDark.value);
-  },
-  { immediate: true },
-);
 
 watch(
   () => props.isLast && props.streaming,
@@ -216,13 +174,10 @@ async function copy() {
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent class="rounded-md border p-4 my-2">
-                <!-- eslint-disable vue/no-v-html -- Html is sanitized by DOMPurify -->
-                <div
-                  v-if="reasoningHtml"
+                <MarkdownContent
+                  :source="message.reasoning ?? ''"
                   class="prose prose-sm max-w-none dark:prose-invert"
-                  v-html="reasoningHtml"
                 />
-                <!-- eslint-enable vue/no-v-html -->
               </CollapsibleContent>
             </Collapsible>
 
@@ -249,13 +204,11 @@ async function copy() {
               </MarkerContent>
             </Marker>
 
-            <!-- eslint-disable vue/no-v-html -- Html is sanitized by DOMPurify -->
-            <div
+            <MarkdownContent
               v-if="message.content"
+              :source="message.content"
               class="prose max-w-none dark:prose-invert"
-              v-html="html"
-            ></div>
-            <!-- eslint-enable vue/no-v-html -->
+            />
             <span
               v-if="isLast && streaming && message.content"
               class="inline-block h-4 w-0.5 animate-pulse bg-current align-middle"

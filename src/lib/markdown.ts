@@ -48,6 +48,33 @@ async function getHighlighter(): Promise<Highlighter> {
 const LOADABLE_LANGS = new Set<string>(PRELOADED_LANGS);
 
 /**
+ * Structured representation of a fenced code block. The renderer only emits
+ * language/code/highlighting data plus an inert marker element; the actual UI
+ * (<CodeBlock/>) is owned by Vue, never by HTML strings in this module.
+ */
+export interface CodeBlockData {
+  language: string;
+  code: string;
+  /** Shiki-generated HTML; sanitized here, rendered by <CodeBlock/> via v-html. */
+  highlightedHtml: string;
+}
+
+export interface RenderedMarkdown {
+  html: string;
+  codeBlocks: CodeBlockData[];
+}
+
+/**
+ * Inert marker for one code block, replaced with a mounted <CodeBlock/>
+ * component by MarkdownContent.vue after v-html rendering. It is the only
+ * custom element the sanitizer allows; a forged marker only swaps in data
+ * from this render pass and can never execute anything.
+ */
+function codeBlockMarker(index: number): string {
+  return `<code-block data-block="${index}"></code-block>`;
+}
+
+/**
  * Extract fenced-code language tags from markdown source using AST.
  * This is robust against code blocks containing backticks or math symbols.
  */
@@ -118,7 +145,7 @@ function preprocessMathDelimiters(source: string): string {
 export async function renderMarkdown(
   source: string,
   isDark = true,
-): Promise<string> {
+): Promise<RenderedMarkdown> {
   const highlighter = await getHighlighter();
 
   const toLoad = [...new Set(findCodeLangs(source))].filter(
@@ -130,6 +157,9 @@ export async function renderMarkdown(
   toLoad.forEach((l) => LOADABLE_LANGS.add(l));
 
   const theme = isDark ? THEMES.dark : THEMES.light;
+
+  // Collected during parse; the renderer emits inert markers referencing these.
+  const codeBlocks: CodeBlockData[] = [];
 
   const marked = new Marked({
     renderer: {
@@ -148,21 +178,41 @@ export async function renderMarkdown(
               displayMode: true,
             });
           } catch {
-            return `<pre><code>${text}</code></pre>`;
+            // Fall back to a plain code block rendered by <CodeBlock/>.
+            codeBlocks.push({
+              language: "text",
+              code: text,
+              highlightedHtml: "",
+            });
+            return codeBlockMarker(codeBlocks.length - 1);
           }
         }
 
         const supported =
           normalized === "text" || LOADABLE_LANGS.has(normalized);
+        let highlighted: string;
         try {
-          return highlighter.codeToHtml(text, {
+          highlighted = highlighter.codeToHtml(text, {
             lang: supported ? normalized : "text",
             theme,
             defaultColor: false,
           });
         } catch {
-          return highlighter.codeToHtml(text, { lang: "text", theme });
+          highlighted = highlighter.codeToHtml(text, {
+            lang: "text",
+            theme,
+          });
         }
+        // Shiki output is escaped by construction; sanitize anyway to keep a
+        // single trust boundary for everything that reaches <CodeBlock/>.
+        codeBlocks.push({
+          language: normalized,
+          code: text,
+          highlightedHtml: DOMPurify.sanitize(highlighted, {
+            USE_PROFILES: { html: true },
+          }),
+        });
+        return codeBlockMarker(codeBlocks.length - 1);
       },
     },
   });
@@ -176,25 +226,32 @@ export async function renderMarkdown(
   // 2. Await parse to handle both sync and async extension returns
   const raw = await marked.parse(processedSource);
 
-  // 3. Sanitize while allowing KaTeX's SVG and MathML
-  return DOMPurify.sanitize(raw, {
+  // 3. Sanitize while allowing KaTeX's SVG and MathML, plus our code-block
+  // marker (the only custom element allowed, so user HTML cannot forge one).
+  const html = DOMPurify.sanitize(raw, {
     USE_PROFILES: { html: true, mathMl: true, svg: true },
+    CUSTOM_ELEMENT_HANDLING: {
+      tagNameCheck: (tag) => tag === "code-block",
+      attributeNameCheck: (attr) => attr === "data-block",
+    },
   });
+
+  return { html, codeBlocks };
 }
 
-const cache = new Map<string, { dark: boolean; html: string }>();
+const cache = new Map<string, { dark: boolean; result: RenderedMarkdown }>();
 const MAX_CACHE = 200;
 export async function cachedMarkdown(
   source: string,
   isDark = true,
-): Promise<string> {
+): Promise<RenderedMarkdown> {
   const hit = cache.get(source);
-  if (hit && hit.dark === isDark) return hit.html;
-  const html = await renderMarkdown(source, isDark);
-  cache.set(source, { dark: isDark, html });
+  if (hit && hit.dark === isDark) return hit.result;
+  const result = await renderMarkdown(source, isDark);
+  cache.set(source, { dark: isDark, result });
   if (cache.size > MAX_CACHE) {
     const oldest = cache.keys().next().value;
     if (oldest !== undefined) cache.delete(oldest);
   }
-  return html;
+  return result;
 }

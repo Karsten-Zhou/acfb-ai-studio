@@ -48,6 +48,7 @@
   "chat": {
     "chooseModel": "Choose model",
     "conversationNotFound": "Conversation not found",
+    "copyCode": "Copy code",
     "copyMessage": "Copy message",
     "disclaimer": "Workers AI can make mistakes. Check important information.",
     "editMessage": "Edit message",

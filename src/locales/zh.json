@@ -48,6 +48,7 @@
   "chat": {
     "chooseModel": "选择模型",
     "conversationNotFound": "找不到该会话",
+    "copyCode": "复制代码",
     "copyMessage": "复制消息",
     "disclaimer": "Workers AI 可能会出错，请核实重要信息。",
     "editMessage": "编辑消息",

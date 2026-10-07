@@ -106,7 +106,6 @@ bun run deploy
 
 ## TODO
 
-- [x] Optimise datetime and filesize formats for different locales.
 - [ ] Add more language translations.
 - [ ] Image & audio attchment support for multimodal chatting AIs.
 - [ ] Migration from `wrangler` to `cf`.
@@ -116,13 +115,11 @@ bun run deploy
 - [ ] Optimise the code location between frontend and backend; currently, some code is misplaced.
 - [ ] Integration of Cloudflare AI Search API.
 - [ ] Max height for user messages in chat
-- [ ] Copiable code snippets in chat messages
 - [ ] Split the code for the sidebar
 - [ ] Custom OpenAI compatible endpoint support for chatting AIs
 - [ ] Llama cpp compatible conversation backup.
 - [ ] Fix the incorrect layout in mid-width screens (e.g., 1024px). 
 - [ ] Incorrect layout when viewing images in mobile devices (e.g., 375px width).
-- [x] Configurable title generation and system prompt for chatting AIs.
 
 ## My Other Projects
 
