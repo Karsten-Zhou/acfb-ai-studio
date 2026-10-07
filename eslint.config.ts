@@ -33,5 +33,12 @@ export default typescriptEslint.config(
       // your rules
     },
   },
+  {
+    files: ["**/*.test.ts", "**/*.spec.ts"],
+    rules: {
+      // Test harnesses mount components through anonymous render roots.
+      "vue/one-component-per-file": "off",
+    },
+  },
   eslintConfigPrettier,
 );

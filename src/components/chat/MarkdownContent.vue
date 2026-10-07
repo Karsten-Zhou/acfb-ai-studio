@@ -20,14 +20,11 @@ const { isDark } = storeToRefs(usePreferencesStore());
 const container = ref<HTMLElement | null>(null);
 const result = ref<RenderedMarkdown>({ html: "", codeBlocks: [] });
 
-// Detached hosts that keep the mounted <CodeBlock/> vnodes alive; unmounted
-// before every re-render and on component teardown.
+// Detached hosts keeping mounted <CodeBlock/> vnodes alive; unmounted on re-render and teardown.
 const hosts: HTMLElement[] = [];
 
-// Bare `render()` mounts run without an app context, which breaks components
-// that rely on app plugins (i18n, reka-ui provides). Carry our own app context
-// over to the dynamically mounted <CodeBlock/> so it behaves like an in-app
-// component.
+// Programmatic render() has no app context, which breaks plugin-provided
+// components; carry MarkdownContent's context over to the mounted <CodeBlock/>.
 const appContext = getCurrentInstance()?.appContext;
 
 watch(

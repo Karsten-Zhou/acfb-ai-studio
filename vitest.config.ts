@@ -1,8 +1,10 @@
 import { defineConfig } from "vitest/config";
+import vue from "@vitejs/plugin-vue";
 import { fileURLToPath } from "node:url";
 
-// Standalone config so unit tests do not need the Cloudflare/Vite plugins.
+// Standalone config; the Vue SFC plugin is needed for component (.vue) tests.
 export default defineConfig({
+  plugins: [vue()],
   resolve: {
     alias: {
       "@shared": fileURLToPath(new URL("./shared", import.meta.url)),

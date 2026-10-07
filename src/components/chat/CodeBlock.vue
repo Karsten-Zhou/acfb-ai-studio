@@ -57,7 +57,6 @@ async function copy() {
         <Copy v-else class="size-3.5" />
       </Button>
     </div>
-    <!-- v-html is limited to Shiki's known/sanitized output; the UI around it is real Vue. -->
     <!-- eslint-disable vue/no-v-html -- highlightedHtml is sanitized in lib/markdown -->
     <div v-if="highlightedHtml" v-html="highlightedHtml" />
     <!-- eslint-enable vue/no-v-html -->

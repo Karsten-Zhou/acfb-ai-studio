@@ -1,5 +1,7 @@
-// Markdown rendering with code syntax highlighting and sanitization.
-import { Marked, Lexer, type Token } from "marked";
+// Markdown → marked → hooks (AST math + code-block extraction) → DOMPurify.
+// The Marked instance and extensions are configured once; only the per-render
+// context changes. Parsing is synchronous, so the shared context can't interleave.
+import { Lexer, Marked, type HooksObject, type Token, type TokensList } from "marked";
 import markedKatex from "marked-katex-extension";
 import type { MarkedKatexOptions } from "marked-katex-extension";
 import katex from "katex";
@@ -14,6 +16,7 @@ import dark2026Raw from "../shikithemes/2026-dark.json";
 import light2026Raw from "../shikithemes/2026-light.json";
 
 const THEMES = { dark: "2026 Dark", light: "2026 Light" } as const;
+type ThemeName = (typeof THEMES)[keyof typeof THEMES];
 const dark2026 = dark2026Raw as ThemeRegistrationRaw;
 const light2026 = light2026Raw as ThemeRegistrationRaw;
 
@@ -47,15 +50,11 @@ async function getHighlighter(): Promise<Highlighter> {
 
 const LOADABLE_LANGS = new Set<string>(PRELOADED_LANGS);
 
-/**
- * Structured representation of a fenced code block. The renderer only emits
- * language/code/highlighting data plus an inert marker element; the actual UI
- * (<CodeBlock/>) is owned by Vue, never by HTML strings in this module.
- */
+/** Structured code-block data; the UI is owned by Vue, never by HTML strings here. */
 export interface CodeBlockData {
   language: string;
   code: string;
-  /** Shiki-generated HTML; sanitized here, rendered by <CodeBlock/> via v-html. */
+  /** Sanitized Shiki HTML, rendered via v-html in <CodeBlock/>. */
   highlightedHtml: string;
 }
 
@@ -64,20 +63,26 @@ export interface RenderedMarkdown {
   codeBlocks: CodeBlockData[];
 }
 
-/**
- * Inert marker for one code block, replaced with a mounted <CodeBlock/>
- * component by MarkdownContent.vue after v-html rendering. It is the only
- * custom element the sanitizer allows; a forged marker only swaps in data
- * from this render pass and can never execute anything.
- */
+/** Inert marker swapped for a mounted <CodeBlock/>; the only custom element the sanitizer allows. */
 function codeBlockMarker(index: number): string {
   return `<code-block data-block="${index}"></code-block>`;
 }
 
-/**
- * Extract fenced-code language tags from markdown source using AST.
- * This is robust against code blocks containing backticks or math symbols.
- */
+/** First whitespace-delimited token of a language tag, lowercased ("ts title=x" → "ts"). */
+function firstLangTag(value: string): string {
+  let end = 0;
+  while (
+    end < value.length &&
+    value[end] !== " " &&
+    value[end] !== "\t" &&
+    value[end] !== "\n"
+  ) {
+    end++;
+  }
+  return value.slice(0, end).toLowerCase();
+}
+
+/** Collect fenced-code langs via AST (robust against backticks/math in code). */
 function findCodeLangs(source: string): string[] {
   try {
     const tokens = Lexer.lex(source);
@@ -86,7 +91,7 @@ function findCodeLangs(source: string): string[] {
     const walk = (tokens: Token[]) => {
       for (const t of tokens) {
         if (t.type === "code" && t.lang) {
-          langs.add(t.lang.toLowerCase().split(/\s+/)[0]);
+          langs.add(firstLangTag(t.lang));
         }
         if ("tokens" in t && Array.isArray(t.tokens)) {
           walk(t.tokens);
@@ -100,10 +105,6 @@ function findCodeLangs(source: string): string[] {
     return [];
   }
 }
-
-// ==========================================
-// Math Enhancements
-// ==========================================
 
 const KATEX_OPTIONS: MarkedKatexOptions = {
   throwOnError: false,
@@ -121,26 +122,157 @@ const KATEX_OPTIONS: MarkedKatexOptions = {
   },
 };
 
-/**
- * Safely preprocess math delimiters \[ \] and \( \) into $$ and $.
- * Uses regex but safely ignores code blocks to prevent breaking LaTeX examples.
- */
-function preprocessMathDelimiters(source: string): string {
-  const codeBlockRegex = /(```[\s\S]*?```|`[^`\n]*`)/g;
-  const parts = source.split(codeBlockRegex);
-
-  return parts
-    .map((part, index) => {
-      if (index % 2 === 1) return part; // Odd indices are code blocks, skip them
-
-      // Convert \[ ... \] to $$ ... $$ (display math)
-      part = part.replace(/\\\[([\s\S]+?)\\\]/g, "\n$$\n$1\n$$\n");
-      // Convert \( ... \) to $ ... $ (inline math)
-      part = part.replace(/\\\(([\s\S]+?)\\\)/g, "$ $1 $");
-      return part;
-    })
-    .join("");
+/** Merge escape/text tokens between \(...\) or \[...\] into KaTeX HTML.
+ *  Code spans/fences are separate token types; unbalanced delimiters stay literal. */
+function transformInlineMath(tokens: Token[]): Token[] {
+  const out: Token[] = [];
+  let i = 0;
+  while (i < tokens.length) {
+    const open = tokens[i];
+    const isOpen =
+      open.type === "escape" && (open.raw === "\\(" || open.raw === "\\[");
+    if (!isOpen) {
+      out.push(open);
+      i++;
+      continue;
+    }
+    const display = open.raw === "\\[";
+    const closeRaw = display ? "\\]" : "\\)";
+    let math = "";
+    let raw = open.raw;
+    let j = i + 1;
+    let closed = false;
+    while (j < tokens.length) {
+      const t = tokens[j];
+      if (t.type === "escape" && t.raw === closeRaw) {
+        raw += t.raw;
+        closed = true;
+        break;
+      }
+      if (t.type === "escape" || t.type === "text") {
+        math += t.raw;
+        raw += t.raw;
+        j++;
+      } else {
+        // Structural token inside delimiters: leave the span literal.
+        break;
+      }
+    }
+    if (!closed) {
+      out.push(open);
+      i++;
+      continue;
+    }
+    out.push({
+      type: "html",
+      raw,
+      text: katex.renderToString(math, { ...KATEX_OPTIONS, displayMode: display }),
+    } as Token);
+    i = j + 1;
+  }
+  return out;
 }
+
+function transformMathDelimiters(tokens: Token[]): void {
+  for (const token of tokens) {
+    if ("tokens" in token && Array.isArray(token.tokens)) {
+      if (token.type === "paragraph" || token.type === "heading") {
+        token.tokens = transformInlineMath(token.tokens);
+      } else {
+        transformMathDelimiters(token.tokens);
+      }
+    }
+  }
+}
+
+/** Mutable view of a `code` token so it can be turned into an `html` token. */
+interface MutableToken {
+  type: string;
+  raw: string;
+  text: string;
+  lang?: string;
+}
+
+interface RenderContext {
+  highlighter: Highlighter;
+  theme: ThemeName;
+  codeBlocks: CodeBlockData[];
+}
+
+/** Replace each code token with KaTeX (latex/math/tex) or an inert marker, collecting block data. */
+function collectCodeBlocks(tokens: Token[], ctx: RenderContext): void {
+  for (const token of tokens) {
+    if (token.type === "code") {
+      const code = token as unknown as MutableToken;
+      const normalized = firstLangTag(code.lang ?? "") || "text";
+
+      if (normalized === "latex" || normalized === "math" || normalized === "tex") {
+        try {
+          code.type = "html";
+          code.text = katex.renderToString(code.text, {
+            ...KATEX_OPTIONS,
+            displayMode: true,
+          });
+        } catch {
+          // Fallback: plain block rendered by <CodeBlock/>.
+          ctx.codeBlocks.push({
+            language: "text",
+            code: code.text,
+            highlightedHtml: "",
+          });
+          code.type = "html";
+          code.text = codeBlockMarker(ctx.codeBlocks.length - 1);
+        }
+        continue;
+      }
+
+      const supported = normalized === "text" || LOADABLE_LANGS.has(normalized);
+      let highlighted: string;
+      try {
+        highlighted = ctx.highlighter.codeToHtml(code.text, {
+          lang: supported ? normalized : "text",
+          theme: ctx.theme,
+          defaultColor: false,
+        });
+      } catch {
+        highlighted = ctx.highlighter.codeToHtml(code.text, {
+          lang: "text",
+          theme: ctx.theme,
+        });
+      }
+      // Sanitize Shiki output so one trust boundary covers everything reaching <CodeBlock/>.
+      ctx.codeBlocks.push({
+        language: normalized,
+        code: code.text,
+        highlightedHtml: DOMPurify.sanitize(highlighted, {
+          USE_PROFILES: { html: true },
+        }),
+      });
+      code.type = "html";
+      code.text = codeBlockMarker(ctx.codeBlocks.length - 1);
+    } else if ("tokens" in token && Array.isArray(token.tokens)) {
+      collectCodeBlocks(token.tokens, ctx);
+    }
+  }
+}
+
+// Per-render state for the hook; parse is synchronous, so no await can
+// interleave between assignment and the hook reading it.
+let renderContext: RenderContext | null = null;
+
+function processAllTokens(tokens: Token[] | TokensList): Token[] | TokensList {
+  const ctx = renderContext;
+  if (!ctx) return tokens;
+  transformMathDelimiters(tokens);
+  collectCodeBlocks(tokens, ctx);
+  return tokens;
+}
+
+const hooks: HooksObject = { processAllTokens };
+
+const marked = new Marked({ gfm: true, breaks: true });
+marked.use(markedKatex(KATEX_OPTIONS));
+marked.use({ hooks });
 
 export async function renderMarkdown(
   source: string,
@@ -157,86 +289,24 @@ export async function renderMarkdown(
   toLoad.forEach((l) => LOADABLE_LANGS.add(l));
 
   const theme = isDark ? THEMES.dark : THEMES.light;
-
-  // Collected during parse; the renderer emits inert markers referencing these.
   const codeBlocks: CodeBlockData[] = [];
+  renderContext = { highlighter, theme, codeBlocks };
+  try {
+    const result = marked.parse(source);
+    const raw = typeof result === "string" ? result : await result;
 
-  const marked = new Marked({
-    renderer: {
-      code({ text, lang }) {
-        const normalized = lang?.toLowerCase() ?? "text";
-
-        // Render latex/math/tex code blocks as display math
-        if (
-          normalized === "latex" ||
-          normalized === "math" ||
-          normalized === "tex"
-        ) {
-          try {
-            return katex.renderToString(text, {
-              ...KATEX_OPTIONS,
-              displayMode: true,
-            });
-          } catch {
-            // Fall back to a plain code block rendered by <CodeBlock/>.
-            codeBlocks.push({
-              language: "text",
-              code: text,
-              highlightedHtml: "",
-            });
-            return codeBlockMarker(codeBlocks.length - 1);
-          }
-        }
-
-        const supported =
-          normalized === "text" || LOADABLE_LANGS.has(normalized);
-        let highlighted: string;
-        try {
-          highlighted = highlighter.codeToHtml(text, {
-            lang: supported ? normalized : "text",
-            theme,
-            defaultColor: false,
-          });
-        } catch {
-          highlighted = highlighter.codeToHtml(text, {
-            lang: "text",
-            theme,
-          });
-        }
-        // Shiki output is escaped by construction; sanitize anyway to keep a
-        // single trust boundary for everything that reaches <CodeBlock/>.
-        codeBlocks.push({
-          language: normalized,
-          code: text,
-          highlightedHtml: DOMPurify.sanitize(highlighted, {
-            USE_PROFILES: { html: true },
-          }),
-        });
-        return codeBlockMarker(codeBlocks.length - 1);
+    // Allow KaTeX SVG/MathML plus the code-block marker; nothing else custom passes.
+    const html = DOMPurify.sanitize(raw, {
+      USE_PROFILES: { html: true, mathMl: true, svg: true },
+      CUSTOM_ELEMENT_HANDLING: {
+        tagNameCheck: (tag) => tag === "code-block",
+        attributeNameCheck: (attr) => attr === "data-block",
       },
-    },
-  });
-
-  marked.use(markedKatex(KATEX_OPTIONS));
-  marked.setOptions({ gfm: true, breaks: true });
-
-  // 1. Preprocess delimiters safely
-  const processedSource = preprocessMathDelimiters(source);
-
-  // 2. Await parse to handle both sync and async extension returns
-  const raw = await marked.parse(processedSource);
-
-  // 3. Sanitize while allowing KaTeX's SVG and MathML, plus our code-block
-  // marker (the only custom element allowed, so user HTML cannot forge one).
-  const html = DOMPurify.sanitize(raw, {
-    USE_PROFILES: { html: true, mathMl: true, svg: true },
-    CUSTOM_ELEMENT_HANDLING: {
-      tagNameCheck: (tag) => tag === "code-block",
-      attributeNameCheck: (attr) => attr === "data-block",
-    },
-  });
-
-  return { html, codeBlocks };
+    });
+    return { html, codeBlocks };
+  } finally {
+    renderContext = null;
+  }
 }
 
 const cache = new Map<string, { dark: boolean; result: RenderedMarkdown }>();
