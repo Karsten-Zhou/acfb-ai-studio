@@ -24,6 +24,13 @@ import { Empty, EmptyHeader, EmptyDescription } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import AppHeader from "@/components/AppHeader.vue";
 import { formatNumber } from "@/lib/i18n";
+import {
+  Select,
+  SelectItem,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const { t } = useI18n({ useScope: "global" });
 const drawStore = useDrawStore();
@@ -188,18 +195,16 @@ function stepFor(bounds: ParamBounds | undefined): number | undefined {
       <div class="flex min-w-sm flex-1 flex-col gap-3 overflow-y-auto p-2">
         <div class="flex flex-col gap-1.5">
           <Label>{{ t("draw.model") }}</Label>
-          <select
-            :value="drawStore.options.model"
-            class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            @change="
-              (e) =>
-                drawStore.setDrawModel((e.target as HTMLSelectElement).value)
-            "
-          >
-            <option v-for="m in models" :key="m.name" :value="m.name">
-              {{ label(m) }}
-            </option>
-          </select>
+          <Select v-model="drawStore.options.model">
+            <SelectTrigger class="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="m in models" :key="m.name" :value="m.name">
+                {{ label(m) }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
           <p class="text-xs text-muted-foreground">
             {{ currentModel?.description }}
           </p>
