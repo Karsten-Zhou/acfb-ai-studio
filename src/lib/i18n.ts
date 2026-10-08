@@ -11,14 +11,17 @@
 
 import { match } from "@formatjs/intl-localematcher";
 import { createI18n } from "vue-i18n";
-import en from "@/locales/en.json";
 import de from "@/locales/de.json";
+import en from "@/locales/en.json";
+import fr from "@/locales/fr.json";
+import hi from "@/locales/hi.json";
+import ja from "@/locales/ja.json";
 import zh from "@/locales/zh.json";
 
-export type Locale = "en" | "de" | "zh";
+export type Locale = "de" | "en" | "fr" | "hi" | "ja" | "zh";
 export type LocaleSetting = "auto" | Locale;
 
-export const supportedLocales = ["en", "de", "zh"] as const;
+export const supportedLocales = ["de", "en", "fr", "hi", "ja", "zh"] as const;
 
 /** True when `value` is a valid locale preference (guards persisted data). */
 export function isLocaleSetting(value: unknown): value is LocaleSetting {
@@ -59,7 +62,7 @@ const i18n = createI18n({
   legacy: false,
   locale: resolveBrowserLocale(),
   fallbackLocale: "en",
-  messages: { en, de, zh },
+  messages: { de, en, fr, hi, ja, zh },
   missingWarn: false,
   fallbackWarn: false,
 });
