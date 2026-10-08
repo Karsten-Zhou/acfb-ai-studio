@@ -118,7 +118,6 @@ bun run deploy
 - [ ] Llama cpp compatible conversation backup.
 - [ ] Fix the incorrect layout in mid-width screens (e.g., 1024px).
 - [ ] Incorrect layout when viewing images in mobile devices (e.g., 375px width).
-- [ ] Improve the prompts for title generation.
 - [ ] Optimise the remaining token calculation.
 
 ## My Other Projects
