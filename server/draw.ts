@@ -1,7 +1,12 @@
 import { Hono } from "hono";
-import { imageRequestSchema, type ImageRequest } from "@shared/api";
+import {
+  imageRequestSchema,
+  imageResultSchema,
+  type ImageRequest,
+} from "@shared/api";
 import { zValidator } from "@hono/zod-validator";
 import { errorResponse, upstreamError, UserFacingError } from "./errors";
+import { zodErrorHook } from "./validation";
 import {
   dimensionsOfBase64,
   dimensionsOfBytes,
@@ -21,7 +26,10 @@ import type { OutputFormat } from "@shared/generated/schema";
 
 const app = new Hono<{ Bindings: Env }>();
 
-app.post("/", zValidator("json", imageRequestSchema), async ({ env, req }) => {
+app.post(
+  "/",
+  zValidator("json", imageRequestSchema, zodErrorHook),
+  async ({ env, req }) => {
   const body = req.valid("json");
 
   const known = body.model ? FREE_MODEL_BY_NAME.get(body.model) : undefined;
@@ -75,13 +83,15 @@ app.post("/", zValidator("json", imageRequestSchema), async ({ env, req }) => {
       throw new UserFacingError(image.reason);
     }
 
-    return Response.json({
-      image: image.data,
-      model: known.name,
-      width: image.width,
-      height: image.height,
-      seed: body.seed,
-    });
+    return Response.json(
+      imageResultSchema.parse({
+        image: image.data,
+        model: known.name,
+        width: image.width,
+        height: image.height,
+        seed: body.seed,
+      }),
+    );
   } catch (err) {
     return errorResponse(err);
   }

@@ -121,16 +121,22 @@ export const defaultsSchema = z.object({
 });
 export type DefaultChatOptions = z.infer<typeof defaultsSchema>;
 
-/** Tag objects emitted over the SSE stream. */
-export const streamEventSchema = z.object({
-  type: z.enum(["delta", "done", "error"]),
-  /** For `delta` — the increment of assistant text. */
-  delta: z.string().optional(),
-  /** For `done` — the fully accumulated message. */
-  content: z.string().optional(),
-  /** For `error` — a human-readable reason. */
-  message: z.string().optional(),
-});
+/** SSE events, discriminated on `type`. */
+export const streamEventSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("delta"),
+    delta: z.string().optional(),
+    reasoning: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal("done"),
+    content: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal("error"),
+    message: z.string(),
+  }),
+]);
 export type StreamEvent = z.infer<typeof streamEventSchema>;
 
 /** Namespace the client-side persistence under. */

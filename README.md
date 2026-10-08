@@ -109,9 +109,7 @@ bun run deploy
 - [ ] Add more language translations.
 - [ ] Migration from `wrangler` to `cf`.
 - [ ] MCP support for chatting AIs.
-- [ ] Refactor the API exchanges by enforcing Zod validation.
 - [ ] Routed conversations and images; rerouting after deleting a thread or image.
-- [ ] Optimise the code location between frontend and backend; currently, some code is misplaced.
 - [ ] Max height for user messages in chat
 - [ ] Split the code for the sidebar
 - [ ] Custom OpenAI compatible endpoint support for chatting AIs

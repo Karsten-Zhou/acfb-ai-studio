@@ -15,13 +15,13 @@ import {
   FREE_TEXT_GENERATION_MODELS,
   FREE_TEXT_TO_IMAGE_MODELS,
 } from "@shared/generated/models";
-import {
-  acceptsParam,
-  getBounds,
-  type ParamBounds,
-} from "@shared/generated/traits";
+import { getBounds, type ParamBounds } from "@shared/generated/traits";
 import { SYNC_MAX_BYTES, SYNC_SOFT_LIMIT_BYTES } from "@shared/sync";
-import type { ImageRequest, ImageResult } from "@shared/api";
+import {
+  imageResultSchema,
+  type ImageRequest,
+  type ImageResult,
+} from "@shared/api";
 import type { GalleryItem } from "@shared/draw";
 import { readApiError } from "@/lib/api-error";
 import { formatMegabytes, t } from "@/lib/i18n";
@@ -200,32 +200,13 @@ export const useDrawStore = defineStore("draw", () => {
     generating.value = true;
     controller = new AbortController();
 
+    // Forward raw values; the server filters and clamps to the model's bounds.
     const payload: ImageRequest = { model, prompt };
-
-    // Only forward a size the user explicitly set *and* the model accepts. An
-    // omitted size lets Workers AI fall back to the model's own default instead
-    // of us inventing one.
-    if (width !== undefined && acceptsParam(model, "width")) {
-      payload.width = clampNum(width, getBounds(model, "width"));
-    }
-    if (height !== undefined && acceptsParam(model, "height")) {
-      payload.height = clampNum(height, getBounds(model, "height"));
-    }
-    if (negativePrompt && acceptsParam(model, "negative_prompt")) {
-      payload.negativePrompt = negativePrompt;
-    }
-    if (numSteps !== undefined) {
-      // `num_steps` and `steps` are two names for the same knob across model
-      // families. Emit whichever the model declares; never both.
-      if (acceptsParam(model, "num_steps")) {
-        payload.numSteps = clampNum(numSteps, getBounds(model, "num_steps"));
-      } else if (acceptsParam(model, "steps")) {
-        payload.numSteps = clampNum(numSteps, getBounds(model, "steps"));
-      }
-    }
-    if (guidance !== undefined && acceptsParam(model, "guidance")) {
-      payload.guidance = clampNum(guidance, getBounds(model, "guidance"));
-    }
+    if (negativePrompt) payload.negativePrompt = negativePrompt;
+    if (width !== undefined) payload.width = width;
+    if (height !== undefined) payload.height = height;
+    if (numSteps !== undefined) payload.numSteps = numSteps;
+    if (guidance !== undefined) payload.guidance = guidance;
 
     // Naming the image does not depend on the image, so the title is requested
     // alongside the generation rather than after it. The item only reaches the
@@ -244,7 +225,7 @@ export const useDrawStore = defineStore("draw", () => {
         // The server's reason (quota, NSFW, ...) is more useful than a status.
         throw new Error((await readApiError(res)).message);
       }
-      const data = (await res.json()) as ImageResult;
+      const data: ImageResult = imageResultSchema.parse(await res.json());
 
       const item: GalleryItem = {
         id: itemId,

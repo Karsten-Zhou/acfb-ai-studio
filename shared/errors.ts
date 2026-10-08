@@ -6,13 +6,19 @@
 //     a specific recovery action. Every code costs a UI branch, so add one
 //     deliberately rather than casually.
 
+import z from "zod";
+
 /** The stored sync payload is unreadable and needs an explicit reset. */
 export const CORRUPT_STATE = "corrupt-state";
 
-export type ApiErrorCode = typeof CORRUPT_STATE;
+export const apiErrorCodeSchema = z.enum([CORRUPT_STATE]);
 
-/** Body of every failed API response. */
-export interface ApiErrorBody {
-  error: string;
-  code?: ApiErrorCode;
-}
+export type ApiErrorCode = z.infer<typeof apiErrorCodeSchema>;
+
+/** Body of every failed API response. The schema is the single source of truth. */
+export const apiErrorBodySchema = z.object({
+  error: z.string().min(1),
+  code: apiErrorCodeSchema.optional(),
+});
+
+export type ApiErrorBody = z.infer<typeof apiErrorBodySchema>;

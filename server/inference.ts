@@ -49,3 +49,44 @@ export function readInferenceResult(result: unknown): {
       res.reasoning || message?.reasoning || message?.reasoning_content || "",
   };
 }
+
+/** Streaming delta under either spelling Workers AI uses. */
+type StreamDelta = {
+  content?: string | null;
+  reasoning?: string | null;
+  reasoning_content?: string | null;
+};
+
+/** Shape of one SSE chunk from the upstream inference stream. */
+type TextGenerationStreamChunk = {
+  // Prompt-input models stream the running answer under `response`.
+  response?: string | null;
+  choices?: Array<{ delta?: StreamDelta | null }> | null;
+};
+
+/** Read the text/reasoning increments out of one upstream SSE chunk. */
+export function readStreamChunk(chunk: unknown): {
+  content?: string;
+  reasoning?: string;
+} {
+  if (typeof chunk === "string") return { content: chunk };
+  if (!chunk || typeof chunk !== "object") return {};
+
+  const res = chunk as TextGenerationStreamChunk;
+  const delta = res.choices?.[0]?.delta;
+
+  const content =
+    typeof delta?.content === "string"
+      ? delta.content
+      : typeof res.response === "string"
+        ? res.response
+        : undefined;
+  const reasoning =
+    typeof delta?.reasoning_content === "string"
+      ? delta.reasoning_content
+      : typeof delta?.reasoning === "string"
+        ? delta.reasoning
+        : undefined;
+
+  return { content, reasoning };
+}

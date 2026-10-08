@@ -1,4 +1,4 @@
-import type { ApiErrorBody, ApiErrorCode } from "@shared/errors";
+import { apiErrorBodySchema, type ApiErrorCode } from "@shared/errors";
 
 /** A failed API response, reduced to what the client needs. */
 export interface ApiError {
@@ -10,10 +10,9 @@ export interface ApiError {
 }
 
 /**
- * Read the reason out of a failed response.
- *
- * Never throws: a response that is not the expected JSON shape still yields a
- * usable message, so the UI never degrades to a bare "Request failed (500)".
+ * Read the reason out of a failed response, validated against
+ * `apiErrorBodySchema`. Never throws: any non-JSON body still yields a usable
+ * message.
  */
 export async function readApiError(res: Response): Promise<ApiError> {
   const status = res.status;
@@ -21,9 +20,10 @@ export async function readApiError(res: Response): Promise<ApiError> {
 
   if (raw) {
     try {
-      const body = JSON.parse(raw) as Partial<ApiErrorBody>;
-      if (typeof body.error === "string" && body.error) {
-        return { message: body.error, status, code: body.code };
+      const parsed = apiErrorBodySchema.safeParse(JSON.parse(raw));
+      if (parsed.success) {
+        const { error, code } = parsed.data;
+        return { message: error, status, ...(code ? { code } : {}) };
       }
     } catch {
       // Not JSON (an HTML error page, a proxy response): fall through and show

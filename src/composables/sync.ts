@@ -12,12 +12,16 @@
 import { nextTick, onScopeDispose, watch } from "vue";
 import { useDebounceFn, useIntervalFn } from "@vueuse/core";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import { okResponseSchema } from "@shared/api";
 import {
   SYNC_MAX_BYTES,
   SYNC_VERSION,
   describePayloadIssues,
   encodeSyncPush,
   mergePayloads,
+  syncConflictResponseSchema,
+  syncMetaSchema,
+  syncStateEnvelopeSchema,
   type SyncConflictResponse,
   type SyncMeta,
   type SyncPayload,
@@ -91,19 +95,9 @@ function toSyncError(err: unknown): SyncError {
 // HTTP
 // ---------------------------------------------------------------------------
 
-interface StateEnvelope {
-  payload: SyncPayload | null;
-  revision: number;
-  bytes: number;
-}
-
-async function readJson<T>(res: Response): Promise<T | null> {
-  try {
-    return (await res.json()) as T;
-  } catch {
-    return null;
-  }
-}
+// ---------------------------------------------------------------------------
+// Payload plumbing
+// ---------------------------------------------------------------------------
 
 /** Turn a failed response into a sync error, carrying the server's reason. */
 async function httpError(res: Response): Promise<SyncRequestError> {
@@ -124,11 +118,11 @@ async function fetchMeta(): Promise<SyncMeta> {
     headers: { accept: "application/json" },
   });
   if (!res.ok) throw await httpError(res);
-  const body = await readJson<SyncMeta>(res);
-  if (!body) {
+  const parsed = syncMetaSchema.safeParse(await readJson(res));
+  if (!parsed.success) {
     throw new SyncRequestError(t("sync.metaParseFailed"));
   }
-  return body;
+  return parsed.data;
 }
 
 async function fetchState(): Promise<SyncStateResponse> {
@@ -136,12 +130,13 @@ async function fetchState(): Promise<SyncStateResponse> {
     headers: { accept: "application/json" },
   });
   if (!res.ok) throw await httpError(res);
-  const body = await readJson<StateEnvelope>(res);
-  if (!body) {
+  const parsed = syncStateEnvelopeSchema.safeParse(await readJson(res));
+  if (!parsed.success) {
     throw new SyncRequestError(t("sync.stateParseFailed"));
   }
-  if (!body.payload) throw new SyncRequestError(t("sync.emptyState"));
-  return { payload: body.payload, revision: body.revision, bytes: body.bytes };
+  if (!parsed.data.payload) throw new SyncRequestError(t("sync.emptyState"));
+  const { payload, revision, bytes } = parsed.data;
+  return { payload, revision, bytes };
 }
 
 async function putState(body: string): Promise<SyncStateResponse> {
@@ -152,24 +147,33 @@ async function putState(body: string): Promise<SyncStateResponse> {
   });
 
   if (res.status === 409) {
-    const conflict = await readJson<SyncConflictResponse>(res);
-    if (!conflict) {
+    const parsed = syncConflictResponseSchema.safeParse(await readJson(res));
+    if (!parsed.success) {
       throw new SyncRequestError(t("sync.conflictParseFailed"));
     }
-    throw new SyncConflictError(conflict);
+    throw new SyncConflictError(parsed.data);
   }
   if (!res.ok) throw await httpError(res);
 
-  const result = await readJson<SyncStateResponse>(res);
-  if (!result) {
+  const parsed = syncStateEnvelopeSchema.safeParse(await readJson(res));
+  if (!parsed.success || !parsed.data.payload) {
     throw new SyncRequestError(t("sync.responseParseFailed"));
   }
-  return result;
+  const { payload, revision, bytes } = parsed.data;
+  return { payload, revision, bytes };
 }
 
 // ---------------------------------------------------------------------------
 // Payload plumbing
 // ---------------------------------------------------------------------------
+
+async function readJson(res: Response): Promise<unknown> {
+  try {
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
 
 /** Guards against re-entrant writes while we are adopting remote state. */
 let applying = false;
@@ -529,6 +533,10 @@ export async function resetSyncState(): Promise<void> {
   const sync = useSyncStore();
   const res = await request("/api/sync", { method: "DELETE" });
   if (!res.ok) throw await httpError(res);
+  const parsed = okResponseSchema.safeParse(await readJson(res));
+  if (!parsed.success) {
+    throw new SyncRequestError(t("sync.responseParseFailed"));
+  }
   sync.localMeta.baseRevision = 0;
   sync.localMeta.dirty = true;
   syncNow?.();

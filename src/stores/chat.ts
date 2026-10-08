@@ -10,7 +10,7 @@
 import { defineStore } from "pinia";
 import { ref, watch } from "vue";
 import { throttleFilter, useStorage } from "@vueuse/core";
-import { STORAGE_KEY } from "@shared/chat";
+import { STORAGE_KEY, streamEventSchema } from "@shared/chat";
 import type { ChatRequest } from "@shared/api";
 import { FREE_TEXT_GENERATION_MODELS } from "@shared/generated/models";
 import { defaultOptions, setDefaults } from "@/composables/chat-defaults";
@@ -585,27 +585,26 @@ async function streamChat(
   let buffer = "";
   let done = false;
 
-  function extractDelta(json: unknown): {
-    content?: string;
-    reasoning?: string;
-  } {
-    if (typeof json === "string") return { content: json };
-    const obj = json as {
-      response?: string;
-      choices?: Array<{
-        delta?: { content?: string; reasoning_content?: string };
-      }>;
-    };
-    const choice = obj.choices?.[0]?.delta;
-    const fromChoices = choice?.content;
-    const reasoning = choice?.reasoning_content;
-    const content =
-      typeof fromChoices === "string" && fromChoices !== ""
-        ? fromChoices
-        : typeof obj.response === "string"
-          ? obj.response
-          : undefined;
-    return { content, reasoning };
+  // Handle one canonical `streamEventSchema` event.
+  function handlePayload(payload: string): void {
+    if (!payload) return;
+    let json: unknown;
+    try {
+      json = JSON.parse(payload);
+    } catch {
+      // Ignore any non-JSON sentinel.
+      return;
+    }
+    const parsed = streamEventSchema.safeParse(json);
+    if (!parsed.success) return;
+
+    const event = parsed.data;
+    if (event.type === "error") {
+      throw new Error(event.message);
+    }
+    if (event.type === "delta" && (event.delta || event.reasoning)) {
+      onDelta({ content: event.delta, reasoning: event.reasoning });
+    }
   }
 
   while (!done) {
@@ -617,27 +616,12 @@ async function streamChat(
       const line = buffer.slice(0, nlIdx).replace(/\r$/, "");
       buffer = buffer.slice(nlIdx + 1);
       if (!line.startsWith("data:")) continue;
-      const payload = line.slice(5).trimStart();
-      if (!payload) continue;
-      try {
-        const delta = extractDelta(JSON.parse(payload));
-        if (delta.content || delta.reasoning) onDelta(delta);
-      } catch {
-        // Ignore `data: [DONE]` and any non-JSON sentinel.
-      }
+      handlePayload(line.slice(5).trimStart());
     }
   }
 
   const trailing = buffer.trim();
   if (trailing.startsWith("data:")) {
-    const payload = trailing.slice(5).trimStart();
-    if (payload) {
-      try {
-        const delta = extractDelta(JSON.parse(payload));
-        if (delta.content || delta.reasoning) onDelta(delta);
-      } catch {
-        /* ignore */
-      }
-    }
+    handlePayload(trailing.slice(5).trimStart());
   }
 }

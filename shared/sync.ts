@@ -86,12 +86,13 @@ export const syncPayloadSchema = z.looseObject({
 export type SyncPayload = z.infer<typeof syncPayloadSchema>;
 
 /** Cheap description of the stored value, used to poll without downloading. */
-export interface SyncMeta {
-  revision: number;
-  updatedAt: number;
-  bytes: number;
-  empty: boolean;
-}
+export const syncMetaSchema = z.object({
+  revision: z.number().int().nonnegative(),
+  updatedAt: z.number().nonnegative(),
+  bytes: z.number().int().nonnegative(),
+  empty: z.boolean(),
+});
+export type SyncMeta = z.infer<typeof syncMetaSchema>;
 
 /** Body of `PUT /api/sync`. */
 export interface SyncPushRequest {
@@ -100,20 +101,28 @@ export interface SyncPushRequest {
   payload: SyncPayload;
 }
 
-/** Successful response of `GET`/`PUT /api/sync`. */
-export interface SyncStateResponse {
+/** Wire envelope of `GET`/`PUT /api/sync`; `payload` is null when empty. */
+export const syncStateEnvelopeSchema = z.object({
+  payload: syncPayloadSchema.nullable(),
+  revision: z.number().int().nonnegative(),
+  bytes: z.number().int().nonnegative(),
+});
+
+/** Successful response of `GET`/`PUT /api/sync` once a payload exists. */
+export type SyncStateResponse = {
   payload: SyncPayload;
   revision: number;
   bytes: number;
-}
+};
 
 /** Response of a `PUT` that lost the compare-and-swap (HTTP 409). */
-export interface SyncConflictResponse {
-  error: "conflict";
-  payload: SyncPayload | null;
-  revision: number;
-  bytes: number;
-}
+export const syncConflictResponseSchema = z.object({
+  error: z.literal("conflict"),
+  payload: syncPayloadSchema.nullable(),
+  revision: z.number().int().nonnegative(),
+  bytes: z.number().int().nonnegative(),
+});
+export type SyncConflictResponse = z.infer<typeof syncConflictResponseSchema>;
 
 /**
  * Validate an unknown value as a sync payload. Returns `null` when the value is

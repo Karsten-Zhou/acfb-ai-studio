@@ -8,10 +8,12 @@
 // client can merge and retry.
 
 import { Hono } from "hono";
+import { okResponseSchema } from "@shared/api";
 import {
   SYNC_KEY,
   SYNC_MAX_BYTES,
   parseSyncPushRequest,
+  syncMetaSchema,
   type SyncPayload,
 } from "@shared/sync";
 import { errorResponse } from "./errors";
@@ -29,7 +31,7 @@ const app = new Hono<{ Bindings: Env }>();
  */
 app.get("/meta", async (c) => {
   try {
-    return c.json(await readSyncMeta(c.env));
+    return c.json(syncMetaSchema.parse(await readSyncMeta(c.env)));
   } catch (err) {
     return errorResponse(err);
   }
@@ -125,7 +127,7 @@ app.put("/", async (c) => {
 app.delete("/", async (c) => {
   try {
     await c.env.SYNC_KV.delete(SYNC_KEY);
-    return c.json({ ok: true });
+    return c.json(okResponseSchema.parse({ ok: true }));
   } catch (err) {
     return errorResponse(err);
   }
