@@ -116,3 +116,40 @@ export const FREE_TEXT_GENERATION_MODEL_LABELS: Record<string, string> = {
 export function modelLabel(name: string): string {
   return FREE_TEXT_GENERATION_MODEL_LABELS[name] ?? name.replace(/^@cf\//, "");
 }
+
+// Human readable model labels for image generation in the UI
+export const FREE_TEXT_TO_IMAGE_MODEL_LABELS: Record<string, string> = {
+  // Black Forest Labs / FLUX
+  "@cf/black-forest-labs/flux-1-schnell": "FLUX.1 Schnell",
+  "@cf/black-forest-labs/flux-2-dev": "FLUX.2 Dev",
+  "@cf/black-forest-labs/flux-2-klein-4b": "FLUX.2 Klein 4B",
+  "@cf/black-forest-labs/flux-2-klein-9b": "FLUX.2 Klein 9B",
+
+  // ByteDance
+  "@cf/bytedance/stable-diffusion-xl-lightning":
+    "Stable Diffusion XL Lightning",
+
+  // Leonardo
+  "@cf/leonardo/lucid-origin": "Leonardo Lucid Origin",
+  "@cf/leonardo/phoenix-1.0": "Leonardo Phoenix 1.0",
+
+  // Lykon / DreamShaper
+  "@cf/lykon/dreamshaper-8-lcm": "DreamShaper 8 LCM",
+
+  // RunwayML
+  "@cf/runwayml/stable-diffusion-v1-5-inpainting":
+    "Stable Diffusion v1.5 Inpainting",
+
+  // Stability AI
+  "@cf/stabilityai/stable-diffusion-xl-base-1.0":
+    "Stable Diffusion XL Base 1.0",
+} as const;
+
+/**
+ * User-facing name for a text-to-image model: the curated label when one
+ * exists, else the model id with the `@cf/` vendor prefix stripped. Mirrors
+ * {@link modelLabel} for the text-generation catalogue.
+ */
+export function imageModelLabel(name: string): string {
+  return FREE_TEXT_TO_IMAGE_MODEL_LABELS[name] ?? name.replace(/^@cf\//, "");
+}

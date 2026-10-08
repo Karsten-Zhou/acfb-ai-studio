@@ -12,6 +12,7 @@ import {
   getDefault,
   type ParamBounds,
 } from "@shared/generated/traits";
+import { imageModelLabel } from "@shared/catalog-types";
 import { useDrawStore, type GalleryItem } from "@/stores/draw";
 import { useSyncStore } from "@/stores/sync";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -104,10 +105,9 @@ function sizePlaceholder(key: "width" | "height"): string {
   return typeof declared === "number" ? String(declared) : t("draw.auto");
 }
 
-/** Fallback display name until `displayName` lands in the catalogue. */
+/** Display name: curated label, falling back to the stripped model id. */
 function label(m: FreeImageModel): string {
-  const fallback = m.name.replace(/^@cf\//, "");
-  return `${(m as { displayName?: string }).displayName ?? fallback}${
+  return `${imageModelLabel(m.name)}${
     m.capabilities.beta ? ` (${t("draw.beta")})` : ""
   }`;
 }
