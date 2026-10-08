@@ -86,7 +86,7 @@ function handleSwitchSibling(messageId: string, direction: -1 | 1) {
 </script>
 
 <template>
-  <div class="flex h-dvh flex-col">
+  <div class="flex h-full min-h-0 flex-col">
     <!-- Top bar -->
     <app-header :title="t('app.titleChat')" />
 
@@ -96,7 +96,7 @@ function handleSwitchSibling(messageId: string, direction: -1 | 1) {
       auto-scroll
       default-scroll-position="end"
     >
-      <MessageScroller>
+      <MessageScroller class="flex-1 min-h-0">
         <MessageScrollerViewport>
           <MessageScrollerContent>
             <MessageScrollerItem
@@ -127,7 +127,7 @@ function handleSwitchSibling(messageId: string, direction: -1 | 1) {
     </MessageScrollerProvider>
 
     <!-- Empty state -->
-    <Empty v-else>
+    <Empty v-else class="flex-1 min-h-0">
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <Sparkles />

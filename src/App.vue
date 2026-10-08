@@ -30,7 +30,7 @@ useTitle(title);
 </script>
 
 <template>
-  <SidebarProvider>
+  <SidebarProvider class="h-full min-h-0">
     <AppSidebar
       :conversations="chatStore.conversations"
       :active-id="chatStore.activeId"
@@ -39,7 +39,7 @@ useTitle(title);
       @delete="chatStore.deleteConversation"
       @rename="chatStore.renameConversation"
     />
-    <SidebarInset class="h-dvh">
+    <SidebarInset class="h-full min-w-0">
       <RouterView />
     </SidebarInset>
   </SidebarProvider>

@@ -179,7 +179,7 @@ function stepFor(bounds: ParamBounds | undefined): number | undefined {
 </script>
 
 <template>
-  <div class="flex h-dvh flex-col">
+  <div class="flex h-full min-h-0 flex-col">
     <!-- Top bar -->
     <app-header :title="t('app.titleDraw')" />
 
