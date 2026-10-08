@@ -70,12 +70,7 @@
         "reasoning_effort": {
           "type": "string",
           "default": "high",
-          "enum": [
-            "max",
-            "high",
-            "low",
-            "none"
-          ],
+          "enum": ["max", "high", "low", "none"],
           "description": "Reasoning effort. Supported levels: max, high, low, none. Compatibility aliases: minimal maps to low; medium maps to high; xhigh maps to high."
         },
         "chat_template_kwargs": {
@@ -137,10 +132,7 @@
         },
         "function_call": {
           "type": "string",
-          "enum": [
-            "none",
-            "auto"
-          ]
+          "enum": ["none", "auto"]
         },
         "functions": {
           "type": "array"
@@ -433,10 +425,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -633,10 +622,7 @@
         },
         "function_call": {
           "type": "string",
-          "enum": [
-            "none",
-            "auto"
-          ]
+          "enum": ["none", "auto"]
         },
         "functions": {
           "type": "array"
@@ -721,10 +707,7 @@
         "reasoning_effort": {
           "type": "string",
           "default": "high",
-          "enum": [
-            "high",
-            "none"
-          ],
+          "enum": ["high", "none"],
           "description": "Reasoning effort. Supported levels: high, none. Compatibility aliases: low maps to high; medium maps to high; max maps to high."
         },
         "chat_template_kwargs": {
@@ -786,10 +769,7 @@
         },
         "function_call": {
           "type": "string",
-          "enum": [
-            "none",
-            "auto"
-          ]
+          "enum": ["none", "auto"]
         },
         "functions": {
           "type": "array"
@@ -830,10 +810,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -917,10 +894,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -1004,10 +978,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -1153,10 +1124,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -1240,10 +1208,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -1327,10 +1292,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -1414,10 +1376,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -1501,10 +1460,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -1641,11 +1597,7 @@
         "reasoning_effort": {
           "type": "string",
           "default": "xhigh",
-          "enum": [
-            "low",
-            "medium",
-            "xhigh"
-          ],
+          "enum": ["low", "medium", "xhigh"],
           "description": "Reasoning effort. Supported levels: low, medium, xhigh."
         },
         "chat_template_kwargs": {
@@ -1707,10 +1659,7 @@
         },
         "function_call": {
           "type": "string",
-          "enum": [
-            "none",
-            "auto"
-          ]
+          "enum": ["none", "auto"]
         },
         "functions": {
           "type": "array"
@@ -1802,10 +1751,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -1951,11 +1897,7 @@
         "reasoning_effort": {
           "type": "string",
           "default": "max",
-          "enum": [
-            "max",
-            "high",
-            "low"
-          ],
+          "enum": ["max", "high", "low"],
           "description": "Reasoning effort. Supported levels: max, high, low. Reasoning cannot be disabled. Compatibility aliases: none maps to max; minimal maps to max; medium maps to max; xhigh maps to max."
         },
         "chat_template_kwargs": {
@@ -1964,9 +1906,7 @@
         "chat_template_kwargs.enable_thinking": {
           "type": "boolean",
           "default": true,
-          "enum": [
-            true
-          ],
+          "enum": [true],
           "description": "Reasoning is always enabled for this model and cannot be disabled."
         },
         "chat_template_kwargs.clear_thinking": {
@@ -2020,10 +1960,7 @@
         },
         "function_call": {
           "type": "string",
-          "enum": [
-            "none",
-            "auto"
-          ]
+          "enum": ["none", "auto"]
         },
         "functions": {
           "type": "array"
@@ -2108,12 +2045,7 @@
         "reasoning_effort": {
           "type": "string",
           "default": "high",
-          "enum": [
-            "max",
-            "high",
-            "low",
-            "none"
-          ],
+          "enum": ["max", "high", "low", "none"],
           "description": "Reasoning effort. Supported levels: max, high, low, none. Compatibility aliases: minimal maps to low; medium maps to high; xhigh maps to high."
         },
         "chat_template_kwargs": {
@@ -2175,10 +2107,7 @@
         },
         "function_call": {
           "type": "string",
-          "enum": [
-            "none",
-            "auto"
-          ]
+          "enum": ["none", "auto"]
         },
         "functions": {
           "type": "array"
@@ -2210,10 +2139,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -2426,11 +2352,7 @@
         "reasoning_effort": {
           "type": "string",
           "default": "max",
-          "enum": [
-            "max",
-            "high",
-            "low"
-          ],
+          "enum": ["max", "high", "low"],
           "description": "Reasoning effort. Supported levels: max, high, low. Reasoning cannot be disabled. Compatibility aliases: none maps to max; minimal maps to max; medium maps to max; xhigh maps to max."
         },
         "chat_template_kwargs": {
@@ -2439,9 +2361,7 @@
         "chat_template_kwargs.enable_thinking": {
           "type": "boolean",
           "default": true,
-          "enum": [
-            true
-          ],
+          "enum": [true],
           "description": "Reasoning is always enabled for this model and cannot be disabled."
         },
         "chat_template_kwargs.clear_thinking": {
@@ -2495,10 +2415,7 @@
         },
         "function_call": {
           "type": "string",
-          "enum": [
-            "none",
-            "auto"
-          ]
+          "enum": ["none", "auto"]
         },
         "functions": {
           "type": "array"
@@ -2530,10 +2447,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -2626,10 +2540,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -2769,9 +2680,7 @@
         "chat_template_kwargs.enable_thinking": {
           "type": "boolean",
           "default": true,
-          "enum": [
-            true
-          ],
+          "enum": [true],
           "description": "Reasoning is always enabled for this model and cannot be disabled."
         },
         "chat_template_kwargs.clear_thinking": {
@@ -2825,10 +2734,7 @@
         },
         "function_call": {
           "type": "string",
-          "enum": [
-            "none",
-            "auto"
-          ]
+          "enum": ["none", "auto"]
         },
         "functions": {
           "type": "array"
@@ -2860,10 +2766,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -3011,11 +2914,7 @@
         "reasoning_effort": {
           "type": "string",
           "default": "max",
-          "enum": [
-            "max",
-            "high",
-            "none"
-          ],
+          "enum": ["max", "high", "none"],
           "description": "Reasoning effort. Supported levels: max, high, none. Compatibility aliases: low maps to high; medium maps to high; xhigh maps to max; minimal maps to none."
         },
         "chat_template_kwargs": {
@@ -3077,10 +2976,7 @@
         },
         "function_call": {
           "type": "string",
-          "enum": [
-            "none",
-            "auto"
-          ]
+          "enum": ["none", "auto"]
         },
         "functions": {
           "type": "array"
@@ -3223,10 +3119,7 @@
         },
         "function_call": {
           "type": "string",
-          "enum": [
-            "none",
-            "auto"
-          ]
+          "enum": ["none", "auto"]
         },
         "functions": {
           "type": "array"
@@ -3334,10 +3227,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
@@ -3530,10 +3420,7 @@
         },
         "function_call": {
           "type": "string",
-          "enum": [
-            "none",
-            "auto"
-          ]
+          "enum": ["none", "auto"]
         },
         "functions": {
           "type": "array"
@@ -3561,10 +3448,7 @@
         },
         "response_format.type": {
           "type": "string",
-          "enum": [
-            "json_object",
-            "json_schema"
-          ]
+          "enum": ["json_object", "json_schema"]
         },
         "response_format.json_schema": {},
         "raw": {
