@@ -163,6 +163,16 @@ export const useChatStore = defineStore("chat", () => {
     activeId.value = id;
   }
 
+  /**
+   * Add restored conversations (from a backup/import) to the list. They are
+   * copies with fresh ids, so they never overwrite or collide with existing
+   * state; the sync watcher picks them up like any other local change.
+   */
+  function importConversations(imported: Conversation[]): void {
+    if (imported.length === 0) return;
+    conversations.value = [...imported, ...conversations.value];
+  }
+
   function stopStreaming(): void {
     activeController?.abort();
     streaming.value = false;
@@ -549,6 +559,7 @@ export const useChatStore = defineStore("chat", () => {
     deleteConversation,
     renameConversation,
     switchConversation,
+    importConversations,
     stopStreaming,
     sendMessage,
     editAndResend,

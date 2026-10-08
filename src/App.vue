@@ -3,6 +3,8 @@ import AppSidebar from "@/components/AppSidebar.vue";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useChatStore } from "@/stores/chat";
 import { useSyncEngine } from "@/composables/sync";
+import { downloadFile, exportConversations } from "@/lib/conversation-backup";
+import { toastError } from "@/lib/toast";
 import { useTitle } from "@vueuse/core";
 import { computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
@@ -50,6 +52,17 @@ function handleDelete(id: string) {
 
 function handleRename(id: string, title: string) {
   chatStore.renameConversation(id, title);
+}
+
+/** Download the conversation as a llama.cpp-compatible JSONL history file. */
+function handleExport(id: string) {
+  const conv = chatStore.conversationById(id);
+  if (!conv) {
+    toastError(t("common.export"), t("chat.conversationNotFound"));
+    return;
+  }
+  const { filename, bytes } = exportConversations([conv]);
+  downloadFile(filename, bytes);
 }
 
 // -------------------------------------------------------------------------
@@ -113,6 +126,7 @@ watch(
       @new="handleNew"
       @delete="handleDelete"
       @rename="handleRename"
+      @export="handleExport"
     />
     <SidebarInset class="h-full min-w-0">
       <RouterView />

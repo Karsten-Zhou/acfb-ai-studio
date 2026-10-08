@@ -11,6 +11,7 @@ import {
   Image as ImageIcon,
   ChevronsUpDown,
   Settings,
+  Download,
 } from "@lucide/vue";
 import type { Conversation } from "@shared/chat";
 
@@ -82,6 +83,7 @@ const emit = defineEmits<{
   (e: "new"): void;
   (e: "delete", id: string): void;
   (e: "rename", id: string, title: string): void;
+  (e: "export", id: string): void;
 }>();
 
 const { t } = useI18n();
@@ -339,6 +341,11 @@ const deleteActionLabel = computed(() =>
                   >
                     <Pencil />
                     <span>{{ t("common.edit") }}</span>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem @click="emit('export', conv.id)">
+                    <Download />
+                    <span>{{ t("common.export") }}</span>
                   </DropdownMenuItem>
 
                   <DropdownMenuItem

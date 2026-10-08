@@ -112,7 +112,6 @@ bun run deploy
 - [ ] Max height for user messages in chat
 - [ ] Split the code for the sidebar
 - [ ] Custom OpenAI compatible endpoint support for chatting AIs
-- [ ] Llama cpp compatible conversation backup.
 - [ ] Optimise the remaining token calculation.
 
 ## My Other Projects

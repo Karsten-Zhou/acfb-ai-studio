@@ -3,6 +3,7 @@
 // group means adding a component here rather than another block of markup.
 import PreferencesSection from "@/components/settings/PreferencesSection.vue";
 import ChatSettingsSection from "@/components/settings/ChatSettingsSection.vue";
+import BackupSection from "@/components/settings/BackupSection.vue";
 import AboutSection from "@/components/settings/AboutSection.vue";
 </script>
 
@@ -10,6 +11,7 @@ import AboutSection from "@/components/settings/AboutSection.vue";
   <div class="space-y-6">
     <PreferencesSection />
     <ChatSettingsSection />
+    <BackupSection />
     <AboutSection />
   </div>
 </template>
