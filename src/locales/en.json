@@ -8,7 +8,6 @@
     "about": "About",
     "buildTime": "Build time",
     "cancel": "Cancel",
-    "continue": "Continue",
     "copied": "Copied",
     "copy": "Copy",
     "delete": "Delete",
@@ -52,14 +51,8 @@
     "copyMessage": "Copy message",
     "disclaimer": "Workers AI can make mistakes. Check important information.",
     "editMessage": "Edit message",
-    "effortHigh": "High",
-    "effortLow": "Low",
-    "effortMedium": "Medium",
-    "effortMinimal": "Minimal",
-    "effortOff": "Off",
     "emptyDescription": "Ask a question, paste some code or explore a topic.",
     "emptyTitle": "I'm powered by Workers AI",
-    "failedTitle": "Chat failed",
     "fixed": "Fixed",
     "generationFailed": "Generation failed",
     "hideReasoning": "Hide reasoning",
@@ -72,7 +65,19 @@
     "send": "Send",
     "showReasoning": "Show reasoning",
     "stopGenerating": "Stop generating",
-    "thinking": "Thinking"
+    "thinking": "Thinking",
+    "attachFile": "Add files",
+    "removeAttachment": "Remove file",
+    "attachmentFailed": "Failed to add files",
+    "reasoningLevel": {
+      "none": "Off",
+      "minimal": "Minimal",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "xhigh": "Extra high",
+      "max": "Max"
+    }
   },
   "draw": {
     "auto": "Auto",

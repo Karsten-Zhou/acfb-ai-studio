@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "generatedAt": "2026-09-11T09:17:20.273Z",
+  "version": 2,
+  "generatedAt": "2026-10-08T10:20:54.295Z",
   "models": [
     {
       "id": "41ca173f-72d5-4420-8915-49e835d2676e",
@@ -164,6 +164,66 @@
       "createdAt": "2024-02-27 17:41:29.578"
     },
     {
+      "id": "87f39d62-116c-4b26-b2cd-562a9ba01f2f",
+      "name": "@cf/cloudflare/clef",
+      "urlPath": "clef",
+      "provider": "cloudflare",
+      "task": "text-generation",
+      "description": "Clef is a 27B multimodal decision model that turns a state and a schema of typed questions into decisions. It reads the state as text, JSON, images, or video, and returns a probability for every allowed option of every question.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": true,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 65536,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.24,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://huggingface.co/Cloudflare/clef/blob/main/LICENSE",
+      "createdAt": "2026-09-29 14:05:24.552"
+    },
+    {
+      "id": "059de3ad-d350-4cb6-8b31-e4f34847d10a",
+      "name": "@cf/cloudflare/clef-flash",
+      "urlPath": "clef-flash",
+      "provider": "cloudflare",
+      "task": "text-generation",
+      "description": "Clef-flash is a fast 9B multimodal decision model that turns a state and a schema of typed questions into decisions. It reads the state as text, JSON, images, or video, and returns a probability for every allowed option of every question.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": true,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 65536,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.09,
+          "currency": "USD"
+        }
+      ],
+      "terms": "https://huggingface.co/Cloudflare/clef-flash/blob/main/LICENSE",
+      "createdAt": "2026-09-29 09:25:44.258"
+    },
+    {
       "id": "ad01ab83-baf8-4e7b-8fed-a0a219d4eb45",
       "name": "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b",
       "urlPath": "deepseek-r1-distill-qwen-32b",
@@ -217,7 +277,7 @@
         "realtime": false,
         "requireWorkersPaid": true
       },
-      "contextWindow": 1310720,
+      "contextWindow": 1048576,
       "pricing": [
         {
           "unit": "per M input tokens",
@@ -331,6 +391,11 @@
         {
           "unit": "per M output tokens",
           "price": 0.3,
+          "currency": "USD"
+        },
+        {
+          "unit": "per M cached input tokens",
+          "price": 0.05,
           "currency": "USD"
         }
       ],
@@ -1209,6 +1274,54 @@
       "createdAt": "2023-11-10 10:54:43.694"
     },
     {
+      "id": "56482a5b-020e-488d-9c56-11a3ed40719c",
+      "name": "@cf/swiss-ai/apertus-v1.5-8b",
+      "urlPath": "apertus-v1.5-8b",
+      "provider": "swiss-ai",
+      "task": "text-generation",
+      "description": "Apertus 1.5 is an 8B parameter language model designed to advance the state of multilingual, multimodal, fully open, and transparent AI. The models support a wide range of languages, handle contexts of up to 262,144 tokens, and it uses only fully open training data whilst delivering performance comparable to other models of similar size. For access, please fill out this form: https://forms.gle/kgvmkr6ucHN3xNuH6",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": false,
+        "vision": true,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 262144,
+      "pricing": null,
+      "terms": null,
+      "createdAt": "2026-09-30 14:20:40.668"
+    },
+    {
+      "id": "bf419b23-844f-4a2c-8111-89dbd63152eb",
+      "name": "@cf/utter-project/eurollm-9b-it",
+      "urlPath": "eurollm-9b-it",
+      "provider": "utter-project",
+      "task": "text-generation",
+      "description": "EuroLLM-9B is a 9B parameter model trained on 4 trillion tokens divided across the considered languages and several data sources: Web data, parallel data (en-xx and xx-en), and high-quality datasets. For access, please fill out this form: https://forms.gle/kgvmkr6ucHN3xNuH6",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": true,
+        "reasoning": false,
+        "vision": false,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 32000,
+      "pricing": null,
+      "terms": null,
+      "createdAt": "2026-09-30 14:09:31.518"
+    },
+    {
       "id": "86b3e51a-4b05-43fa-a403-0f27821919d2",
       "name": "@cf/zai-org/glm-4.7-flash",
       "urlPath": "glm-4.7-flash",
@@ -1302,7 +1415,7 @@
         "realtime": false,
         "requireWorkersPaid": true
       },
-      "contextWindow": 1310720,
+      "contextWindow": 1048576,
       "pricing": [
         {
           "unit": "per M input tokens",
@@ -1342,7 +1455,7 @@
         "realtime": false,
         "requireWorkersPaid": true
       },
-      "contextWindow": 1310720,
+      "contextWindow": 1048576,
       "pricing": [
         {
           "unit": "per M input tokens",

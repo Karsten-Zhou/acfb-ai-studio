@@ -106,3 +106,13 @@ export const FREE_TEXT_GENERATION_MODEL_LABELS: Record<string, string> = {
   // Zhipu AI / GLM
   "@cf/zai-org/glm-4.7-flash": "GLM 4.7 Flash",
 } as const;
+
+/**
+ * User-facing name for a model: the curated label when one exists, else the
+ * model id with the `@cf/` vendor prefix stripped. New models added to the
+ * catalogue upstream therefore render as a readable code name instead of a
+ * blank entry, without anyone having to update this map first.
+ */
+export function modelLabel(name: string): string {
+  return FREE_TEXT_GENERATION_MODEL_LABELS[name] ?? name.replace(/^@cf\//, "");
+}

@@ -12,17 +12,17 @@
  * so the script can never emit something the runtime will reject.
  *
  * The introspection work (walking each model's JSON Schema to extract
- * accepted parameters, bounds, defaults, output format) happens here, once
- * per sync. At runtime, consumers read the precomputed traits.json — no
- * schema compilation, no library dependency, no cold-start cost.
+ * accepted parameters, bounds, defaults, output format, and multimodal input
+ * support) happens here, once per sync. At runtime, consumers read the
+ * precomputed traits.json — no schema compilation, no library dependency, no
+ * cold-start cost.
  *
  * Environment variables:
  *   MY_CF_ACCOUNT_ID  (required)
  *   MY_CF_API_TOKEN   (required, needs AI read permission)
  *
  * Usage:
- *   bun run ./scripts/sync-cloudflare-models.ts
- *   pnpm sync:models
+ *   bun run sync-cloudflare-models
  */
 import { writeFile, readFile, mkdir } from "node:fs/promises";
 import path from "node:path";
@@ -38,6 +38,11 @@ import {
   type ParamInfo,
   type TraitsFile,
 } from "../shared/generated/schema";
+import {
+  detectModelInput,
+  resolveRef,
+  type JsonSchema,
+} from "./model-input-introspect";
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -157,12 +162,29 @@ async function fetchSchemaDoc(
     `https://developers.cloudflare.com/workers-ai/models/` +
     `${urlPath}/${fileName}`;
 
+  // A 404 means the model genuinely has no such schema document (e.g. a
+  // prompt-input model with no `schema-input.json`), which is a legitimate
+  // "absent" and returns null quietly. Every *other* failure — a 5xx, a
+  // network error, malformed JSON — would silently corrupt the catalogue if
+  // treated the same way, so those are raised and abort the sync instead.
+  let res: Response;
   try {
-    const res = await fetch(url);
-    if (!res.ok) return null;
+    res = await fetch(url);
+  } catch (err) {
+    throw new Error(`[sync-models] network error fetching ${url}`, {
+      cause: err,
+    });
+  }
+  if (res.status === 404) return null;
+  if (!res.ok) {
+    throw new Error(
+      `[sync-models] HTTP ${res.status} fetching ${url}: ${await res.text()}`,
+    );
+  }
+  try {
     return (await res.json()) as unknown;
-  } catch {
-    return null;
+  } catch (err) {
+    throw new Error(`[sync-models] invalid JSON at ${url}`, { cause: err });
   }
 }
 
@@ -237,39 +259,37 @@ function normalize(raw: CloudflareModel): ModelInfo | null {
 // runtime, consumers read the precomputed traits.json — no library needed.
 // ---------------------------------------------------------------------------
 
-interface JsonSchema {
-  type?: string;
-  properties?: Record<string, JsonSchema>;
-  items?: JsonSchema;
-  oneOf?: JsonSchema[];
-  anyOf?: JsonSchema[];
-  allOf?: JsonSchema[];
-  $ref?: string;
-  definitions?: Record<string, JsonSchema>;
-  $defs?: Record<string, JsonSchema>;
-  minimum?: number;
-  maximum?: number;
-  default?: unknown;
-  enum?: unknown[];
-}
-
-/** Resolve a local `$ref` like "#/definitions/foo" or "#/$defs/foo". */
-function resolveRef(ref: string, root: JsonSchema): JsonSchema | null {
-  if (!ref.startsWith("#/")) return null;
-
-  let cur: unknown = root;
-  for (const seg of ref.slice(2).split("/")) {
-    if (cur == null || typeof cur !== "object") return null;
-    cur = (cur as Record<string, unknown>)[seg];
-  }
-  return (cur as JsonSchema | undefined) ?? null;
-}
-
 /**
  * Walk a schema and record every property as a dotted path. Recurses into
  * nested objects and fans out across oneOf/anyOf/allOf so that a parameter
  * declared in any variant is captured.
  */
+/**
+ * Read a scalar `type` from a property. Cloudflare frequently wraps it in an
+ * `anyOf`/`oneOf` alongside `null` (e.g. `reasoning_effort` is
+ * `{ anyOf: [{type:"string", enum:[...]}, {type:"null"}] }`), so the property's
+ * own `type` is absent and must be found in its variants.
+ */
+function scalarType(schema: JsonSchema): string | undefined {
+  if (typeof schema.type === "string") return schema.type;
+  for (const v of schema.anyOf ?? schema.oneOf ?? []) {
+    if (typeof v.type === "string") return v.type;
+  }
+  return undefined;
+}
+
+/**
+ * Read a scalar `enum` from a property or its direct variants. This is how the
+ * supported `reasoning_effort` levels are captured: they are declared on an
+ * `anyOf` member, not on the property itself.
+ */
+function scalarEnum(schema: JsonSchema): unknown[] | undefined {
+  if (Array.isArray(schema.enum)) return schema.enum;
+  for (const v of schema.anyOf ?? schema.oneOf ?? []) {
+    if (Array.isArray(v.enum)) return v.enum;
+  }
+  return undefined;
+}
 function walkParams(
   schema: JsonSchema,
   prefix: string,
@@ -297,15 +317,18 @@ function walkParams(
 
     // Record the property itself. Merge with any prior entry so that a
     // property declared in multiple oneOf variants keeps all its metadata.
+
     const prev = out[path] ?? {};
     const info: ParamInfo = { ...prev };
-    if (typeof sub.type === "string") info.type = sub.type;
+    const type = scalarType(sub);
+    if (type) info.type = type;
     if (typeof sub.minimum === "number") info.min = sub.minimum;
     if (typeof sub.maximum === "number") info.max = sub.maximum;
     if (sub.default !== undefined) info.default = sub.default;
-    if (Array.isArray(sub.enum)) info.enum = sub.enum;
+    const enumValues = scalarEnum(sub);
+    if (enumValues) info.enum = enumValues;
+    if (typeof sub.description === "string") info.description = sub.description;
     out[path] = info;
-
     // Recurse into nested objects so that e.g. `chat_template_kwargs` also
     // produces `chat_template_kwargs.enable_thinking`.
     if (sub.properties || sub.$ref) {
@@ -381,16 +404,23 @@ async function main(): Promise<void> {
         fetchSchemaDoc(m.urlPath, outFile),
       ]);
 
+      if (!input) {
+        // A text-generation model that documents neither a streaming- nor a
+        // schema-input document is unexpected; surface it.
+        console.warn(`[sync-models] no input schema for ${m.name} (${inFile})`);
+      }
       const params: Record<string, ParamInfo> = {};
-      if (input && typeof input === "object") {
-        const root = input as JsonSchema;
-        walkParams(root, "", params, root);
+      const inputSchema =
+        input && typeof input === "object" ? (input as JsonSchema) : null;
+      if (inputSchema) {
+        walkParams(inputSchema, "", params, inputSchema);
       }
 
       traits[m.name] = {
         params,
         output: computeOutputFormat(output),
         multipart: "multipart" in params,
+        input: detectModelInput(inputSchema),
       };
     }),
   );
@@ -399,9 +429,11 @@ async function main(): Promise<void> {
     (sum, t) => sum + Object.keys(t.params).length,
     0,
   );
+  const multimodal = Object.values(traits).filter((t) => t.input.image).length;
   console.log(
     `[sync-models] traits computed: ${totalParams} parameter entries ` +
-      `across ${Object.keys(traits).length} models`,
+      `across ${Object.keys(traits).length} models, ` +
+      `${multimodal} with image input`,
   );
 
   const generatedAt = new Date().toISOString();

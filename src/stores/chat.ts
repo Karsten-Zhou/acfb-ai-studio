@@ -26,6 +26,7 @@ import {
   pathTo,
 } from "@/lib/conversation-tree";
 import type {
+  Attachment,
   ChatMessage,
   Conversation,
   GenerationParams,
@@ -175,6 +176,7 @@ export const useChatStore = defineStore("chat", () => {
     role: ChatMessage["role"],
     content: string,
     parentId: string | null,
+    attachments?: Attachment[],
   ): ChatMessage {
     return {
       id: crypto.randomUUID(),
@@ -182,6 +184,7 @@ export const useChatStore = defineStore("chat", () => {
       role,
       content,
       createdAt: Date.now(),
+      ...(attachments && attachments.length > 0 ? { attachments } : {}),
     };
   }
 
@@ -315,16 +318,25 @@ export const useChatStore = defineStore("chat", () => {
   ): WireChatMessage[] {
     const out: WireChatMessage[] = [];
     for (const m of pathTo(conv, upTo)) {
-      if (!m.content || m.error) continue;
+      // A turn with neither text nor attachments carries nothing; a failed
+      // turn is dropped entirely.
+      if (m.error) continue;
+      const hasAttachments = (m.attachments?.length ?? 0) > 0;
+      if (!m.content && !hasAttachments) continue;
+
       const last = out[out.length - 1];
       if (last && last.role === m.role) {
-        last.content += `\n\n${m.content}`;
+        last.content += m.content ? `\n\n${m.content}` : "";
+        if (hasAttachments) {
+          last.attachments = [...(last.attachments ?? []), ...m.attachments!];
+        }
         continue;
       }
       out.push({
         role: m.role,
         content: m.content,
         ...(m.reasoning ? { reasoning: m.reasoning } : {}),
+        ...(hasAttachments ? { attachments: m.attachments } : {}),
       });
     }
     return out;
@@ -363,11 +375,14 @@ export const useChatStore = defineStore("chat", () => {
   }
 
   /** Send from the composer: continues the active branch or starts a new one. */
-  async function sendMessage(content: string): Promise<void> {
+  async function sendMessage(
+    content: string,
+    attachments?: Attachment[],
+  ): Promise<void> {
     if (streaming.value) return;
     const conv = activeConversation() ?? createConversation();
 
-    const userMsg = createNode("user", content, conv.leafId);
+    const userMsg = createNode("user", content, conv.leafId, attachments);
     const parent = nodeById(conv, conv.leafId);
     if (parent) parent.activeChildId = userMsg.id;
     conv.messages.push(userMsg);
@@ -379,8 +394,9 @@ export const useChatStore = defineStore("chat", () => {
       conv.titleSource = "fallback";
       // Naming a conversation does not depend on the reply, so the title is
       // requested alongside the stream rather than after it — unless the user
-      // disabled automatic title generation in the settings.
-      if (defaultOptions.autoTitle !== false) {
+      // disabled automatic title generation in the settings. Attachments alone
+      // (no text) give the title generator nothing to work with.
+      if (defaultOptions.autoTitle !== false && content) {
         void applyGeneratedTitle(conv.id, content);
       }
     }
@@ -392,6 +408,9 @@ export const useChatStore = defineStore("chat", () => {
    * Edit the user message `messageId`: create a sibling variant with the new
    * content and generate a fresh reply under it. The original branch (and its
    * whole subtree) is preserved and stays reachable via sibling navigation.
+   *
+   * Attachments carry over to the edited variant, since editing is for the
+   * text prompt; removing or adding media is done by sending a new message.
    */
   async function editAndResend(
     conversationId: string,
@@ -406,7 +425,12 @@ export const useChatStore = defineStore("chat", () => {
     const trimmed = content.trim();
     if (!trimmed) return;
 
-    const sibling = createNode("user", trimmed, original.parentId);
+    const sibling = createNode(
+      "user",
+      trimmed,
+      original.parentId,
+      original.attachments,
+    );
     conv.messages.push(sibling);
     const parent = nodeById(conv, original.parentId);
     if (parent) parent.activeChildId = sibling.id;

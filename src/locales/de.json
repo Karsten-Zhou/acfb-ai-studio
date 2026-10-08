@@ -8,7 +8,6 @@
     "about": "Über",
     "buildTime": "Build-Zeit",
     "cancel": "Abbrechen",
-    "continue": "Weiter",
     "copied": "Kopiert",
     "copy": "Kopieren",
     "delete": "Löschen",
@@ -52,14 +51,8 @@
     "copyMessage": "Nachricht kopieren",
     "disclaimer": "Workers AI kann Fehler machen. Prüfe wichtige Informationen.",
     "editMessage": "Nachricht bearbeiten",
-    "effortHigh": "Hoch",
-    "effortLow": "Niedrig",
-    "effortMedium": "Mittel",
-    "effortMinimal": "Minimal",
-    "effortOff": "Aus",
     "emptyDescription": "Stelle eine Frage, füge Code ein oder erkunde ein Thema.",
     "emptyTitle": "Mit Workers AI chatten",
-    "failedTitle": "Chat fehlgeschlagen",
     "fixed": "Fest",
     "generationFailed": "Generierung fehlgeschlagen",
     "hideReasoning": "Überlegungen ausblenden",
@@ -72,7 +65,19 @@
     "send": "Senden",
     "showReasoning": "Überlegungen einblenden",
     "stopGenerating": "Generierung stoppen",
-    "thinking": "Denkt nach"
+    "thinking": "Denkt nach",
+    "attachFile": "Dateien hinzufügen",
+    "removeAttachment": "Datei entfernen",
+    "attachmentFailed": "Dateien konnten nicht hinzugefügt werden",
+    "reasoningLevel": {
+      "none": "Aus",
+      "minimal": "Minimal",
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch",
+      "xhigh": "Sehr hoch",
+      "max": "Maximal"
+    }
   },
   "draw": {
     "auto": "Automatisch",

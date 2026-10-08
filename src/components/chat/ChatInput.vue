@@ -1,10 +1,20 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { ArrowUp, Square, ChevronsUpDown, Brain } from "@lucide/vue";
+import { ArrowUp, Square, ChevronsUpDown, Brain, Paperclip } from "@lucide/vue";
 import type { FreeTextModel } from "@shared/generated/models";
-import type { GenerationParams, ReasoningEffort } from "@shared/chat";
-import { acceptsParam } from "@shared/generated/traits";
+import type {
+  Attachment,
+  GenerationParams,
+  ReasoningEffort,
+} from "@shared/chat";
+import { normalizeReasoningEffort } from "@shared/reasoning";
+import {
+  getReasoningOptions,
+  supportsImageInput,
+} from "@shared/generated/traits";
+import { IMAGE_ACCEPT_ATTRIBUTE } from "@shared/attachments";
+import { modelLabel } from "@shared/catalog-types";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -14,7 +24,9 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { FREE_TEXT_GENERATION_MODEL_LABELS } from "@shared/catalog-types";
+import { readAttachments } from "@/composables/use-attachments";
+import { toastError } from "@/lib/toast";
+import AttachmentList from "./AttachmentList.vue";
 
 const props = defineProps<{
   streaming: boolean;
@@ -31,8 +43,13 @@ const selectedModel = computed(() =>
   props.models.find((m) => m.name === props.model),
 );
 
+/** Whether the selected model documents image input. */
+const canAttach = computed(() =>
+  props.model ? supportsImageInput(props.model) : false,
+);
+
 const emit = defineEmits<{
-  (e: "send", content: string): void;
+  (e: "send", content: string, attachments: Attachment[]): void;
   (e: "stop"): void;
   (e: "update:model", id: string): void;
   (e: "update:params", params: GenerationParams): void;
@@ -40,19 +57,20 @@ const emit = defineEmits<{
 }>();
 
 const draft = ref("");
+const attachments = ref<Attachment[]>([]);
+const fileInput = ref<HTMLInputElement | null>(null);
 
-const currentModel = computed(() => {
-  const found = props.models.find((m) => m.name === props.model);
-  return found
-    ? FREE_TEXT_GENERATION_MODEL_LABELS[found.name]
-    : props.model || t("chat.chooseModel");
-});
+const currentModel = computed(() =>
+  props.model ? modelLabel(props.model) : t("chat.chooseModel"),
+);
 
 function submit() {
   const text = draft.value.trim();
-  if (!text || props.streaming) return;
-  emit("send", text);
+  const files = attachments.value;
+  if ((!text && files.length === 0) || props.streaming) return;
+  emit("send", text, files);
   draft.value = "";
+  attachments.value = [];
 }
 
 function onKeydown(e: KeyboardEvent) {
@@ -62,14 +80,98 @@ function onKeydown(e: KeyboardEvent) {
   }
 }
 
-// reasoning efforts
-const efforts = computed<{ value: ReasoningEffort; label: string }[]>(() => [
-  { value: "off", label: t("chat.effortOff") },
-  { value: "minimal", label: t("chat.effortMinimal") },
-  { value: "low", label: t("chat.effortLow") },
-  { value: "medium", label: t("chat.effortMedium") },
-  { value: "high", label: t("chat.effortHigh") },
-]);
+function openPicker() {
+  fileInput.value?.click();
+}
+
+async function onFilesChosen(e: Event) {
+  const input = e.target as HTMLInputElement;
+  const files = Array.from(input.files ?? []);
+  input.value = "";
+  if (files.length === 0) return;
+
+  const { attachments: added, errors } = await readAttachments(
+    files,
+    attachments.value.length,
+  );
+  if (added.length > 0) attachments.value = [...attachments.value, ...added];
+  for (const error of errors) {
+    toastError(
+      t("chat.attachmentFailed"),
+      `${error.fileName}: ${error.message}`,
+    );
+  }
+}
+
+function removeAttachment(id: string) {
+  attachments.value = attachments.value.filter((a) => a.id !== id);
+}
+
+// ---------------------------------------------------------------------------
+// Reasoning controls
+//
+// The offered levels come from the model's own schema (see
+// shared/reasoning.ts): a graded `reasoning_effort` enum, a binary chat-template
+// toggle, both, or neither. Nothing is hardcoded here.
+// ---------------------------------------------------------------------------
+
+/** Levels the selected model offers, ascending; empty when not adjustable. */
+const reasoningOptions = computed<ReasoningEffort[]>(() =>
+  props.model ? getReasoningOptions(props.model) : [],
+);
+
+const canAdjustReasoning = computed(() => reasoningOptions.value.length > 0);
+
+/** The stored effort snapped to a level this model actually offers. */
+const selectedEffort = computed<ReasoningEffort | undefined>(() =>
+  normalizeReasoningEffort(props.reasoningEffort, reasoningOptions.value),
+);
+
+/**
+ * One literal `t()` call per level so i18n tooling can see every message is
+ * used. Covers the full canonical scale; `getReasoningOptions` only ever
+ * yields a subset of these.
+ */
+const EFFORT_LABELS: Record<ReasoningEffort, () => string> = {
+  none: () => t("chat.reasoningLevel.none"),
+  minimal: () => t("chat.reasoningLevel.minimal"),
+  low: () => t("chat.reasoningLevel.low"),
+  medium: () => t("chat.reasoningLevel.medium"),
+  high: () => t("chat.reasoningLevel.high"),
+  xhigh: () => t("chat.reasoningLevel.xhigh"),
+  max: () => t("chat.reasoningLevel.max"),
+};
+const effortLabel = (effort: ReasoningEffort): string =>
+  EFFORT_LABELS[effort]();
+/**
+ * When the model changes, its offered levels change with it. Snap the stored
+ * default to the nearest offered level so the control reflects what will
+ * actually be sent (the server snaps identically). Skipped while there is no
+ * model, to avoid clobbering the persisted default during init.
+ */
+watch(
+  [() => props.model, reasoningOptions],
+  () => {
+    const snapped = selectedEffort.value;
+    if (props.model && snapped && snapped !== props.reasoningEffort) {
+      emit("update:reasoningEffort", snapped);
+    }
+  },
+  { immediate: true },
+);
+
+const reasoningLabel = computed(() => {
+  if (!canAdjustReasoning.value) {
+    // No knob: a reasoning-capable model that always reasons reads "Fixed";
+    // anything else has no reasoning to speak of.
+    return selectedModel.value?.capabilities.reasoning
+      ? t("chat.fixed")
+      : t("chat.reasoningLevel.none");
+  }
+  return selectedEffort.value
+    ? effortLabel(selectedEffort.value)
+    : t("chat.reasoning");
+});
 </script>
 
 <template>
@@ -77,6 +179,13 @@ const efforts = computed<{ value: ReasoningEffort; label: string }[]>(() => [
     <div
       class="mx-auto flex w-full max-w-3xl flex-col gap-1.5 rounded-xl border border-input bg-card p-2 shadow-xs focus-within:ring-2 focus-within:ring-ring/50"
     >
+      <AttachmentList
+        v-if="attachments.length"
+        :attachments="attachments"
+        class="px-1 pt-1"
+        @remove="removeAttachment"
+      />
+
       <Textarea
         v-model="draft"
         :rows="1"
@@ -106,7 +215,7 @@ const efforts = computed<{ value: ReasoningEffort; label: string }[]>(() => [
                 :value="m.name"
               >
                 <span class="min-w-0 flex-1 truncate">
-                  {{ FREE_TEXT_GENERATION_MODEL_LABELS[m.name] }}
+                  {{ modelLabel(m.name) }}
                 </span>
                 <Brain v-if="m.capabilities.reasoning" />
               </DropdownMenuRadioItem>
@@ -117,28 +226,13 @@ const efforts = computed<{ value: ReasoningEffort; label: string }[]>(() => [
         <!-- Reasoning settings -->
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
-            <Button
-              variant="ghost"
-              size="sm"
-              :disabled="
-                !selectedModel?.capabilities.reasoning ||
-                !acceptsParam(model, 'reasoning_effort')
-              "
-            >
+            <Button variant="ghost" size="sm" :disabled="!canAdjustReasoning">
               <Brain />
-              <template v-if="!selectedModel?.capabilities.reasoning">
-                {{ t("chat.effortOff") }}
-              </template>
-              <template v-else-if="!acceptsParam(model, 'reasoning_effort')">
-                {{ t("chat.fixed") }}
-              </template>
-              <template v-else>
-                {{
-                  efforts.find((e) => e.value === reasoningEffort)?.label ??
-                  t("chat.reasoning")
-                }}
-              </template>
-              <ChevronsUpDown class="text-muted-foreground" />
+              {{ reasoningLabel }}
+              <ChevronsUpDown
+                v-if="canAdjustReasoning"
+                class="text-muted-foreground"
+              />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -146,21 +240,42 @@ const efforts = computed<{ value: ReasoningEffort; label: string }[]>(() => [
             class="max-h-72 max-w-52 overflow-y-auto"
           >
             <DropdownMenuRadioGroup
-              :model-value="reasoningEffort"
+              :model-value="selectedEffort"
               @update:model-value="
                 (v) => emit('update:reasoningEffort', v as ReasoningEffort)
               "
             >
               <DropdownMenuRadioItem
-                v-for="e in efforts"
-                :key="e.value"
-                :value="e.value"
+                v-for="e in reasoningOptions"
+                :key="e"
+                :value="e"
               >
-                {{ e.label }}
+                {{ effortLabel(e) }}
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <!-- Attachment picker: only shown when the model documents image input -->
+        <Button
+          v-if="canAttach"
+          variant="ghost"
+          size="icon-sm"
+          :disabled="streaming"
+          :aria-label="t('chat.attachFile')"
+          :title="t('chat.attachFile')"
+          @click="openPicker"
+        >
+          <Paperclip class="size-4" />
+        </Button>
+        <input
+          ref="fileInput"
+          type="file"
+          class="hidden"
+          multiple
+          :accept="IMAGE_ACCEPT_ATTRIBUTE"
+          @change="onFilesChosen"
+        />
 
         <div class="flex-1" />
 
@@ -177,7 +292,7 @@ const efforts = computed<{ value: ReasoningEffort; label: string }[]>(() => [
         <Button
           v-else
           size="icon-sm"
-          :disabled="!draft.trim()"
+          :disabled="!draft.trim() && attachments.length === 0"
           class="rounded-full"
           @click="submit"
         >

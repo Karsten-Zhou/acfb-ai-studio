@@ -38,7 +38,7 @@ export function resolveBrowserLocale(): Locale {
 }
 
 // Recursive dotted-path type over the (nested) en locale: yields keys like
-// "common.settings" or "chat.effort.high".
+// "common.settings" or "chat.reasoningLevel.high".
 type Paths<T, P extends string = ""> = {
   [K in keyof T]: T[K] extends string
     ? P extends ""

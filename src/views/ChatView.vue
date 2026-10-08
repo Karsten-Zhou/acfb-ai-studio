@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { Sparkles } from "@lucide/vue";
-import type { ChatMessage as ChatMessageType } from "@shared/chat";
+import type { Attachment, ChatMessage as ChatMessageType } from "@shared/chat";
 import { useChatStore } from "@/stores/chat";
 import { activeThread, childrenOf } from "@/lib/conversation-tree";
 import { FREE_TEXT_GENERATION_MODELS } from "@shared/generated/models";
@@ -58,8 +58,8 @@ const thread = computed(() => {
 
 const lastIndex = computed(() => thread.value.length - 1);
 
-async function handleSend(content: string) {
-  await chatStore.sendMessage(content);
+async function handleSend(content: string, attachments: Attachment[]) {
+  await chatStore.sendMessage(content, attachments);
 }
 
 function handleStop() {

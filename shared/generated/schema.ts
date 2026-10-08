@@ -7,7 +7,7 @@
 import { z } from "zod";
 
 /** Bump when the shape of models.json / traits.json changes. */
-export const GENERATED_DATA_VERSION = 1;
+export const GENERATED_DATA_VERSION = 2;
 
 // ---------------------------------------------------------------------------
 // models.json
@@ -74,11 +74,27 @@ export const ParamInfoSchema = z.object({
 
 export const OutputFormatSchema = z.enum(["json", "image/png", "image/jpeg"]);
 
+/**
+ * Input shape and image support, derived from the model's input schema at sync
+ * time (see scripts/model-input-introspect.ts). Consumers never hard-code which
+ * models take images; they read this flag.
+ *
+ * Audio and video are not modelled: Cloudflare exposes no such input capability
+ * anywhere and the schema content parts are shared vocabulary, so offering them
+ * fails at inference. See the introspect module.
+ */
+export const ModelInputSchema = z.object({
+  /** The schema documents the OpenAI-style `messages` chat shape. */
+  messages: z.boolean(),
+  /** The model documents image input (content part or legacy `image`). */
+  image: z.boolean(),
+});
 export const ModelTraitsSchema = z.object({
   /** Flattened dotted paths of every property the input schema declares. */
   params: z.record(z.string(), ParamInfoSchema),
   output: OutputFormatSchema,
   multipart: z.boolean(),
+  input: ModelInputSchema,
 });
 
 export const TraitsFileSchema = z.object({
@@ -99,5 +115,6 @@ export type ModelsFile = z.infer<typeof ModelsFileSchema>;
 
 export type ParamInfo = z.infer<typeof ParamInfoSchema>;
 export type OutputFormat = z.infer<typeof OutputFormatSchema>;
+export type ModelInput = z.infer<typeof ModelInputSchema>;
 export type ModelTraits = z.infer<typeof ModelTraitsSchema>;
 export type TraitsFile = z.infer<typeof TraitsFileSchema>;

@@ -31,6 +31,7 @@ import { AlertCircleIcon } from "@lucide/vue";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { formatNumber } from "@/lib/i18n";
 import MarkdownContent from "./MarkdownContent.vue";
+import AttachmentList from "./AttachmentList.vue";
 
 const props = defineProps<{
   message: ChatMessage;
@@ -83,6 +84,9 @@ function startEdit() {
 
 function sendEdit() {
   const content = draft.value.trim();
+  // A message that was sent with attachments only (no text) can be re-edited
+  // to have text, but the text itself is still required by the input, so an
+  // empty edit is rejected.
   if (!content || props.streaming) return;
   editing.value = false;
   emit("edit", props.message.id, content);
@@ -144,75 +148,87 @@ async function copy() {
             </div>
           </template>
 
-          <p v-else-if="message.role === 'user'" class="whitespace-pre-wrap">
-            {{ message.content }}
-          </p>
-
           <template v-else>
-            <Collapsible
-              v-if="message.reasoning"
-              v-model:open="reasoningOpen"
-              class="mb-3"
+            <AttachmentList
+              v-if="message.role === 'user' && message.attachments?.length"
+              :attachments="message.attachments"
+              readonly
+              class="mb-2"
+            />
+
+            <p
+              v-if="message.role === 'user' && message.content"
+              class="whitespace-pre-wrap"
             >
-              <CollapsibleTrigger as-child>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  class="text-muted-foreground"
-                  :aria-label="
-                    reasoningOpen
-                      ? t('chat.hideReasoning')
-                      : t('chat.showReasoning')
-                  "
-                >
-                  <Brain />
-                  <span>{{ t("chat.reasoning") }}</span>
-                  <ChevronRight
-                    class="transition-transform"
-                    :class="{ 'rotate-90': reasoningOpen }"
+              {{ message.content }}
+            </p>
+
+            <template v-else-if="message.role === 'assistant'">
+              <Collapsible
+                v-if="message.reasoning"
+                v-model:open="reasoningOpen"
+                class="mb-3"
+              >
+                <CollapsibleTrigger as-child>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    class="text-muted-foreground"
+                    :aria-label="
+                      reasoningOpen
+                        ? t('chat.hideReasoning')
+                        : t('chat.showReasoning')
+                    "
+                  >
+                    <Brain />
+                    <span>{{ t("chat.reasoning") }}</span>
+                    <ChevronRight
+                      class="transition-transform"
+                      :class="{ 'rotate-90': reasoningOpen }"
+                    />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent class="rounded-md border p-4 my-2">
+                  <MarkdownContent
+                    :source="message.reasoning ?? ''"
+                    class="prose prose-sm max-w-none dark:prose-invert"
                   />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent class="rounded-md border p-4 my-2">
-                <MarkdownContent
-                  :source="message.reasoning ?? ''"
-                  class="prose prose-sm max-w-none dark:prose-invert"
-                />
-              </CollapsibleContent>
-            </Collapsible>
+                </CollapsibleContent>
+              </Collapsible>
 
-            <Alert
-              v-if="message.error && !message.content"
-              variant="destructive"
-            >
-              <AlertCircleIcon />
-              <AlertTitle>{{ t("chat.generationFailed") }}</AlertTitle>
-              <AlertDescription class="line-clamp-4">
-                {{ message.error }}
-              </AlertDescription>
-            </Alert>
+              <Alert
+                v-if="message.error && !message.content"
+                variant="destructive"
+              >
+                <AlertCircleIcon />
+                <AlertTitle>{{ t("chat.generationFailed") }}</AlertTitle>
+                <AlertDescription class="line-clamp-4">
+                  {{ message.error }}
+                </AlertDescription>
+              </Alert>
 
-            <Marker
-              v-if="isLast && streaming && !message.content"
-              role="status"
-            >
-              <MarkerIcon>
-                <Spinner />
-              </MarkerIcon>
-              <MarkerContent class="shimmer">
-                {{ t("chat.thinking") }}
-              </MarkerContent>
-            </Marker>
+              <Marker
+                v-if="isLast && streaming && !message.content"
+                role="status"
+              >
+                <MarkerIcon>
+                  <Spinner />
+                </MarkerIcon>
+                <MarkerContent class="shimmer">
+                  {{ t("chat.thinking") }}
+                </MarkerContent>
+              </Marker>
 
-            <MarkdownContent
-              v-if="message.content"
-              :source="message.content"
-              class="prose max-w-none dark:prose-invert"
-            />
-            <span
-              v-if="isLast && streaming && message.content"
-              class="inline-block h-4 w-0.5 animate-pulse bg-current align-middle"
-            />
+              <MarkdownContent
+                v-if="message.content"
+                :source="message.content"
+                class="prose max-w-none dark:prose-invert"
+              />
+              <span
+                v-if="isLast && streaming && message.content"
+                class="inline-block h-4 w-0.5 animate-pulse bg-current align-middle"
+              />
+            </template>
           </template>
         </BubbleContent>
       </Bubble>

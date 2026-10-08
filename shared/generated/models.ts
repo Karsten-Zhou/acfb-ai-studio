@@ -44,16 +44,37 @@ function isFreeImageModel(m: ModelInfo): m is FreeImageModel {
   );
 }
 
+/** ======================================================
+ * Special exclusion
+ * ======================================================
+ * Models the upstream catalogue lists but that must not reach the UI. Applied
+ * once, here, so every list below (text, image, and the lookup maps) shares it.
+ *
+ * TODO: Check the list periodically to see if upstream data or policy has
+ * changed.
+ */
+
+const EXCLUDED_MODEL_NAMES: ReadonlySet<string> = new Set([
+  "@cf/cloudflare/clef", // not a text-generation model, mislabeled upstream
+  "@cf/cloudflare/clef-flash", // not a text-generation model, mislabeled upstream
+  "@cf/swiss-ai/apertus-v1.5-8b", // not universally available currently
+  "@cf/utter-project/eurollm-9b-it", // not universally available currently
+]);
+
+const ROUGHLY_FILTERED_MODELS: readonly ModelInfo[] = MODELS.filter(
+  (m) => !EXCLUDED_MODEL_NAMES.has(m.name),
+);
+
 /** Free tier available models. */
-export const FREE_MODELS: readonly ModelInfo[] = MODELS.filter(
+export const FREE_MODELS: readonly ModelInfo[] = ROUGHLY_FILTERED_MODELS.filter(
   (m) => m.capabilities.requireWorkersPaid === false,
 );
 
 export const FREE_TEXT_GENERATION_MODELS: readonly FreeTextModel[] =
-  MODELS.filter(isFreeTextModel);
+  ROUGHLY_FILTERED_MODELS.filter(isFreeTextModel);
 
 export const FREE_TEXT_TO_IMAGE_MODELS: readonly FreeImageModel[] =
-  MODELS.filter(isFreeImageModel);
+  ROUGHLY_FILTERED_MODELS.filter(isFreeImageModel);
 
 export const FREE_MODEL_BY_NAME: ReadonlyMap<string, ModelInfo> = new Map(
   FREE_MODELS.map((m) => [m.name, m]),

@@ -4,15 +4,36 @@
 
 import z from "zod";
 
-/** Matches the Workers AI definition; `off` disables thinking entirely. */
-export const reasoningEffortSchema = z.enum([
-  "off",
+/**
+ * Canonical reasoning-depth scale, ordered lowest → highest.
+ *
+ * This is the app's vocabulary, not any single model's. Cloudflare declares a
+ * model-specific subset as an enum (`low/medium/xhigh`, `max/high/low`, ...),
+ * so the levels offered for a model come from its schema
+ * (`getReasoningOptions`), and a stored value is snapped to the nearest offered
+ * level (`normalizeReasoningEffort`).
+ *
+ * `none` means "do not reason". It is a real member of the scale, not a
+ * separate flag, so a single code path maps any level onto the model's wire
+ * params: `none` drives a chat-template toggle off and/or a
+ * `reasoning_effort: "none"`, whichever the model declares.
+ */
+const REASONING_EFFORT_VALUES = [
+  "none",
   "minimal",
   "low",
   "medium",
   "high",
-]);
+  "xhigh",
+  "max",
+] as const;
+
+export const reasoningEffortSchema = z.enum(REASONING_EFFORT_VALUES);
 export type ReasoningEffort = z.infer<typeof reasoningEffortSchema>;
+
+/** The scale as a plain array, for ordinal comparisons. */
+export const REASONING_EFFORTS: readonly ReasoningEffort[] =
+  REASONING_EFFORT_VALUES;
 
 /** Generation knobs adjustable per-request from the UI. */
 export const generationParamsSchema = z.object({
@@ -23,14 +44,33 @@ export const generationParamsSchema = z.object({
 export type GenerationParams = z.infer<typeof generationParamsSchema>;
 
 /**
+ * An image the user attached to a message. Held inline as a base64 data URL so
+ * it survives localStorage and sync unchanged; `mimeType` is stored alongside
+ * for display and validation.
+ */
+export const attachmentSchema = z.object({
+  id: z.string().min(1),
+  /** e.g. `data:image/png;base64,...`. */
+  dataUrl: z.string().min(1),
+  mimeType: z.string().min(1),
+  /** Original file name, for display only. */
+  name: z.string().optional(),
+});
+export type Attachment = z.infer<typeof attachmentSchema>;
+
+/**
  * The wire shape of a chat message — what `/api/chat` accepts. Kept separate
  * from the storage `ChatMessage` so branch metadata never leaks into requests.
+ *
+ * `attachments` is only meaningful for `user` messages; the server rejects it
+ * elsewhere (Cloudflare only defines media content parts on the user role).
  */
 export const wireChatMessageSchema = z.object({
   role: z.enum(["user", "assistant", "system"]),
   content: z.string(),
   /** Optional chain-of-thought content from reasoning models. */
   reasoning: z.string().optional(),
+  attachments: z.array(attachmentSchema).optional(),
 });
 export type WireChatMessage = z.infer<typeof wireChatMessageSchema>;
 

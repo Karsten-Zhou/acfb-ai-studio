@@ -23,7 +23,7 @@ export async function generateTitle(
       { role: "user", content: subject },
     ],
     params: { stream: false },
-    reasoningEffort: "off",
+    reasoningEffort: "none",
   };
 
   try {

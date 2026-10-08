@@ -8,7 +8,6 @@
     "about": "关于",
     "buildTime": "构建时间",
     "cancel": "取消",
-    "continue": "继续",
     "copied": "已复制",
     "copy": "复制",
     "delete": "删除",
@@ -52,14 +51,8 @@
     "copyMessage": "复制消息",
     "disclaimer": "Workers AI 可能会出错，请核实重要信息。",
     "editMessage": "编辑消息",
-    "effortHigh": "高",
-    "effortLow": "低",
-    "effortMedium": "中",
-    "effortMinimal": "最低",
-    "effortOff": "关闭",
     "emptyDescription": "提出问题、粘贴代码，或探索一个主题。",
     "emptyTitle": "由 Workers AI 驱动",
-    "failedTitle": "对话失败",
     "fixed": "固定",
     "generationFailed": "生成失败",
     "hideReasoning": "隐藏思考过程",
@@ -72,7 +65,19 @@
     "send": "发送",
     "showReasoning": "显示思考过程",
     "stopGenerating": "停止生成",
-    "thinking": "思考中"
+    "thinking": "思考中",
+    "attachFile": "添加文件",
+    "attachmentFailed": "添加文件失败",
+    "removeAttachment": "移除文件",
+    "reasoningLevel": {
+      "none": "关闭",
+      "minimal": "最低",
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "xhigh": "极高",
+      "max": "最高"
+    }
   },
   "draw": {
     "auto": "自动",
