@@ -6,7 +6,7 @@ import { useI18n } from "vue-i18n";
 import { ExternalLink, Info } from "@lucide/vue";
 import { formatDateTime } from "@/lib/i18n";
 
-const { t } = useI18n({ useScope: "global" });
+const { t } = useI18n();
 
 const version = __APP_VERSION__;
 const buildTime = __APP_BUILD_TIME__;

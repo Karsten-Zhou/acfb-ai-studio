@@ -32,7 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const { t } = useI18n({ useScope: "global" });
+const { t } = useI18n();
 const drawStore = useDrawStore();
 const sync = useSyncStore();
 const models = FREE_TEXT_TO_IMAGE_MODELS;

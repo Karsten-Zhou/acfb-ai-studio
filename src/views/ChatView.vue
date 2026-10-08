@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/empty";
 import AppHeader from "@/components/AppHeader.vue";
 
-const { t } = useI18n({ useScope: "global" });
+const { t } = useI18n();
 const chatStore = useChatStore();
 const models = FREE_TEXT_GENERATION_MODELS;
 

@@ -6,7 +6,7 @@ import { useDrawStore } from "@/stores/draw";
 import { formatNumber } from "@/lib/i18n";
 import AppHeader from "@/components/AppHeader.vue";
 
-const { t } = useI18n({ useScope: "global" });
+const { t } = useI18n();
 const draw = useDrawStore();
 const route = useRoute();
 const router = useRouter();

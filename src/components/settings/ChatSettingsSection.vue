@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { defaultOptions } from "@/composables/chat-defaults";
 
-const { t } = useI18n({ useScope: "global" });
+const { t } = useI18n();
 
 /**
  * Writable computeds bridge the optional persisted fields (`autoTitle?`,

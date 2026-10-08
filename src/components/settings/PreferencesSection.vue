@@ -20,7 +20,7 @@ import {
   type LocaleSetting,
 } from "@/lib/i18n";
 
-const { t } = useI18n({ useScope: "global" });
+const { t } = useI18n();
 const preferences = usePreferencesStore();
 
 const themes = computed<

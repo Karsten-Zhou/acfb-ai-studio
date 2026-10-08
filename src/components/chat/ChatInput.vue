@@ -36,7 +36,7 @@ const props = defineProps<{
   reasoningEffort: ReasoningEffort;
 }>();
 
-const { t } = useI18n({ useScope: "global" });
+const { t } = useI18n();
 
 /** Undefined until the user (or the catalog default) picks a model. */
 const selectedModel = computed(() =>

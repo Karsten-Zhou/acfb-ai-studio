@@ -54,7 +54,7 @@ const emit = defineEmits<{
   (e: "switchSibling", messageId: string, direction: -1 | 1): void;
 }>();
 
-const { t } = useI18n({ useScope: "global" });
+const { t } = useI18n();
 
 const editing = ref(false);
 const draft = ref("");

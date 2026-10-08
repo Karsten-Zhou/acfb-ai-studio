@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MessageSquareText, Image } from "@lucide/vue";
 
-const { t } = useI18n({ useScope: "global" });
+const { t } = useI18n();
 </script>
 
 <template>

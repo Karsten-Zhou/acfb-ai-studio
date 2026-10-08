@@ -22,7 +22,7 @@ import SettingsContent from "@/components/settings/SettingsContent.vue";
 
 const open = defineModel<boolean>("open", { required: true });
 
-const { t } = useI18n({ useScope: "global" });
+const { t } = useI18n();
 const isDesktop = useMediaQuery("(min-width: 768px)");
 </script>
 

@@ -14,7 +14,7 @@ import { requestSync, resetSyncState } from "@/composables/sync";
 import { useSyncStore } from "@/stores/sync";
 import { formatMegabytes, formatRelativeTime } from "@/lib/i18n";
 
-const { t } = useI18n({ useScope: "global" });
+const { t } = useI18n();
 const sync = useSyncStore();
 
 /** Ticks so "synced 2m ago" stays truthful without re-rendering constantly. */

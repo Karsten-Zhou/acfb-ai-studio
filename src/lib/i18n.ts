@@ -89,7 +89,7 @@ export function applyLocale(setting: LocaleSetting): Locale {
 /**
  * Translate a (compile-time checked) key.
  *
- * For components prefer vue-i18n's `useI18n({ useScope: "global" })`; this
+ * For components prefer vue-i18n's `useI18n()`; this
  * helper exists for modules without a component instance (stores, composables)
  * and is equally reactive because it reads the global locale ref.
  */

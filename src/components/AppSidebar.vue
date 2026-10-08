@@ -84,7 +84,7 @@ const emit = defineEmits<{
   (e: "rename", id: string, title: string): void;
 }>();
 
-const { t } = useI18n({ useScope: "global" });
+const { t } = useI18n();
 const chatStore = useChatStore();
 const drawStore = useDrawStore();
 const { isMobile } = useSidebar();

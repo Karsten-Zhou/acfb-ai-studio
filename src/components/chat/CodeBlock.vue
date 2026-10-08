@@ -11,7 +11,7 @@ const props = defineProps<{
   highlightedHtml?: string;
 }>();
 
-const { t } = useI18n({ useScope: "global" });
+const { t } = useI18n();
 
 const copied = ref(false);
 

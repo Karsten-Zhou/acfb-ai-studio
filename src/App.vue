@@ -15,7 +15,7 @@ import { Toaster } from "@/components/ui/sonner";
 useSyncEngine();
 
 const chatStore = useChatStore();
-const { t } = useI18n({ useScope: "global" });
+const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 
