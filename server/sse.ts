@@ -20,7 +20,10 @@ function readUpstreamError(value: unknown): string {
   return "The model stream failed.";
 }
 
-export function canonicalEventStream(): TransformStream<Uint8Array, Uint8Array> {
+export function canonicalEventStream(): TransformStream<
+  Uint8Array,
+  Uint8Array
+> {
   const decoder = new TextDecoder();
   // An upstream event may span chunks; carry the partial line here.
   let buffer = "";
@@ -50,9 +53,7 @@ export function canonicalEventStream(): TransformStream<Uint8Array, Uint8Array> 
           controller.enqueue(
             sseLine({
               type: "error",
-              message: readUpstreamError(
-                (json as { error: unknown }).error,
-              ),
+              message: readUpstreamError((json as { error: unknown }).error),
             }),
           );
           continue;

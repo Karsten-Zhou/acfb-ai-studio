@@ -9,6 +9,7 @@ export const router = createRouter({
   routes: [
     { path: "/", redirect: "/chat" },
     { path: "/chat", name: "chat", component: ChatView },
+    { path: "/chat/:id", name: "chat-conversation", component: ChatView },
     { path: "/draw", name: "draw", component: DrawView },
     { path: "/draw/:id", name: "draw-image", component: ImageView },
     { path: "/:pathMatch(.*)*", name: "not-found", component: NotFoundView },

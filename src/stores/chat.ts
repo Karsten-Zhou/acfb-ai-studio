@@ -145,7 +145,7 @@ export const useChatStore = defineStore("chat", () => {
     // Tombstone it so another device that still holds a copy doesn't resurrect it.
     sync.recordDeletion(id);
     if (activeId.value === id) {
-      activeId.value = conversations.value[0]?.id ?? null;
+      activeId.value = null;
     }
   }
 
@@ -556,6 +556,7 @@ export const useChatStore = defineStore("chat", () => {
     switchSibling,
     retryLast,
     regenerate,
+    conversationById,
   };
 });
 

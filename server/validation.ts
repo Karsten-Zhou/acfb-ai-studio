@@ -7,13 +7,9 @@ import { formatZodIssues } from "@shared/sync";
 
 // Loosely typed: generic over every validated schema.
 type ValidationOutcome =
-  | { success: true; data: unknown }
-  | { success: false; error: z.ZodError };
+  { success: true; data: unknown } | { success: false; error: z.ZodError };
 
-export function zodErrorHook(
-  result: unknown,
-  c: Context,
-): Response | void {
+export function zodErrorHook(result: unknown, c: Context): Response | void {
   const outcome = result as ValidationOutcome;
   if (!outcome.success) {
     return c.json(

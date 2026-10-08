@@ -30,72 +30,76 @@ app.post(
   "/",
   zValidator("json", imageRequestSchema, zodErrorHook),
   async ({ env, req }) => {
-  const body = req.valid("json");
+    const body = req.valid("json");
 
-  const known = body.model ? FREE_MODEL_BY_NAME.get(body.model) : undefined;
-  if (!known) {
-    return Response.json(
-      { error: `Unknown model: ${body.model ?? "(none provided)"}` },
-      { status: 400 },
-    );
-  }
-  if (known.task !== "text-to-image") {
-    return Response.json(
-      { error: `${known.name} is not a text-to-image model` },
-      { status: 400 },
-    );
-  }
-
-  const multipart = isMultipartModel(known.name);
-  const outputFormat = getOutputFormat(known.name);
-
-  // The client refuses to generate once its local copy of the history reaches
-  // the soft limit; this is the authoritative version of that check, using the
-  // size actually stored in KV. Only metadata is read, so it is cheap.
-  try {
-    const { bytes } = await readSyncMeta(env);
-    if (bytes >= SYNC_SOFT_LIMIT_BYTES) {
-      return Response.json({ error: softLimitMessage(bytes) }, { status: 413 });
+    const known = body.model ? FREE_MODEL_BY_NAME.get(body.model) : undefined;
+    if (!known) {
+      return Response.json(
+        { error: `Unknown model: ${body.model ?? "(none provided)"}` },
+        { status: 400 },
+      );
     }
-  } catch (err) {
-    // Fail open: a storage hiccup must not stop image generation, and the sync
-    // upload still enforces the hard 25 MiB limit on write.
-    console.error("Draw: could not read the sync size:", err);
-  }
-
-  const options = multipart
-    ? { multipart: buildMultipart(known.name, body) }
-    : buildOptions(known.name, body);
-
-  // `env.AI.run` is the only upstream call, so its failure is marked here rather
-  // than sniffed from the error's shape later (see `upstreamError`).
-  let result: unknown;
-  try {
-    result = await env.AI.run(known.name, options);
-  } catch (err) {
-    return errorResponse(upstreamError(err));
-  }
-
-  try {
-    const image = await normalizeImage(result, outputFormat);
-
-    if (!image.ok) {
-      throw new UserFacingError(image.reason);
+    if (known.task !== "text-to-image") {
+      return Response.json(
+        { error: `${known.name} is not a text-to-image model` },
+        { status: 400 },
+      );
     }
 
-    return Response.json(
-      imageResultSchema.parse({
-        image: image.data,
-        model: known.name,
-        width: image.width,
-        height: image.height,
-        seed: body.seed,
-      }),
-    );
-  } catch (err) {
-    return errorResponse(err);
-  }
-});
+    const multipart = isMultipartModel(known.name);
+    const outputFormat = getOutputFormat(known.name);
+
+    // The client refuses to generate once its local copy of the history reaches
+    // the soft limit; this is the authoritative version of that check, using the
+    // size actually stored in KV. Only metadata is read, so it is cheap.
+    try {
+      const { bytes } = await readSyncMeta(env);
+      if (bytes >= SYNC_SOFT_LIMIT_BYTES) {
+        return Response.json(
+          { error: softLimitMessage(bytes) },
+          { status: 413 },
+        );
+      }
+    } catch (err) {
+      // Fail open: a storage hiccup must not stop image generation, and the sync
+      // upload still enforces the hard 25 MiB limit on write.
+      console.error("Draw: could not read the sync size:", err);
+    }
+
+    const options = multipart
+      ? { multipart: buildMultipart(known.name, body) }
+      : buildOptions(known.name, body);
+
+    // `env.AI.run` is the only upstream call, so its failure is marked here rather
+    // than sniffed from the error's shape later (see `upstreamError`).
+    let result: unknown;
+    try {
+      result = await env.AI.run(known.name, options);
+    } catch (err) {
+      return errorResponse(upstreamError(err));
+    }
+
+    try {
+      const image = await normalizeImage(result, outputFormat);
+
+      if (!image.ok) {
+        throw new UserFacingError(image.reason);
+      }
+
+      return Response.json(
+        imageResultSchema.parse({
+          image: image.data,
+          model: known.name,
+          width: image.width,
+          height: image.height,
+          seed: body.seed,
+        }),
+      );
+    } catch (err) {
+      return errorResponse(err);
+    }
+  },
+);
 
 /**
  * Build the `multipart` option for FLUX.2 [dev]/[klein] models.
