@@ -87,10 +87,11 @@ async function handleFiles(event: Event): Promise<void> {
         </div>
         <Button
           class="shrink-0"
+          size="sm"
           :disabled="chatStore.conversations.length === 0 || importing"
           @click="exportOpen = true"
         >
-          <Download class="size-4" />
+          <Download />
           {{ t("settings.exportConversations") }}
         </Button>
       </div>
@@ -113,12 +114,13 @@ async function handleFiles(event: Event): Promise<void> {
           </p>
         </div>
         <Button
+          size="sm"
           class="shrink-0"
           variant="outline"
           :disabled="importing"
           @click="fileInput?.click()"
         >
-          <Upload class="size-4" />
+          <Upload />
           {{ t("settings.import") }}
         </Button>
       </div>

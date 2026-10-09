@@ -5,6 +5,7 @@
 import { useI18n } from "vue-i18n";
 import { ExternalLink, Info } from "@lucide/vue";
 import { formatDateTime } from "@/lib/i18n";
+import { Button } from "@/components/ui/button";
 
 const { t } = useI18n();
 
@@ -31,14 +32,15 @@ const repoUrl = __APP_REPO_URL__;
       </div>
     </dl>
 
-    <a
+    <Button
       :href="repoUrl"
       target="_blank"
       rel="noopener noreferrer"
-      class="inline-flex items-center gap-1.5 text-sm text-primary underline-offset-4 hover:underline"
+      variant="link"
+      size="sm"
     >
-      <ExternalLink class="size-4" />
+      <ExternalLink />
       {{ t("common.viewSource") }}
-    </a>
+    </Button>
   </section>
 </template>

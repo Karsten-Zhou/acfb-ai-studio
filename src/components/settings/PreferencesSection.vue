@@ -66,7 +66,7 @@ const localeOptions = computed<{ value: LocaleSetting; label: string }[]>(
           :variant="preferences.theme === option.value ? 'default' : 'outline'"
           @click="preferences.theme = option.value"
         >
-          <component :is="option.icon" class="size-4" />
+          <component :is="option.icon" />
           {{ option.label }}
         </Button>
       </div>

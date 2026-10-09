@@ -331,7 +331,7 @@ const reasoningLabel = computed(() => {
           :title="t('chat.attachFile')"
           @click="openPicker"
         >
-          <Paperclip class="size-4" />
+          <Paperclip />
         </Button>
         <input
           ref="fileInput"
@@ -349,20 +349,20 @@ const reasoningLabel = computed(() => {
           size="icon-sm"
           variant="secondary"
           class="rounded-full"
+          :aria-label="t('chat.stopGenerating')"
           @click="emit('stop')"
         >
-          <Square class="size-4 fill-current" />
-          <span class="sr-only">{{ t("chat.stopGenerating") }}</span>
+          <Square class="fill-current" />
         </Button>
         <Button
           v-else
           size="icon-sm"
           :disabled="!draft.trim() && attachments.length === 0"
           class="rounded-full"
+          :aria-label="t('chat.send')"
           @click="submit"
         >
-          <ArrowUp class="size-4" />
-          <span class="sr-only">{{ t("chat.send") }}</span>
+          <ArrowUp />
         </Button>
       </div>
     </div>

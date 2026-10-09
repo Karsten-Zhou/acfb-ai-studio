@@ -147,20 +147,22 @@ function confirmDelete(): void {
                 <ItemActions>
                   <Button
                     variant="ghost"
+                    size="icon-sm"
+                    :aria-label="t('common.edit')"
                     :title="t('common.edit')"
                     @click.stop="openRename(item.id, item.title || item.prompt)"
                   >
-                    <Pencil class="size-4" />
-                    <span class="sr-only">{{ t("common.edit") }}</span>
+                    <Pencil />
                   </Button>
 
                   <Button
                     variant="ghost"
+                    size="icon-sm"
+                    :aria-label="t('common.delete')"
                     :title="t('common.delete')"
                     @click.stop="openDelete(item.id)"
                   >
-                    <Trash2 class="size-4" />
-                    <span class="sr-only">{{ t("common.delete") }}</span>
+                    <Trash2 />
                   </Button>
                 </ItemActions>
               </Item>

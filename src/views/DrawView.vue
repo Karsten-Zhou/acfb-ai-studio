@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { Square, Sparkles, TriangleAlert } from "@lucide/vue";
+import { Square, TriangleAlert } from "@lucide/vue";
 import {
   FREE_TEXT_TO_IMAGE_MODELS,
   type FreeImageModel,
@@ -292,8 +292,6 @@ function stepFor(bounds: ParamBounds | undefined): number | undefined {
             :disabled="loading || !prompt.trim() || storageBlocked"
             @click="submit"
           >
-            <Sparkles v-if="!loading" class="size-4" />
-            <Square v-else class="size-4 fill-current" />
             {{ loading ? t("draw.generating") : t("draw.generate") }}
           </Button>
           <Button
@@ -303,7 +301,7 @@ function stepFor(bounds: ParamBounds | undefined): number | undefined {
             :aria-label="t('draw.stopGenerating')"
             @click="drawStore.stopGenerating"
           >
-            <Square class="size-4 fill-current" />
+            <Square class="fill-current" />
           </Button>
         </div>
       </div>

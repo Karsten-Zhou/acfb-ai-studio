@@ -69,7 +69,7 @@ function toggle(id: string): void {
             open[step.call.id] ? t('chat.hideToolCall') : t('chat.showToolCall')
           "
         >
-          <Wrench class="size-3.5" />
+          <Wrench />
           <span class="truncate" :class="{ shimmer: step.pending }">
             {{ t("chat.toolCall", { name: step.label }) }}
           </span>

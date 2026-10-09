@@ -110,14 +110,14 @@ async function onReset() {
         {{ status.label }}
       </span>
       <Button
-        size="icon-sm"
+        size="icon-xs"
         variant="ghost"
         class="h-6 w-6"
         :aria-label="t('sync.syncNow')"
         :disabled="sync.phase === 'syncing'"
         @click="requestSync"
       >
-        <RefreshCw class="size-3.5" />
+        <RefreshCw />
       </Button>
     </div>
 

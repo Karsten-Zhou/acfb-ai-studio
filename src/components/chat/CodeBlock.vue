@@ -48,13 +48,13 @@ async function copy() {
       </span>
       <Button
         variant="ghost"
-        size="icon-sm"
+        size="icon-xs"
         :aria-label="copied ? t('common.copied') : t('chat.copyCode')"
         :title="copied ? t('common.copied') : t('chat.copyCode')"
         @click="copy"
       >
-        <Check v-if="copied" class="size-3.5" />
-        <Copy v-else class="size-3.5" />
+        <Check v-if="copied" />
+        <Copy v-else />
       </Button>
     </div>
     <!-- eslint-disable vue/no-v-html -- highlightedHtml is sanitized in lib/markdown -->

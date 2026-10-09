@@ -32,7 +32,7 @@ const emit = defineEmits<{ (e: "remove", id: string): void }>();
         :aria-label="$t('chat.removeAttachment')"
         @click="emit('remove', a.id)"
       >
-        <X class="size-3" />
+        <X />
       </Button>
     </div>
   </div>

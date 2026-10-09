@@ -209,14 +209,14 @@ async function copy() {
             />
             <div class="mt-2 flex gap-2">
               <Button
-                size="sm"
+                size="xs"
                 :disabled="streaming || !draft.trim()"
                 @click="sendEdit"
               >
-                <Send class="size-3.5" />
+                <Send />
                 {{ t("chat.send") }}
               </Button>
-              <Button size="sm" variant="ghost" @click="cancelEdit">
+              <Button size="xs" variant="ghost" @click="cancelEdit">
                 {{ t("common.cancel") }}
               </Button>
             </div>
@@ -246,7 +246,7 @@ async function copy() {
                 </p>
                 <div
                   v-if="isOverflowing && collapsed"
-                  class="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-muted to-transparent"
+                  class="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-muted to-transparent"
                 />
               </div>
               <button
@@ -345,61 +345,61 @@ async function copy() {
       <MessageFooter v-if="!editing">
         <Button
           variant="ghost"
-          size="icon-sm"
+          size="icon-xs"
           :aria-label="copied ? t('common.copied') : t('chat.copyMessage')"
           :title="t('common.copy')"
           @click="copy"
         >
-          <Check v-if="copied" class="size-3.5" />
-          <Copy v-else class="size-3.5" />
+          <Check v-if="copied" />
+          <Copy v-else />
         </Button>
 
         <Button
           v-if="message.role === 'user'"
           variant="ghost"
-          size="icon-sm"
+          size="icon-xs"
           :aria-label="t('chat.editMessage')"
           :title="t('common.edit')"
           :disabled="streaming"
           @click="startEdit"
         >
-          <Pencil class="size-3.5" />
+          <Pencil />
         </Button>
 
         <Button
           v-else
           variant="ghost"
-          size="icon-sm"
+          size="icon-xs"
           :aria-label="t('common.tryAgain')"
           :title="t('common.tryAgain')"
           :disabled="streaming"
           @click="emit('retry', message.id)"
         >
-          <RefreshCw class="size-3.5" />
+          <RefreshCw />
         </Button>
 
         <!-- Sibling-branch navigation (◀ 2/3 ▶) -->
         <div v-if="siblingCount > 1" class="flex items-center">
           <Button
             variant="ghost"
-            size="icon-sm"
+            size="icon-xs"
             :aria-label="t('chat.previousVersion')"
             :disabled="streaming || siblingIndex <= 1"
             @click="emit('switchSibling', message.id, -1)"
           >
-            <ChevronLeft class="size-3.5" />
+            <ChevronLeft />
           </Button>
           <span class="text-xs tabular-nums text-muted-foreground">
             {{ formatNumber(siblingIndex) }}/{{ formatNumber(siblingCount) }}
           </span>
           <Button
             variant="ghost"
-            size="icon-sm"
+            size="icon-xs"
             :aria-label="t('chat.nextVersion')"
             :disabled="streaming || siblingIndex >= siblingCount"
             @click="emit('switchSibling', message.id, 1)"
           >
-            <ChevronRight class="size-3.5" />
+            <ChevronRight />
           </Button>
         </div>
       </MessageFooter>
