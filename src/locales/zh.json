@@ -78,7 +78,13 @@
       "high": "高",
       "xhigh": "极高",
       "max": "最高"
-    }
+    },
+    "tools": "工具",
+    "toolCall": "工具：{name}",
+    "toolArguments": "参数",
+    "toolResult": "结果",
+    "showToolCall": "显示工具调用",
+    "hideToolCall": "隐藏工具调用"
   },
   "draw": {
     "auto": "自动",

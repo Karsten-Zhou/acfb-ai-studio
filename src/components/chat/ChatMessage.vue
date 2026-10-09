@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import {
   Brain,
@@ -11,7 +11,7 @@ import {
   RefreshCw,
   Send,
 } from "@lucide/vue";
-import type { ChatMessage } from "@shared/chat";
+import type { ChatMessage, ToolCall } from "@shared/chat";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -32,6 +32,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { formatNumber } from "@/lib/i18n";
 import MarkdownContent from "./MarkdownContent.vue";
 import AttachmentList from "./AttachmentList.vue";
+import ToolCallList from "./ToolCallList.vue";
 
 const props = defineProps<{
   message: ChatMessage;
@@ -55,6 +56,46 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+
+type AssistantPart =
+  { type: "content"; text: string } | { type: "tools"; calls: ToolCall[] };
+
+/**
+ * The assistant reply as an ordered timeline: prose segments interleaved with
+ * the tool calls that interrupted them. Each call records the content length at
+ * the moment it was requested (`contentOffset`), so it renders exactly where it
+ * happened rather than all at the top of the message.
+ */
+const assistantParts = computed<AssistantPart[]>(() => {
+  const content = props.message.content ?? "";
+  const calls = props.message.toolCalls ?? [];
+  if (calls.length === 0) return [{ type: "content", text: content }];
+
+  const groups = new Map<number, ToolCall[]>();
+  for (const call of calls) {
+    const offset = Math.max(
+      0,
+      Math.min(call.contentOffset ?? 0, content.length),
+    );
+    const bucket = groups.get(offset);
+    if (bucket) bucket.push(call);
+    else groups.set(offset, [call]);
+  }
+
+  const parts: AssistantPart[] = [];
+  let cursor = 0;
+  for (const offset of [...groups.keys()].sort((a, b) => a - b)) {
+    if (offset > cursor) {
+      parts.push({ type: "content", text: content.slice(cursor, offset) });
+      cursor = offset;
+    }
+    parts.push({ type: "tools", calls: groups.get(offset) ?? [] });
+  }
+  if (cursor < content.length) {
+    parts.push({ type: "content", text: content.slice(cursor) });
+  }
+  return parts;
+});
 
 const editing = ref(false);
 const draft = ref("");
@@ -219,11 +260,18 @@ async function copy() {
                 </MarkerContent>
               </Marker>
 
-              <MarkdownContent
-                v-if="message.content"
-                :source="message.content"
-                class="prose max-w-none dark:prose-invert"
-              />
+              <template v-for="(part, index) in assistantParts" :key="index">
+                <ToolCallList
+                  v-if="part.type === 'tools'"
+                  :tool-calls="part.calls"
+                  :streaming="isLast && streaming"
+                />
+                <MarkdownContent
+                  v-if="part.type === 'content' && part.text"
+                  :source="part.text"
+                  class="prose max-w-none dark:prose-invert"
+                />
+              </template>
               <span
                 v-if="isLast && streaming && message.content"
                 class="inline-block h-4 w-0.5 animate-pulse bg-current align-middle"

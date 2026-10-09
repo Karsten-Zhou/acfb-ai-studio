@@ -78,7 +78,13 @@
       "high": "High",
       "xhigh": "Extra high",
       "max": "Max"
-    }
+    },
+    "tools": "Tools",
+    "toolCall": "Tool: {name}",
+    "toolArguments": "Arguments",
+    "toolResult": "Result",
+    "showToolCall": "Show tool call",
+    "hideToolCall": "Hide tool call"
   },
   "draw": {
     "auto": "Auto",

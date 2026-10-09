@@ -149,3 +149,20 @@ export function getReasoningOptions(modelName: string): ReasoningEffort[] {
 export function hasReasoningControl(modelName: string): boolean {
   return getReasoningOptions(modelName).length > 0;
 }
+
+// ---------------------------------------------------------------------------
+// Tool calling
+// ---------------------------------------------------------------------------
+
+/**
+ * True when the model's input schema declares the OpenAI-style `tools`
+ * parameter. This — not the catalogue's `function_calling` capability flag — is
+ * authoritative: the flag is set on several models whose published schema has no
+ * `tools` (or `functions`) property at all, and offering tools to those would
+ * fail at inference.
+ */
+export function supportsToolCalling(modelName: string): boolean {
+  return (
+    acceptsParam(modelName, "tools") || acceptsParam(modelName, "functions")
+  );
+}

@@ -18,6 +18,7 @@ Deploy your own private, self-hosted instance in under a minute with one click:
 - **Complete Model Support:** Access all available text and image generation models provided by Cloudflare Workers AI (free tier).
 - **Modern UI & UX:** Features dark/light mode themes, multi-language support, and a fully responsive layout across desktop and mobile devices.
 - **Cross-Device Sync**: Synchronize images and chat history across your devices.
+- **Tool Calling:** Compatible chat models can call built-in tools - currently a current date & time tool - with each call and its result shown inline as a collapsible step.
 
 ## Tech Stack
 
@@ -36,24 +37,26 @@ Deploy your own private, self-hosted instance in under a minute with one click:
 ├── src/                      # Vue 3 frontend
 │   ├── views/                # Route views (Chat, Draw, Image, NotFound)
 │   ├── components/           # Core layout components (AppHeader, AppSidebar, SyncStatus)
-│   │   ├── chat/             # Chat interface (ChatInput, ChatMessage)
+│   │   ├── chat/             # Chat interface (ChatInput, ChatMessage, ToolCallList)
 │   │   ├── settings/         # Preferences and settings modals
-│   │   └── ui/               # shadcn-vue primitives (new-york-v4)
+│   │   └── ui/               # shadcn-vue primitives (maintained by shadcn-vue cli)
 │   ├── stores/               # Pinia state management (chat, draw, preferences, sync)
 │   ├── composables/          # Vue composables (chat-defaults, sync)
 │   ├── lib/                  # Utilities (api-error, markdown, i18n, query-client)
-│   ├── locales/              # i18n translations (en, zh, de)
+│   ├── locales/              # i18n translations (de, en, fr, hi, ja, zh)
 │   ├── router/               # Vue Router configuration
 │   └── shikithemes/          # Code syntax highlighting themes
 │
 ├── server/                   # Cloudflare Worker backend
 │   ├── index.ts              # Worker entry point
 │   ├── chat.ts, draw.ts      # AI chat & image endpoints
+│   ├── agent.ts, tools.ts    # Tool-calling loop & server-side tool execution
 │   ├── sync.ts, sync-storage.ts # Data synchronization handlers
 │   └── errors.ts, image-dimensions.ts
 │
 ├── shared/                   # Shared TypeScript types & validation schemas
 │   ├── api.ts, chat.ts, draw.ts, errors.ts, sync.ts
+│   ├── tools.ts              # Tool definitions offered to tool-calling models
 │   └── generated/            # Codegen models, schemas, and traits
 │
 ├── scripts/                  # Model & theme synchronization scripts

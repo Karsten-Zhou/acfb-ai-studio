@@ -4,7 +4,6 @@
     "titleChat": "Workers AI चैट",
     "titleDraw": "Workers AI ड्रॉ"
   },
-
   "common": {
     "about": "हमारे बारे में",
     "buildTime": "बिल्ड का समय",
@@ -30,7 +29,6 @@
     "deleteConversationDescription": "क्या आप वाकई इस बातचीत को हटाना चाहते हैं? इसे वापस नहीं लाया जा सकता।",
     "deleteImageDescription": "क्या आप वाकई इस इमेज को हटाना चाहते हैं? इसे वापस नहीं लाया जा सकता।"
   },
-
   "nav": {
     "chat": "चैट",
     "chatDescription": "टेक्स्ट मॉडल से बात करें",
@@ -47,7 +45,6 @@
     "noConversations": "अभी कोई बातचीत नहीं है",
     "noImages": "अभी कोई इमेज नहीं है"
   },
-
   "chat": {
     "chooseModel": "मॉडल चुनें",
     "conversationNotFound": "बातचीत नहीं मिली",
@@ -81,9 +78,14 @@
       "high": "ज़्यादा",
       "xhigh": "बहुत ज़्यादा",
       "max": "अधिकतम"
-    }
+    },
+    "tools": "टूल्स",
+    "toolCall": "टूल: {name}",
+    "toolArguments": "आर्ग्युमेंट्स",
+    "toolResult": "परिणाम",
+    "showToolCall": "टूल कॉल दिखाएँ",
+    "hideToolCall": "टूल कॉल छिपाएँ"
   },
-
   "draw": {
     "auto": "ऑटो",
     "beta": "बीटा",
@@ -108,12 +110,10 @@
     "steps": "स्टेप्स",
     "width": "चौड़ाई"
   },
-
   "notFound": {
     "description": "आप जिस पेज को ढूँढ रहे हैं, वह मौजूद नहीं है।",
     "title": "404 – नहीं मिला"
   },
-
   "settings": {
     "autoTitle": "बातचीत के नाम अपने-आप बनाएँ",
     "autoTitleDescription": "मॉडल से नई बातचीत के नाम अपने-आप रखने को कहें।",
@@ -152,7 +152,6 @@
     "themeLight": "लाइट",
     "title": "सेटिंग्स"
   },
-
   "sync": {
     "conflictParseFailed": "Sync conflict को पढ़ा नहीं जा सका।",
     "conflictRetries": "कई कोशिशों के बाद भी Sync conflict बना हुआ है। थोड़ी देर बाद फिर से कोशिश करें।",

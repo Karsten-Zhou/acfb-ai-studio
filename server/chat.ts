@@ -10,11 +10,17 @@ import {
   FREE_MODEL_BY_NAME,
   FREE_TEXT_GENERATION_MODELS,
 } from "@shared/generated/models";
-import { acceptsParam, getReasoningTraits } from "@shared/generated/traits";
+import {
+  acceptsParam,
+  getReasoningTraits,
+  supportsToolCalling,
+} from "@shared/generated/traits";
 import { reasoningParams } from "@shared/reasoning";
+import { toWireTools } from "@shared/tools";
 import { errorResponse, upstreamError } from "./errors";
 import { readInferenceResult } from "./inference";
 import { canonicalEventStream } from "./sse";
+import { nonStreamingToolAgent, streamingToolAgent } from "./agent";
 import { zodErrorHook } from "./validation";
 import { buildChatInput } from "./attachments";
 import { readSyncMeta } from "./sync-storage";
@@ -44,6 +50,14 @@ app.post(
     }
 
     const stream = params.stream ?? true;
+
+    // Tools are only offered when both the user enabled some and the model's
+    // schema actually declares the `tools` parameter. A model that does not
+    // would otherwise be sent an unsupported field and fail upstream.
+    const requestedTools = body.tools ?? [];
+    const toolsEnabled =
+      requestedTools.length > 0 && supportsToolCalling(known.name);
+    const wireTools = toolsEnabled ? toWireTools(requestedTools) : [];
 
     // Attachments are stored inline (base64 data URLs) in the conversation tree,
     // which lives in the single-KV sync payload. Sending more would only push it
@@ -101,6 +115,9 @@ app.post(
     if (params.topP !== undefined && acceptsParam(known.name, "top_p")) {
       cfParams.top_p = params.topP;
     }
+    if (toolsEnabled) {
+      cfParams.tools = wireTools;
+    }
 
     // Let Workers AI size the output itself. Models with a separate completion
     // budget get an unbounded request (Infinity) so they can use the whole
@@ -125,11 +142,8 @@ app.post(
       );
     }
 
-    if (stream) {
-      cfParams.stream = true;
-      if (acceptsParam(known.name, "stream_options")) {
-        cfParams.stream_options = { include_usage: true };
-      }
+    if (stream && acceptsParam(known.name, "stream_options")) {
+      cfParams.stream_options = { include_usage: true };
     }
 
     console.debug(`cfParams for ${known.name}:`, cfParams);
@@ -137,6 +151,50 @@ app.post(
     // ---------------------------------------------------------------------
     // Dispatch
     // ---------------------------------------------------------------------
+
+    // The tool-calling loop owns the request end to end: it makes its own
+    // upstream calls so it can feed tool results back between steps.
+    if (toolsEnabled) {
+      if (!stream) {
+        try {
+          const result = await nonStreamingToolAgent({
+            baseParams: cfParams,
+            messages: cfMessages,
+            runOnce: (msgs, p) =>
+              env.AI.run(known.name, { ...p, messages: msgs }),
+          });
+          return Response.json(
+            chatResponseSchema.parse({
+              conversationId,
+              content: result.content,
+              reasoning: result.reasoning,
+              model: known.name,
+              toolCalls: result.toolCalls,
+            }),
+          );
+        } catch (err) {
+          return errorResponse(upstreamError(err));
+        }
+      }
+
+      const toolStream = streamingToolAgent({
+        baseParams: cfParams,
+        messages: cfMessages,
+        runStream: async (msgs, p) =>
+          (await env.AI.run(known.name, {
+            ...p,
+            messages: msgs,
+          })) as unknown as ReadableStream<Uint8Array>,
+      });
+      return new Response(toolStream, {
+        headers: {
+          "content-type": "text/event-stream; charset=utf-8",
+          "cache-control": "no-cache",
+          "x-accel-buffering": "no",
+          connection: "keep-alive",
+        },
+      });
+    }
 
     if (!stream) {
       try {
@@ -152,6 +210,8 @@ app.post(
         return errorResponse(upstreamError(err));
       }
     }
+
+    cfParams.stream = true;
 
     let upstream: ReadableStream<Uint8Array>;
     try {

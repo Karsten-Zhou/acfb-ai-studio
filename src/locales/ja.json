@@ -78,7 +78,13 @@
       "high": "高",
       "xhigh": "非常に高い",
       "max": "最大"
-    }
+    },
+    "tools": "ツール",
+    "toolCall": "ツール: {name}",
+    "toolArguments": "引数",
+    "toolResult": "結果",
+    "showToolCall": "ツール呼び出しを表示",
+    "hideToolCall": "ツール呼び出しを非表示"
   },
   "draw": {
     "auto": "自動",

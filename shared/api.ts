@@ -1,5 +1,9 @@
 import z from "zod";
-import { reasoningEffortSchema, wireChatMessageSchema } from "./chat";
+import {
+  reasoningEffortSchema,
+  toolCallSchema,
+  wireChatMessageSchema,
+} from "./chat";
 
 export const chatRequestSchema = z.object({
   conversationId: z.uuid().optional(),
@@ -13,6 +17,8 @@ export const chatRequestSchema = z.object({
     })
     .partial(),
   reasoningEffort: reasoningEffortSchema.optional(),
+  /** Tool ids the user enabled for this request. Empty/absent means none. */
+  tools: z.array(z.string()).optional(),
 });
 
 /** The wire chat request, derived from the schema. */
@@ -24,6 +30,8 @@ export const chatResponseSchema = z.object({
   content: z.string(),
   reasoning: z.string(),
   model: z.string().min(1),
+  /** Tool-calling steps taken while producing the answer. */
+  toolCalls: z.array(toolCallSchema).optional(),
 });
 export type ChatResponse = z.infer<typeof chatResponseSchema>;
 

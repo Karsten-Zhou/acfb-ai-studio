@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { ArrowUp, Square, ChevronsUpDown, Brain, Paperclip } from "@lucide/vue";
+import {
+  ArrowUp,
+  Square,
+  ChevronsUpDown,
+  Brain,
+  Paperclip,
+  Wrench,
+  Image as ImageIcon,
+} from "@lucide/vue";
 import type { FreeTextModel } from "@shared/generated/models";
 import type {
   Attachment,
@@ -12,6 +20,7 @@ import { normalizeReasoningEffort } from "@shared/reasoning";
 import {
   getReasoningOptions,
   supportsImageInput,
+  supportsToolCalling,
 } from "@shared/generated/traits";
 import { IMAGE_ACCEPT_ATTRIBUTE } from "@shared/attachments";
 import { modelLabel } from "@shared/catalog-types";
@@ -19,11 +28,14 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { TOOLS } from "@shared/tools";
+import { defaultOptions } from "@/composables/chat-defaults";
 import { readAttachments } from "@/composables/use-attachments";
 import { toastError } from "@/lib/toast";
 import AttachmentList from "./AttachmentList.vue";
@@ -46,6 +58,22 @@ const selectedModel = computed(() =>
 /** Whether the selected model documents image input. */
 const canAttach = computed(() =>
   props.model ? supportsImageInput(props.model) : false,
+);
+
+function isToolEnabled(id: string): boolean {
+  return (defaultOptions.tools ?? []).includes(id);
+}
+
+function setToolEnabled(id: string, enabled: boolean): void {
+  const current = new Set(defaultOptions.tools ?? []);
+  if (enabled) current.add(id);
+  else current.delete(id);
+  defaultOptions.tools = [...current];
+}
+
+/** Whether the selected model's schema declares tool-calling support. */
+const canUseTools = computed(() =>
+  props.model ? supportsToolCalling(props.model) : false,
 );
 
 const emit = defineEmits<{
@@ -204,7 +232,7 @@ const reasoningLabel = computed(() => {
               <ChevronsUpDown class="text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" class="max-h-72 max-w-52">
+          <DropdownMenuContent align="start" class="max-h-72 w-64">
             <DropdownMenuRadioGroup
               :model-value="model"
               @update:model-value="(id) => emit('update:model', id as string)"
@@ -217,7 +245,22 @@ const reasoningLabel = computed(() => {
                 <span class="min-w-0 flex-1 truncate">
                   {{ modelLabel(m.name) }}
                 </span>
-                <Brain v-if="m.capabilities.reasoning" />
+                <span
+                  class="flex shrink-0 items-center gap-1 text-muted-foreground"
+                >
+                  <Brain
+                    v-if="m.capabilities.reasoning"
+                    :title="t('chat.reasoning')"
+                  />
+                  <Wrench
+                    v-if="supportsToolCalling(m.name)"
+                    :title="t('chat.tools')"
+                  />
+                  <ImageIcon
+                    v-if="supportsImageInput(m.name)"
+                    :title="t('chat.attachFile')"
+                  />
+                </span>
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
@@ -253,6 +296,28 @@ const reasoningLabel = computed(() => {
                 {{ effortLabel(e) }}
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <!-- Tools: only offered when the model's schema declares tool calling -->
+        <DropdownMenu v-if="canUseTools">
+          <DropdownMenuTrigger as-child>
+            <Button variant="ghost" size="sm">
+              <Wrench />
+              {{ t("chat.tools") }}
+              <ChevronsUpDown class="text-muted-foreground" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" class="max-w-64">
+            <DropdownMenuCheckboxItem
+              v-for="tool in TOOLS"
+              :key="tool.id"
+              :model-value="isToolEnabled(tool.id)"
+              @update:model-value="(v) => setToolEnabled(tool.id, v === true)"
+              @select.prevent
+            >
+              <span class="min-w-0 flex-1 truncate">{{ tool.label }}</span>
+            </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
 

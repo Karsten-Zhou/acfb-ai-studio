@@ -31,6 +31,7 @@ import type {
   Conversation,
   GenerationParams,
   ReasoningEffort,
+  ToolCall,
   WireChatMessage,
 } from "@shared/chat";
 
@@ -227,6 +228,7 @@ export const useChatStore = defineStore("chat", () => {
 
     delete assistant.error;
     delete assistant.reasoning;
+    delete assistant.toolCalls;
     assistant.content = "";
     replyTo.activeChildId = assistant.id;
     conv.leafId = assistant.id;
@@ -261,6 +263,7 @@ export const useChatStore = defineStore("chat", () => {
           messages: requestMessages,
           params: params.value,
           reasoningEffort: reasoningEffort.value,
+          tools: [...(defaultOptions.tools ?? [])],
         },
         (delta) => {
           const { msg } = currentTurn();
@@ -270,6 +273,32 @@ export const useChatStore = defineStore("chat", () => {
           }
           if (delta.content) {
             msg.content = (msg.content ?? "") + delta.content;
+          }
+          if (delta.toolCall) {
+            const list = msg.toolCalls ?? [];
+            const existing = list.find((c) => c.id === delta.toolCall!.id);
+            if (existing) {
+              // A later fragment refined the arguments of a call already shown.
+              existing.name = delta.toolCall.name;
+              existing.arguments = delta.toolCall.arguments;
+            } else {
+              msg.toolCalls = [
+                ...list,
+                {
+                  ...delta.toolCall,
+                  contentOffset: (msg.content ?? "").length,
+                },
+              ];
+            }
+          }
+          if (delta.toolResult) {
+            const step = msg.toolCalls?.find(
+              (c) => c.id === delta.toolResult!.id,
+            );
+            if (step) {
+              step.result = delta.toolResult.result;
+              if (delta.toolResult.error) step.error = delta.toolResult.error;
+            }
           }
         },
         controller.signal,
@@ -575,9 +604,16 @@ export const useChatStore = defineStore("chat", () => {
 // SSE stream helper
 // ---------------------------------------------------------------------------
 
+type StreamDelta = {
+  content?: string;
+  reasoning?: string;
+  toolCall?: ToolCall;
+  toolResult?: { id: string; name: string; result: string; error?: string };
+};
+
 async function streamChat(
   req: ChatRequest,
-  onDelta: (delta: { content?: string; reasoning?: string }) => void,
+  onDelta: (delta: StreamDelta) => void,
   signal: AbortSignal,
 ): Promise<void> {
   const res = await fetch("/api/chat", {
@@ -616,6 +652,25 @@ async function streamChat(
     }
     if (event.type === "delta" && (event.delta || event.reasoning)) {
       onDelta({ content: event.delta, reasoning: event.reasoning });
+    }
+    if (event.type === "tool_call") {
+      onDelta({
+        toolCall: {
+          id: event.id,
+          name: event.name,
+          arguments: event.arguments,
+        },
+      });
+    }
+    if (event.type === "tool_result") {
+      onDelta({
+        toolResult: {
+          id: event.id,
+          name: event.name,
+          result: event.result,
+          error: event.error,
+        },
+      });
     }
   }
 

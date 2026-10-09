@@ -78,7 +78,13 @@
       "high": "Hoch",
       "xhigh": "Sehr hoch",
       "max": "Maximal"
-    }
+    },
+    "tools": "Werkzeuge",
+    "toolCall": "Werkzeug: {name}",
+    "toolArguments": "Argumente",
+    "toolResult": "Ergebnis",
+    "showToolCall": "Werkzeugaufruf anzeigen",
+    "hideToolCall": "Werkzeugaufruf ausblenden"
   },
   "draw": {
     "auto": "Automatisch",

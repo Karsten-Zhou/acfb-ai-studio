@@ -4,7 +4,6 @@
     "titleChat": "Chat Workers AI",
     "titleDraw": "Workers AI Draw"
   },
-
   "common": {
     "about": "À propos",
     "buildTime": "Date de compilation",
@@ -30,7 +29,6 @@
     "deleteConversationDescription": "Voulez-vous vraiment supprimer cette conversation ? Cette action est irréversible.",
     "deleteImageDescription": "Voulez-vous vraiment supprimer cette image ? Cette action est irréversible."
   },
-
   "nav": {
     "chat": "Chat",
     "chatDescription": "Discutez avec un modèle de texte",
@@ -47,7 +45,6 @@
     "noConversations": "Aucune conversation pour le moment",
     "noImages": "Aucune image pour le moment"
   },
-
   "chat": {
     "chooseModel": "Choisir un modèle",
     "conversationNotFound": "Conversation introuvable",
@@ -81,9 +78,14 @@
       "high": "Élevé",
       "xhigh": "Très élevé",
       "max": "Maximum"
-    }
+    },
+    "tools": "Outils",
+    "toolCall": "Outil : {name}",
+    "toolArguments": "Arguments",
+    "toolResult": "Résultat",
+    "showToolCall": "Afficher l'appel d'outil",
+    "hideToolCall": "Masquer l'appel d'outil"
   },
-
   "draw": {
     "auto": "Auto",
     "beta": "Bêta",
@@ -108,12 +110,10 @@
     "steps": "Étapes",
     "width": "Largeur"
   },
-
   "notFound": {
     "description": "La page que vous recherchez n’existe pas.",
     "title": "404 – Page introuvable"
   },
-
   "settings": {
     "autoTitle": "Générer les titres des conversations",
     "autoTitleDescription": "Demander au modèle de nommer automatiquement les nouvelles conversations.",
@@ -152,7 +152,6 @@
     "themeLight": "Clair",
     "title": "Paramètres"
   },
-
   "sync": {
     "conflictParseFailed": "Impossible d’analyser le conflit de synchronisation.",
     "conflictRetries": "Le conflit de synchronisation persiste après plusieurs tentatives. Réessayez dans un instant.",

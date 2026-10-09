@@ -1,23 +1,13 @@
 // Transform Cloudflare's upstream SSE into the canonical stream events
 // (`streamEventSchema` in `@shared/chat`). Upstream-shape parsing lives in
-// `./inference` (`readStreamChunk`).
+// `./inference` (`readStreamChunk`, `readUpstreamErrorMessage`).
 
-import { readStreamChunk } from "./inference";
+import { readStreamChunk, readUpstreamErrorMessage } from "./inference";
 
 const encoder = new TextEncoder();
 
-function sseLine(event: object): Uint8Array {
+export function encodeSseEvent(event: object): Uint8Array {
   return encoder.encode(`data: ${JSON.stringify(event)}\n\n`);
-}
-
-/** Read a human-readable message out of an upstream `{ error }` payload. */
-function readUpstreamError(value: unknown): string {
-  if (typeof value === "string") return value;
-  if (value && typeof value === "object" && "message" in value) {
-    const message = (value as { message: unknown }).message;
-    if (typeof message === "string" && message) return message;
-  }
-  return "The model stream failed.";
 }
 
 export function canonicalEventStream(): TransformStream<
@@ -51,9 +41,11 @@ export function canonicalEventStream(): TransformStream<
 
         if (json && typeof json === "object" && "error" in json) {
           controller.enqueue(
-            sseLine({
+            encodeSseEvent({
               type: "error",
-              message: readUpstreamError((json as { error: unknown }).error),
+              message:
+                readUpstreamErrorMessage((json as { error: unknown }).error) ??
+                "The model stream failed.",
             }),
           );
           continue;
@@ -62,7 +54,7 @@ export function canonicalEventStream(): TransformStream<
         const { content, reasoning } = readStreamChunk(json);
         if (content !== undefined || reasoning !== undefined) {
           controller.enqueue(
-            sseLine({
+            encodeSseEvent({
               type: "delta",
               ...(content !== undefined ? { delta: content } : {}),
               ...(reasoning !== undefined ? { reasoning } : {}),
@@ -73,7 +65,7 @@ export function canonicalEventStream(): TransformStream<
     },
 
     flush(controller) {
-      controller.enqueue(sseLine({ type: "done" }));
+      controller.enqueue(encodeSseEvent({ type: "done" }));
     },
   });
 }

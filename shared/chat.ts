@@ -75,6 +75,30 @@ export const wireChatMessageSchema = z.object({
 export type WireChatMessage = z.infer<typeof wireChatMessageSchema>;
 
 /**
+ * One tool invocation the model requested, and — once the server has run it —
+ * the result. Stored on the assistant message purely so the UI can render the
+ * tool-calling steps; it is never sent back to the model as history.
+ */
+export const toolCallSchema = z.object({
+  /** Provider-assigned id, used to pair a call with its result. */
+  id: z.string().min(1),
+  /** Tool name, e.g. `get_current_datetime`. */
+  name: z.string().min(1),
+  /** Raw JSON argument string exactly as the model emitted it. */
+  arguments: z.string(),
+  /** Serialized tool result, once available. */
+  result: z.string().optional(),
+  /** Set when execution failed; `result` may then hold a diagnostic. */
+  error: z.string().optional(),
+  /**
+   * Length of the reply's content when this call was requested, so the UI can
+   * render it inline where it happened. Storage-only; absent means "at the top".
+   */
+  contentOffset: z.number().int().nonnegative().optional(),
+});
+export type ToolCall = z.infer<typeof toolCallSchema>;
+
+/**
  * A stored chat message node. Messages form a tree (`parentId`) so a
  * conversation can hold sibling branches (edit / try-again variants).
  */
@@ -88,6 +112,8 @@ export const chatMessageSchema = z.object({
   activeChildId: z.string().optional(),
   /** Set when generating this reply failed or was stopped. Storage-only. */
   error: z.string().optional(),
+  /** Tool-calling steps taken while producing this reply. Storage-only. */
+  toolCalls: z.array(toolCallSchema).optional(),
 });
 export type ChatMessage = z.infer<typeof chatMessageSchema>;
 
@@ -118,6 +144,8 @@ export const defaultsSchema = z.object({
   autoTitle: z.boolean().optional(),
   /** Global system prompt, sent before every chat request. */
   systemPrompt: z.string().optional(),
+  /** Tool ids enabled for tool-calling models. */
+  tools: z.array(z.string()).optional(),
 });
 export type DefaultChatOptions = z.infer<typeof defaultsSchema>;
 
@@ -127,6 +155,19 @@ export const streamEventSchema = z.discriminatedUnion("type", [
     type: z.literal("delta"),
     delta: z.string().optional(),
     reasoning: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal("tool_call"),
+    id: z.string(),
+    name: z.string(),
+    arguments: z.string(),
+  }),
+  z.object({
+    type: z.literal("tool_result"),
+    id: z.string(),
+    name: z.string(),
+    result: z.string(),
+    error: z.string().optional(),
   }),
   z.object({
     type: z.literal("done"),
