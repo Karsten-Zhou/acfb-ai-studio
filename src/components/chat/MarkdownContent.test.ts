@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
-import { createApp, h } from "vue";
+import { createApp, h, ref } from "vue";
 import { createPinia } from "pinia";
 import { i18n } from "@/lib/i18n";
 import MarkdownContent from "./MarkdownContent.vue";
@@ -30,6 +30,15 @@ const SOURCE = [
   "```",
 ].join("\n");
 
+async function waitFor(host: HTMLElement, predicate: () => boolean) {
+  const deadline = Date.now() + 5_000;
+  while (Date.now() < deadline) {
+    if (predicate()) return;
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  }
+  throw new Error(`Timed out waiting for Markdown render. Current text: ${host.textContent}`);
+}
+
 async function mountMarkdown(source: string) {
   const host = document.createElement("div");
   document.body.appendChild(host);
@@ -37,28 +46,68 @@ async function mountMarkdown(source: string) {
   app.use(createPinia());
   app.use(i18n);
   app.mount(host);
-  // The pipeline is async (shiki init); poll until blocks mount or timeout.
-  const deadline = Date.now() + 5_000;
-  while (Date.now() < deadline) {
-    await new Promise((resolve) => setTimeout(resolve, 25));
-    if (host.querySelectorAll("button").length > 0) break;
-  }
+  await waitFor(host, () => host.querySelectorAll("button").length === 2);
   return { host, app };
 }
 
 describe("MarkdownContent", () => {
-  it("replaces code-block markers with mounted CodeBlock components", async () => {
+  it("renders code blocks as Vue components", async () => {
     const { host, app } = await mountMarkdown(SOURCE);
-    // The inert markers must be gone, replaced by real components.
+
     expect(host.querySelectorAll("code-block[data-block]")).toHaveLength(0);
-    // One copy button per fenced block.
     expect(host.querySelectorAll("button")).toHaveLength(2);
-    // Language labels and code are rendered by Vue, not injected HTML.
     expect(host.textContent).toContain("python");
     expect(host.textContent).toContain("print('hi')");
     expect(host.textContent).toContain("ts");
     expect(host.textContent).toContain("const x = 1");
+
     app.unmount();
+    host.remove();
+  });
+
+  it("preserves an existing code block while a later block streams", async () => {
+    const source = ref(SOURCE);
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+
+    const app = createApp({
+      render: () => h(MarkdownContent, { source: source.value }),
+    });
+    app.use(createPinia());
+    app.use(i18n);
+    app.mount(host);
+
+    await waitFor(host, () => host.querySelectorAll("button").length === 2);
+
+    const originalButtons = Array.from(host.querySelectorAll("button"));
+    const updatedSource = [
+      "```python",
+      "print('hi')",
+      "```",
+      "",
+      "```ts",
+      "const x = 1",
+      "const y = 2",
+    ].join("\n");
+
+    source.value = updatedSource;
+
+    await waitFor(
+      host,
+      () =>
+        host.textContent?.includes("const y = 2") === true &&
+        host.querySelectorAll("button").length === 2,
+    );
+
+    const updatedButtons = Array.from(host.querySelectorAll("button"));
+
+    expect(updatedButtons[0]).toBe(originalButtons[0]);
+    expect(updatedButtons[1]).toBe(originalButtons[1]);
+    expect(host.textContent).toContain("print('hi')");
+    expect(host.textContent).toContain("const y = 2");
+
+    app.unmount();
+    host.remove();
   });
 
   it("renders nothing when the source is empty", async () => {
@@ -70,9 +119,11 @@ describe("MarkdownContent", () => {
     app.use(createPinia());
     app.use(i18n);
     app.mount(host);
-    // The empty-source branch is synchronous; one tick is enough to settle.
+
     await new Promise((resolve) => setTimeout(resolve, 50));
     expect(host.textContent).toBe("");
+
     app.unmount();
+    host.remove();
   });
 });

@@ -345,7 +345,7 @@ async function copy() {
       <MessageFooter v-if="!editing">
         <Button
           variant="ghost"
-          size="icon-xs"
+          size="icon-sm"
           :aria-label="copied ? t('common.copied') : t('chat.copyMessage')"
           :title="t('common.copy')"
           @click="copy"
@@ -357,7 +357,7 @@ async function copy() {
         <Button
           v-if="message.role === 'user'"
           variant="ghost"
-          size="icon-xs"
+          size="icon-sm"
           :aria-label="t('chat.editMessage')"
           :title="t('common.edit')"
           :disabled="streaming"
@@ -369,7 +369,7 @@ async function copy() {
         <Button
           v-else
           variant="ghost"
-          size="icon-xs"
+          size="icon-sm"
           :aria-label="t('common.tryAgain')"
           :title="t('common.tryAgain')"
           :disabled="streaming"
@@ -382,7 +382,7 @@ async function copy() {
         <div v-if="siblingCount > 1" class="flex items-center">
           <Button
             variant="ghost"
-            size="icon-xs"
+            size="icon-sm"
             :aria-label="t('chat.previousVersion')"
             :disabled="streaming || siblingIndex <= 1"
             @click="emit('switchSibling', message.id, -1)"
@@ -394,7 +394,7 @@ async function copy() {
           </span>
           <Button
             variant="ghost"
-            size="icon-xs"
+            size="icon-sm"
             :aria-label="t('chat.nextVersion')"
             :disabled="streaming || siblingIndex >= siblingCount"
             @click="emit('switchSibling', message.id, 1)"

@@ -117,7 +117,11 @@ bun run deploy
 - [ ] MCP support for chatting AIs.
 - [ ] Custom OpenAI compatible endpoint support for chatting AIs
 - [ ] Optimise the remaining token calculation.
-- [ ] Rare case: Codeblock doesn't render. Fiexed on page reload. Need to investigate the root cause.
+- [ ] `8001: Invalid input` happens when chat model switched, sometimes.
+- [ ] When using `Qwen3.8 27B` without toolsets:
+    ```
+    8007: {"error":{"message":"1 validation error:\n  {'type': 'value_error', 'loc': ('body',), 'msg': 'Value error, `tools` must not be an empty array. Either provide at least one tool or omit the field entirely.', 'input': {'chat_template_kwargs': {'clear_thinking': False, 'enable_thinking': False}, 'max_completion_tokens': None, 'messages': [{'content': 'Give me a git code to show net codeline changes. answer consisely', 'role': 'user'}], 'model': '@cf<path>-27b', 'parallel_tool_calls': True, 'stream': True, 'stream_options': {'continuous_usage_stats': True, 'include_usage': True}, 'tools': [], 'web_search_options': {'search_context_size': 'medium'}}, 'ctx': {'error': ValueError('`tools` must not be an empty array. Either provide at least one tool or omit the field entirely.')}}","type":"Bad Request","param":"body","code":400}}
+    ```
 
 ## My Other Projects
 

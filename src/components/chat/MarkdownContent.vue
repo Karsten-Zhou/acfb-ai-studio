@@ -1,77 +1,94 @@
 <script setup lang="ts">
-import {
-  getCurrentInstance,
-  h,
-  nextTick,
-  onBeforeUnmount,
-  ref,
-  render,
-  watch,
-} from "vue";
+import { defineComponent, h, onBeforeUnmount, ref, watch, type VNodeChild } from "vue";
 import { storeToRefs } from "pinia";
 import { cachedMarkdown, type RenderedMarkdown } from "@/lib/markdown";
 import { usePreferencesStore } from "@/stores/preferences";
 import CodeBlock from "./CodeBlock.vue";
 
 const props = defineProps<{ source: string }>();
-
 const { isDark } = storeToRefs(usePreferencesStore());
 
-const container = ref<HTMLElement | null>(null);
 const result = ref<RenderedMarkdown>({ html: "", codeBlocks: [] });
-
-// Detached hosts keeping mounted <CodeBlock/> vnodes alive; unmounted on re-render and teardown.
-const hosts: HTMLElement[] = [];
-
-// Programmatic render() has no app context, which breaks plugin-provided
-// components; carry MarkdownContent's context over to the mounted <CodeBlock/>.
-const appContext = getCurrentInstance()?.appContext;
+let renderId = 0;
 
 watch(
   [() => props.source, isDark],
   async () => {
-    unmountCodeBlocks();
+    const currentRenderId = ++renderId;
+
     if (!props.source) {
       result.value = { html: "", codeBlocks: [] };
       return;
     }
-    result.value = await cachedMarkdown(props.source, isDark.value);
-    await nextTick();
-    mountCodeBlocks();
+
+    const rendered = await cachedMarkdown(props.source, isDark.value);
+    if (currentRenderId !== renderId) return;
+
+    result.value = rendered;
   },
   { immediate: true },
 );
 
-function mountCodeBlocks() {
-  const root = container.value;
-  if (!root) return;
-  root.querySelectorAll("code-block[data-block]").forEach((marker) => {
-    const data =
-      result.value.codeBlocks[Number(marker.getAttribute("data-block"))];
-    if (!data) return;
-    const host = document.createElement("div");
-    const vnode = h(CodeBlock, {
-      code: data.code,
-      language: data.language,
-      highlightedHtml: data.highlightedHtml,
-    });
-    if (appContext) vnode.appContext = appContext;
-    render(vnode, host);
-    marker.replaceWith(...Array.from(host.childNodes));
-    hosts.push(host);
-  });
-}
+onBeforeUnmount(() => {
+  renderId++;
+});
 
-function unmountCodeBlocks() {
-  for (const host of hosts) render(null, host);
-  hosts.length = 0;
-}
+/**
+ * Convert sanitized Markdown HTML into Vue VNodes. Code-block markers become
+ * keyed Vue components, so Vue reconciles them instead of replacing the entire
+ * message DOM with v-html.
+ */
+const contentRenderer = defineComponent({
+  name: "MarkdownContentRenderer",
+  setup() {
+    function toVNode(node: Node): VNodeChild {
+      if (node.nodeType === 3) return node.textContent ?? "";
+      if (node.nodeType !== 1) return null;
 
-onBeforeUnmount(unmountCodeBlocks);
+      const element = node as Element;
+      const tag = element.localName;
+
+      if (tag === "code-block") {
+        const rawIndex = element.getAttribute("data-block");
+        const index = rawIndex === null ? Number.NaN : Number(rawIndex);
+        const data = result.value.codeBlocks[index];
+        if (!data) return null;
+
+        return h(CodeBlock, {
+          key: `code-block-${index}`,
+          code: data.code,
+          language: data.language,
+          highlightedHtml: data.highlightedHtml,
+        });
+      }
+
+      const props: Record<string, string> = {};
+      for (const attribute of Array.from(element.attributes)) {
+        props[attribute.name] = attribute.value;
+      }
+
+      const children = Array.from(element.childNodes)
+        .map(toVNode)
+        .filter((child) => child !== null);
+
+      return h(tag, props, children.length ? children : undefined);
+    }
+
+    return () => {
+      // renderMarkdown sanitizes this HTML before it reaches the renderer.
+      const template = document.createElement("template");
+      template.innerHTML = result.value.html;
+
+      const children = Array.from(template.content.childNodes)
+        .map(toVNode)
+        .filter((child) => child !== null);
+
+      return h("div", children);
+    };
+  },
+});
 </script>
 
 <template>
-  <!-- eslint-disable vue/no-v-html -- Html is sanitized by DOMPurify in lib/markdown -->
-  <div ref="container" v-html="result.html" />
-  <!-- eslint-enable vue/no-v-html -->
+  <component :is="contentRenderer" />
 </template>
