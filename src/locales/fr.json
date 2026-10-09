@@ -25,7 +25,6 @@
     "renameDescription": "Saisissez un nouveau nom pour cet élément.",
     "renameAction": "Renommer",
     "deleteTitle": "Supprimer",
-    "deleteDescription": "Voulez-vous vraiment supprimer cet élément ? Cette action est irréversible.",
     "deleteConversationDescription": "Voulez-vous vraiment supprimer cette conversation ? Cette action est irréversible.",
     "deleteImageDescription": "Voulez-vous vraiment supprimer cette image ? Cette action est irréversible."
   },

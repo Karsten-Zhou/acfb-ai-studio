@@ -25,7 +25,6 @@
     "renameDescription": "Gib einen neuen Namen für dieses Element ein.",
     "renameAction": "Umbenennen",
     "deleteTitle": "Löschen",
-    "deleteDescription": "Möchtest du dieses Element wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
     "deleteConversationDescription": "Möchtest du diese Unterhaltung wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
     "deleteImageDescription": "Möchtest du dieses Bild wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
   },

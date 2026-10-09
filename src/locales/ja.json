@@ -25,7 +25,6 @@
     "renameDescription": "この項目の新しい名前を入力してください。",
     "renameAction": "名前を変更",
     "deleteTitle": "削除",
-    "deleteDescription": "この項目を削除しますか？この操作は元に戻せません。",
     "deleteConversationDescription": "この会話を削除しますか？この操作は元に戻せません。",
     "deleteImageDescription": "この画像を削除しますか？この操作は元に戻せません。"
   },

@@ -3,8 +3,6 @@ import AppSidebar from "@/components/AppSidebar.vue";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useChatStore } from "@/stores/chat";
 import { useSyncEngine } from "@/composables/sync";
-import { downloadFile, exportConversations } from "@/lib/conversation-backup";
-import { toastError } from "@/lib/toast";
 import { useTitle } from "@vueuse/core";
 import { computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
@@ -31,39 +29,6 @@ const title = computed(() => {
   }
 });
 useTitle(title);
-
-// -------------------------------------------------------------------------
-// UI Actions (Drive the router)
-// -------------------------------------------------------------------------
-
-function handleSelect(id: string) {
-  router.push(`/chat/${id}`);
-}
-
-function handleNew() {
-  router.push("/chat");
-}
-
-function handleDelete(id: string) {
-  // Store handles the logic (picks next conversation or null).
-  // The store -> route watcher below will handle the redirect.
-  chatStore.deleteConversation(id);
-}
-
-function handleRename(id: string, title: string) {
-  chatStore.renameConversation(id, title);
-}
-
-/** Download the conversation as a llama.cpp-compatible JSONL history file. */
-function handleExport(id: string) {
-  const conv = chatStore.conversationById(id);
-  if (!conv) {
-    toastError(t("common.export"), t("chat.conversationNotFound"));
-    return;
-  }
-  const { filename, bytes } = exportConversations([conv]);
-  downloadFile(filename, bytes);
-}
 
 // -------------------------------------------------------------------------
 // Sync: Route -> Store (User navigated via URL or UI action)
@@ -119,15 +84,7 @@ watch(
 
 <template>
   <SidebarProvider class="h-full min-h-0">
-    <AppSidebar
-      :conversations="chatStore.conversations"
-      :active-id="chatStore.activeId"
-      @select="handleSelect"
-      @new="handleNew"
-      @delete="handleDelete"
-      @rename="handleRename"
-      @export="handleExport"
-    />
+    <AppSidebar />
     <SidebarInset class="h-full min-w-0">
       <RouterView />
     </SidebarInset>

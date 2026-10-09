@@ -115,9 +115,9 @@ bun run deploy
 
 - [ ] Add more language translations.
 - [ ] MCP support for chatting AIs.
-- [ ] Split the code for the sidebar
 - [ ] Custom OpenAI compatible endpoint support for chatting AIs
 - [ ] Optimise the remaining token calculation.
+- [ ] Rare case: Codeblock doesn't render. Fiexed on page reload. Need to investigate the root cause.
 
 ## My Other Projects
 

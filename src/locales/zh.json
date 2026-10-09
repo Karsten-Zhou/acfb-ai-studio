@@ -25,7 +25,6 @@
     "renameDescription": "请输入此项目的新名称。",
     "renameAction": "重命名",
     "deleteTitle": "删除",
-    "deleteDescription": "确定要删除此项目吗？此操作无法撤销。",
     "deleteConversationDescription": "确定要删除此对话吗？此操作无法撤销。",
     "deleteImageDescription": "确定要删除此图片吗？此操作无法撤销。"
   },
