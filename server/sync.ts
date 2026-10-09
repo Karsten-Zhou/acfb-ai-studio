@@ -1,6 +1,6 @@
 // Cross-device sync endpoints, backed by a single Cloudflare KV value.
 //
-// Local development uses Miniflare's simulated namespace (see `wrangler.jsonc`)
+// Local development uses Miniflare's simulated namespace (see `cloudflare.config.ts`)
 // so nothing here touches a real Cloudflare resource.
 //
 // Concurrency is handled with compare-and-swap: a client sends the revision it

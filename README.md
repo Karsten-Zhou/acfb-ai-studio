@@ -60,7 +60,7 @@ Deploy your own private, self-hosted instance in under a minute with one click:
 │   └── generated/            # Codegen models, schemas, and traits
 │
 ├── scripts/                  # Model & theme synchronization scripts
-├── wrangler.jsonc            # Cloudflare Workers configuration
+├── cloudflare.config.ts       # Cloudflare Workers configuration
 ├── vite.config.ts            # Vite configuration (frontend + worker build)
 └── vitest.config.ts          # Unit testing setup
 ```
@@ -85,7 +85,7 @@ bun install
 2. **Authenticate with Cloudflare:**
 
 ```bash
-bunx wrangler login
+bunx cf auth login
 ```
 
 3. **Sync the latest Cloudflare AI models and Shiki themes:**
@@ -110,7 +110,6 @@ bun run deploy
 ## TODO
 
 - [ ] Add more language translations.
-- [ ] Migration from `wrangler` to `cf`.
 - [ ] MCP support for chatting AIs.
 - [ ] Max height for user messages in chat
 - [ ] Split the code for the sidebar

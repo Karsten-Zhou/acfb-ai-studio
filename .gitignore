@@ -142,8 +142,8 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 
-# wrangler
-.wrangler/
+# cloudflare
+.cloudflare/
 
 # ignore bun.lock so Cloudflare build w/o `--frozen-lockfile` with older bunjs
 bun.lock
