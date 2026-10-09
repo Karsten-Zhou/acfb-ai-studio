@@ -46,6 +46,8 @@
     "noImages": "暂无图片"
   },
   "chat": {
+    "showMore": "显示更多",
+    "showLess": "显示更少",
     "chooseModel": "选择模型",
     "conversationNotFound": "找不到该会话",
     "copyCode": "复制代码",

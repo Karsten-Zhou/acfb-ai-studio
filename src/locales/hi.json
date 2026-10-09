@@ -46,6 +46,8 @@
     "noImages": "अभी कोई इमेज नहीं है"
   },
   "chat": {
+    "showMore": "और दिखाएं",
+    "showLess": "कम दिखाएं",
     "chooseModel": "मॉडल चुनें",
     "conversationNotFound": "बातचीत नहीं मिली",
     "copyCode": "कोड कॉपी करें",

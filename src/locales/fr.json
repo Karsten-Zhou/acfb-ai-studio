@@ -46,6 +46,8 @@
     "noImages": "Aucune image pour le moment"
   },
   "chat": {
+    "showMore": "Afficher plus",
+    "showLess": "Afficher moins",
     "chooseModel": "Choisir un modèle",
     "conversationNotFound": "Conversation introuvable",
     "copyCode": "Copier le code",

@@ -13,6 +13,7 @@ export default defineConfig(
       "**/coverage",
       "**/dist",
       "src/components/ui/**",
+      ".cloudflare/**",
       "server/worker-configuration.d.ts",
     ],
   },

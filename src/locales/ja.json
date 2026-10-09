@@ -46,6 +46,8 @@
     "noImages": "まだ画像はありません"
   },
   "chat": {
+    "showMore": "もっと見る",
+    "showLess": "折りたたむ",
     "chooseModel": "モデルを選択",
     "conversationNotFound": "会話が見つかりません",
     "copyCode": "コードをコピー",

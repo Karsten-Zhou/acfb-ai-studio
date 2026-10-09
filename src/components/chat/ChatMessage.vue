@@ -4,6 +4,7 @@ import { useI18n } from "vue-i18n";
 import {
   Brain,
   Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Copy,
@@ -103,6 +104,38 @@ const copied = ref(false);
 const reasoningOpen = ref(false);
 const editArea = ref<InstanceType<typeof Textarea> | null>(null);
 
+/**
+ * Long user messages are clamped to a fixed height with a show more / show less
+ * toggle (ChatGPT style). COLLAPSED_MAX_HEIGHT_PX is the visible ceiling while
+ * collapsed; isOverflowing records whether the full text exceeds it and thus
+ * whether the toggle should render at all.
+ */
+const COLLAPSED_MAX_HEIGHT_PX = 320;
+const contentEl = ref<HTMLElement | null>(null);
+const collapsed = ref(true);
+const isOverflowing = ref(false);
+
+function measureOverflow() {
+  const el = contentEl.value;
+  if (!el) return;
+  isOverflowing.value = el.scrollHeight > COLLAPSED_MAX_HEIGHT_PX + 8;
+  if (!isOverflowing.value) collapsed.value = true;
+}
+
+// Rendered height can change without the text changing (viewport resize, font
+// load), so observe the element as well as the content.
+watch(contentEl, (el, _previous, onCleanup) => {
+  if (!el || typeof ResizeObserver === "undefined") return;
+  const observer = new ResizeObserver(() => measureOverflow());
+  observer.observe(el);
+  onCleanup(() => observer.disconnect());
+});
+
+watch(
+  () => props.message.content,
+  () => void nextTick(measureOverflow),
+);
+
 watch(
   () => props.isLast && props.streaming,
   (active) => {
@@ -197,12 +230,40 @@ async function copy() {
               class="mb-2"
             />
 
-            <p
-              v-if="message.role === 'user' && message.content"
-              class="whitespace-pre-wrap"
-            >
-              {{ message.content }}
-            </p>
+            <div v-if="message.role === 'user' && message.content">
+              <div class="relative">
+                <p
+                  ref="contentEl"
+                  class="whitespace-pre-wrap"
+                  :class="{ 'overflow-hidden': collapsed }"
+                  :style="
+                    collapsed
+                      ? { maxHeight: COLLAPSED_MAX_HEIGHT_PX + 'px' }
+                      : undefined
+                  "
+                >
+                  {{ message.content }}
+                </p>
+                <div
+                  v-if="isOverflowing && collapsed"
+                  class="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-muted to-transparent"
+                />
+              </div>
+              <button
+                v-if="isOverflowing"
+                type="button"
+                class="mt-1 inline-flex items-center gap-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+                @click="collapsed = !collapsed"
+              >
+                <span>
+                  {{ collapsed ? t("chat.showMore") : t("chat.showLess") }}
+                </span>
+                <ChevronDown
+                  class="size-3.5 transition-transform"
+                  :class="{ 'rotate-180': !collapsed }"
+                />
+              </button>
+            </div>
 
             <template v-else-if="message.role === 'assistant'">
               <Collapsible
