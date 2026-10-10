@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { defineComponent, h, onBeforeUnmount, ref, watch, type VNodeChild } from "vue";
+import {
+  defineComponent,
+  h,
+  onBeforeUnmount,
+  ref,
+  watch,
+  type VNodeChild,
+} from "vue";
 import { storeToRefs } from "pinia";
 import { cachedMarkdown, type RenderedMarkdown } from "@/lib/markdown";
 import { usePreferencesStore } from "@/stores/preferences";

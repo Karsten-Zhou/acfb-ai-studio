@@ -85,7 +85,7 @@ describe("renderMarkdown", () => {
     expect(html).toContain('<table dir="auto">');
     // The code marker carries no direction; its CodeBlock UI is pinned LTR.
     expect(html).toContain("<code-block ");
-    expect(html).not.toContain('<code-block dir=');
+    expect(html).not.toContain("<code-block dir=");
   });
 
   it("does not stamp dir on loose-list paragraph wrappers", async () => {
@@ -95,7 +95,7 @@ describe("renderMarkdown", () => {
     const { html } = await renderMarkdown(md);
     expect(html).toContain('<li dir="auto">');
     expect(html).toContain("<p>");
-    expect(html).not.toContain('<p dir=');
+    expect(html).not.toContain("<p dir=");
   });
 
   it("leaves code spans and fenced code containing delimiters untouched", async () => {

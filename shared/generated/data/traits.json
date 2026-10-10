@@ -1,263 +1,7 @@
 {
   "version": 2,
-  "generatedAt": "2026-10-08T10:20:54.295Z",
+  "generatedAt": "2026-10-10T14:18:25.885Z",
   "traits": {
-    "@cf/deepseek-ai/deepseek-v4-flash-0731": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "The input text prompt for the model to generate a response."
-        },
-        "model": {
-          "type": "string",
-          "description": "ID of the model to use (e.g. '@cf/zai-org/glm-4.7-flash, etc')."
-        },
-        "audio": {
-          "type": "object"
-        },
-        "frequency_penalty": {
-          "type": "number",
-          "default": 0,
-          "description": "Penalizes new tokens based on their existing frequency in the text so far."
-        },
-        "logit_bias": {
-          "type": "object",
-          "description": "Modify the likelihood of specified tokens appearing in the completion. Maps token IDs to bias values from -100 to 100."
-        },
-        "logprobs": {
-          "type": "boolean",
-          "default": false,
-          "description": "Whether to return log probabilities of the output tokens."
-        },
-        "top_logprobs": {
-          "type": "integer",
-          "description": "How many top log probabilities to return at each token position (0-20). Requires logprobs=true."
-        },
-        "max_tokens": {
-          "type": "integer",
-          "description": "Deprecated in favor of max_completion_tokens. The maximum number of tokens to generate."
-        },
-        "max_completion_tokens": {
-          "type": "integer",
-          "description": "An upper bound for the number of tokens that can be generated for a completion."
-        },
-        "metadata": {
-          "type": "object",
-          "description": "Set of 16 key-value pairs that can be attached to the object."
-        },
-        "modalities": {
-          "type": "array",
-          "description": "Output types requested from the model (e.g. ['text'] or ['text', 'audio'])."
-        },
-        "n": {
-          "type": "integer",
-          "default": 1,
-          "description": "How many chat completion choices to generate for each input message."
-        },
-        "parallel_tool_calls": {
-          "type": "boolean",
-          "default": true,
-          "description": "Whether to enable parallel function calling during tool use."
-        },
-        "prediction": {
-          "type": "object"
-        },
-        "presence_penalty": {
-          "type": "number",
-          "default": 0,
-          "description": "Penalizes new tokens based on whether they appear in the text so far."
-        },
-        "reasoning_effort": {
-          "type": "string",
-          "default": "high",
-          "enum": ["max", "high", "low", "none"],
-          "description": "Reasoning effort. Supported levels: max, high, low, none. Compatibility aliases: minimal maps to low; medium maps to high; xhigh maps to high."
-        },
-        "chat_template_kwargs": {
-          "type": "object"
-        },
-        "chat_template_kwargs.enable_thinking": {
-          "type": "boolean",
-          "default": true,
-          "description": "Whether to enable reasoning for this model."
-        },
-        "chat_template_kwargs.clear_thinking": {
-          "type": "boolean",
-          "default": false,
-          "description": "If false, preserves reasoning context between turns."
-        },
-        "response_format": {},
-        "seed": {
-          "type": "integer",
-          "description": "If specified, the system will make a best effort to sample deterministically."
-        },
-        "stop": {
-          "type": "null",
-          "description": "Up to 4 sequences where the API will stop generating further tokens."
-        },
-        "store": {
-          "type": "boolean",
-          "default": false,
-          "description": "Whether to store the output for model distillation / evals."
-        },
-        "stream": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, partial message deltas will be sent as server-sent events."
-        },
-        "stream_options": {
-          "type": "object"
-        },
-        "temperature": {
-          "type": "number",
-          "default": 1,
-          "description": "Sampling temperature between 0 and 2."
-        },
-        "tool_choice": {},
-        "tools": {
-          "type": "array",
-          "description": "A list of tools the model may call."
-        },
-        "top_p": {
-          "type": "number",
-          "default": 1,
-          "description": "Nucleus sampling: considers the results of the tokens with top_p probability mass."
-        },
-        "user": {
-          "type": "string",
-          "description": "A unique identifier representing your end-user, for abuse monitoring."
-        },
-        "web_search_options": {
-          "type": "object"
-        },
-        "function_call": {
-          "type": "string",
-          "enum": ["none", "auto"]
-        },
-        "functions": {
-          "type": "array"
-        },
-        "messages": {
-          "type": "array",
-          "description": "A list of messages comprising the conversation so far."
-        }
-      },
-      "output": "image/png",
-      "multipart": false,
-      "input": {
-        "messages": true,
-        "image": true
-      }
-    },
-    "@cf/black-forest-labs/flux-2-dev": {
-      "params": {
-        "multipart": {
-          "type": "object"
-        },
-        "multipart.body": {
-          "type": "object"
-        },
-        "multipart.contentType": {
-          "type": "string"
-        }
-      },
-      "output": "json",
-      "multipart": true,
-      "input": {
-        "messages": false,
-        "image": false
-      }
-    },
-    "@cf/black-forest-labs/flux-2-klein-9b": {
-      "params": {
-        "multipart": {
-          "type": "object"
-        },
-        "multipart.body": {
-          "type": "object"
-        },
-        "multipart.contentType": {
-          "type": "string"
-        }
-      },
-      "output": "json",
-      "multipart": true,
-      "input": {
-        "messages": false,
-        "image": false
-      }
-    },
-    "@cf/bytedance/stable-diffusion-xl-lightning": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "A text description of the image you want to generate"
-        },
-        "negative_prompt": {
-          "type": "string",
-          "description": "Text describing elements to avoid in the generated image"
-        },
-        "height": {
-          "type": "integer",
-          "min": 256,
-          "max": 2048,
-          "description": "The height of the generated image in pixels"
-        },
-        "width": {
-          "type": "integer",
-          "min": 256,
-          "max": 2048,
-          "description": "The width of the generated image in pixels"
-        },
-        "image": {
-          "type": "array",
-          "description": "For use with img2img tasks. An array of integers that represent the image data constrained to 8-bit unsigned integer values"
-        },
-        "image_b64": {
-          "type": "string",
-          "description": "For use with img2img tasks. A base64-encoded string of the input image"
-        },
-        "mask": {
-          "type": "array",
-          "description": "An array representing An array of integers that represent mask image data for inpainting constrained to 8-bit unsigned integer values"
-        },
-        "num_steps": {
-          "type": "integer",
-          "max": 20,
-          "default": 20,
-          "description": "The number of diffusion steps; higher values can improve quality but take longer"
-        },
-        "strength": {
-          "type": "number",
-          "default": 1,
-          "description": "A value between 0 and 1 indicating how strongly to apply the transformation during img2img tasks; lower values make the output closer to the input image"
-        },
-        "guidance": {
-          "type": "number",
-          "default": 7.5,
-          "description": "Controls how closely the generated image should adhere to the prompt; higher values make the image more aligned with the prompt"
-        },
-        "seed": {
-          "type": "integer",
-          "description": "Random seed for reproducibility of the image generation"
-        }
-      },
-      "output": "image/png",
-      "multipart": false,
-      "input": {
-        "messages": false,
-        "image": true
-      }
-    },
-    "@cf/cloudflare/clef": {
-      "params": {},
-      "output": "json",
-      "multipart": false,
-      "input": {
-        "messages": false,
-        "image": false
-      }
-    },
     "@cf/black-forest-labs/flux-2-klein-4b": {
       "params": {
         "multipart": {
@@ -277,132 +21,84 @@
         "image": false
       }
     },
-    "@cf/black-forest-labs/flux-1-schnell": {
+    "@cf/qwen/qwq-32b": {
       "params": {
         "prompt": {
           "type": "string",
-          "description": "A text description of the image you want to generate."
+          "description": "The input text prompt for the model to generate a response."
         },
-        "steps": {
+        "guided_json": {
+          "type": "object",
+          "description": "JSON schema that should be fulfilled for the response."
+        },
+        "raw": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
+        },
+        "max_tokens": {
           "type": "integer",
-          "max": 8,
-          "description": "The number of diffusion steps; higher values can improve quality but take longer. Default is 4"
-        }
-      },
-      "output": "json",
-      "multipart": false,
-      "input": {
-        "messages": false,
-        "image": false
-      }
-    },
-    "@cf/lykon/dreamshaper-8-lcm": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "A text description of the image you want to generate"
+          "default": 256,
+          "description": "The maximum number of tokens to generate in the response."
         },
-        "negative_prompt": {
-          "type": "string",
-          "description": "Text describing elements to avoid in the generated image"
-        },
-        "height": {
-          "type": "integer",
-          "min": 256,
-          "max": 2048,
-          "description": "The height of the generated image in pixels"
-        },
-        "width": {
-          "type": "integer",
-          "min": 256,
-          "max": 2048,
-          "description": "The width of the generated image in pixels"
-        },
-        "image": {
-          "type": "array",
-          "description": "For use with img2img tasks. An array of integers that represent the image data constrained to 8-bit unsigned integer values"
-        },
-        "image_b64": {
-          "type": "string",
-          "description": "For use with img2img tasks. A base64-encoded string of the input image"
-        },
-        "mask": {
-          "type": "array",
-          "description": "An array representing An array of integers that represent mask image data for inpainting constrained to 8-bit unsigned integer values"
-        },
-        "num_steps": {
-          "type": "integer",
-          "max": 20,
-          "default": 20,
-          "description": "The number of diffusion steps; higher values can improve quality but take longer"
-        },
-        "strength": {
+        "temperature": {
           "type": "number",
-          "default": 1,
-          "description": "A value between 0 and 1 indicating how strongly to apply the transformation during img2img tasks; lower values make the output closer to the input image"
+          "min": 0,
+          "max": 5,
+          "default": 0.15,
+          "description": "Controls the randomness of the output; higher values produce more random results."
         },
-        "guidance": {
+        "top_p": {
           "type": "number",
-          "default": 7.5,
-          "description": "Controls how closely the generated image should adhere to the prompt; higher values make the image more aligned with the prompt"
+          "min": 0,
+          "max": 2,
+          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50,
+          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
         },
         "seed": {
           "type": "integer",
-          "description": "Random seed for reproducibility of the image generation"
+          "min": 1,
+          "max": 9999999999,
+          "description": "Random seed for reproducibility of the generation."
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Penalty for repeated tokens; higher values discourage repetition."
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Increases the likelihood of the model introducing new topics."
         }
       },
       "output": "image/png",
       "multipart": false,
       "input": {
         "messages": false,
-        "image": true
+        "image": false
       }
     },
-    "@cf/leonardo/lucid-origin": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "A text description of the image you want to generate."
-        },
-        "guidance": {
-          "type": "number",
-          "min": 0,
-          "max": 10,
-          "default": 4.5,
-          "description": "Controls how closely the generated image should adhere to the prompt; higher values make the image more aligned with the prompt"
-        },
-        "seed": {
-          "type": "integer",
-          "min": 0,
-          "description": "Random seed for reproducibility of the image generation"
-        },
-        "height": {
-          "type": "integer",
-          "min": 0,
-          "max": 2500,
-          "default": 1120,
-          "description": "The height of the generated image in pixels"
-        },
-        "width": {
-          "type": "integer",
-          "min": 0,
-          "max": 2500,
-          "default": 1120,
-          "description": "The width of the generated image in pixels"
-        },
-        "num_steps": {
-          "type": "integer",
-          "min": 1,
-          "max": 40,
-          "description": "The number of diffusion steps; higher values can improve quality but take longer"
-        },
-        "steps": {
-          "type": "integer",
-          "min": 1,
-          "max": 40,
-          "description": "The number of diffusion steps; higher values can improve quality but take longer"
-        }
-      },
+    "@cf/cloudflare/clef-omni": {
+      "params": {},
       "output": "json",
       "multipart": false,
       "input": {
@@ -410,7 +106,7 @@
         "image": false
       }
     },
-    "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b": {
+    "@cf/aisingapore/gemma-sea-lion-v4-27b-it": {
       "params": {
         "prompt": {
           "type": "string",
@@ -440,7 +136,7 @@
         },
         "max_tokens": {
           "type": "integer",
-          "default": 256,
+          "default": 2000,
           "description": "The maximum number of tokens to generate in the response."
         },
         "temperature": {
@@ -494,296 +190,13 @@
         "image": false
       }
     },
-    "@cf/google/gemma-4-26b-a4b-it": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "The input text prompt for the model to generate a response."
-        },
-        "skip_special_tokens": {
-          "type": "boolean",
-          "default": false
-        },
-        "model": {
-          "type": "string",
-          "description": "ID of the model to use (e.g. '@cf/zai-org/glm-4.7-flash, etc')."
-        },
-        "audio": {
-          "type": "object"
-        },
-        "frequency_penalty": {
-          "type": "number",
-          "default": 0,
-          "description": "Penalizes new tokens based on their existing frequency in the text so far."
-        },
-        "logit_bias": {
-          "type": "object",
-          "description": "Modify the likelihood of specified tokens appearing in the completion. Maps token IDs to bias values from -100 to 100."
-        },
-        "logprobs": {
-          "type": "boolean",
-          "default": false,
-          "description": "Whether to return log probabilities of the output tokens."
-        },
-        "top_logprobs": {
-          "type": "integer",
-          "description": "How many top log probabilities to return at each token position (0-20). Requires logprobs=true."
-        },
-        "max_tokens": {
-          "type": "integer",
-          "description": "Deprecated in favor of max_completion_tokens. The maximum number of tokens to generate."
-        },
-        "max_completion_tokens": {
-          "type": "integer",
-          "description": "An upper bound for the number of tokens that can be generated for a completion."
-        },
-        "metadata": {
-          "type": "object",
-          "description": "Set of 16 key-value pairs that can be attached to the object."
-        },
-        "modalities": {
-          "type": "array",
-          "description": "Output types requested from the model (e.g. ['text'] or ['text', 'audio'])."
-        },
-        "n": {
-          "type": "integer",
-          "default": 1,
-          "description": "How many chat completion choices to generate for each input message."
-        },
-        "parallel_tool_calls": {
-          "type": "boolean",
-          "default": true,
-          "description": "Whether to enable parallel function calling during tool use."
-        },
-        "prediction": {
-          "type": "object"
-        },
-        "presence_penalty": {
-          "type": "number",
-          "default": 0,
-          "description": "Penalizes new tokens based on whether they appear in the text so far."
-        },
-        "chat_template_kwargs": {
-          "type": "object"
-        },
-        "chat_template_kwargs.enable_thinking": {
-          "type": "boolean",
-          "default": true,
-          "description": "Whether to enable reasoning for this model."
-        },
-        "chat_template_kwargs.clear_thinking": {
-          "type": "boolean",
-          "default": false,
-          "description": "If false, preserves reasoning context between turns."
-        },
-        "response_format": {},
-        "seed": {
-          "type": "integer",
-          "description": "If specified, the system will make a best effort to sample deterministically."
-        },
-        "stop": {
-          "type": "null",
-          "description": "Up to 4 sequences where the API will stop generating further tokens."
-        },
-        "store": {
-          "type": "boolean",
-          "default": false,
-          "description": "Whether to store the output for model distillation / evals."
-        },
-        "stream": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, partial message deltas will be sent as server-sent events."
-        },
-        "stream_options": {
-          "type": "object"
-        },
-        "temperature": {
-          "type": "number",
-          "default": 1,
-          "description": "Sampling temperature between 0 and 2."
-        },
-        "tool_choice": {},
-        "tools": {
-          "type": "array",
-          "description": "A list of tools the model may call."
-        },
-        "top_p": {
-          "type": "number",
-          "default": 1,
-          "description": "Nucleus sampling: considers the results of the tokens with top_p probability mass."
-        },
-        "user": {
-          "type": "string",
-          "description": "A unique identifier representing your end-user, for abuse monitoring."
-        },
-        "web_search_options": {
-          "type": "object"
-        },
-        "function_call": {
-          "type": "string",
-          "enum": ["none", "auto"]
-        },
-        "functions": {
-          "type": "array"
-        },
-        "messages": {
-          "type": "array",
-          "description": "A list of messages comprising the conversation so far."
-        }
-      },
-      "output": "image/png",
+    "@cf/utter-project/eurollm-9b-it": {
+      "params": {},
+      "output": "json",
       "multipart": false,
       "input": {
-        "messages": true,
-        "image": true
-      }
-    },
-    "@cf/moonshotai/kimi-k2.6": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "The input text prompt for the model to generate a response."
-        },
-        "model": {
-          "type": "string",
-          "description": "ID of the model to use (e.g. '@cf/zai-org/glm-4.7-flash, etc')."
-        },
-        "audio": {
-          "type": "object"
-        },
-        "frequency_penalty": {
-          "type": "number",
-          "default": 0,
-          "description": "Penalizes new tokens based on their existing frequency in the text so far."
-        },
-        "logit_bias": {
-          "type": "object",
-          "description": "Modify the likelihood of specified tokens appearing in the completion. Maps token IDs to bias values from -100 to 100."
-        },
-        "logprobs": {
-          "type": "boolean",
-          "default": false,
-          "description": "Whether to return log probabilities of the output tokens."
-        },
-        "top_logprobs": {
-          "type": "integer",
-          "description": "How many top log probabilities to return at each token position (0-20). Requires logprobs=true."
-        },
-        "max_tokens": {
-          "type": "integer",
-          "description": "Deprecated in favor of max_completion_tokens. The maximum number of tokens to generate."
-        },
-        "max_completion_tokens": {
-          "type": "integer",
-          "description": "An upper bound for the number of tokens that can be generated for a completion."
-        },
-        "metadata": {
-          "type": "object",
-          "description": "Set of 16 key-value pairs that can be attached to the object."
-        },
-        "modalities": {
-          "type": "array",
-          "description": "Output types requested from the model (e.g. ['text'] or ['text', 'audio'])."
-        },
-        "n": {
-          "type": "integer",
-          "default": 1,
-          "description": "How many chat completion choices to generate for each input message."
-        },
-        "parallel_tool_calls": {
-          "type": "boolean",
-          "default": true,
-          "description": "Whether to enable parallel function calling during tool use."
-        },
-        "prediction": {
-          "type": "object"
-        },
-        "presence_penalty": {
-          "type": "number",
-          "default": 0,
-          "description": "Penalizes new tokens based on whether they appear in the text so far."
-        },
-        "reasoning_effort": {
-          "type": "string",
-          "default": "high",
-          "enum": ["high", "none"],
-          "description": "Reasoning effort. Supported levels: high, none. Compatibility aliases: low maps to high; medium maps to high; max maps to high."
-        },
-        "chat_template_kwargs": {
-          "type": "object"
-        },
-        "chat_template_kwargs.enable_thinking": {
-          "type": "boolean",
-          "default": true,
-          "description": "Whether to enable reasoning for this model."
-        },
-        "chat_template_kwargs.clear_thinking": {
-          "type": "boolean",
-          "default": false,
-          "description": "If false, preserves reasoning context between turns."
-        },
-        "response_format": {},
-        "seed": {
-          "type": "integer",
-          "description": "If specified, the system will make a best effort to sample deterministically."
-        },
-        "stop": {
-          "type": "null",
-          "description": "Up to 4 sequences where the API will stop generating further tokens."
-        },
-        "store": {
-          "type": "boolean",
-          "default": false,
-          "description": "Whether to store the output for model distillation / evals."
-        },
-        "stream": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, partial message deltas will be sent as server-sent events."
-        },
-        "stream_options": {
-          "type": "object"
-        },
-        "temperature": {
-          "type": "number",
-          "default": 1,
-          "description": "Sampling temperature between 0 and 2."
-        },
-        "tool_choice": {},
-        "tools": {
-          "type": "array",
-          "description": "A list of tools the model may call."
-        },
-        "top_p": {
-          "type": "number",
-          "default": 1,
-          "description": "Nucleus sampling: considers the results of the tokens with top_p probability mass."
-        },
-        "user": {
-          "type": "string",
-          "description": "A unique identifier representing your end-user, for abuse monitoring."
-        },
-        "web_search_options": {
-          "type": "object"
-        },
-        "function_call": {
-          "type": "string",
-          "enum": ["none", "auto"]
-        },
-        "functions": {
-          "type": "array"
-        },
-        "messages": {
-          "type": "array",
-          "description": "A list of messages comprising the conversation so far."
-        }
-      },
-      "output": "image/png",
-      "multipart": false,
-      "input": {
-        "messages": true,
-        "image": true
+        "messages": false,
+        "image": false
       }
     },
     "@cf/cloudflare/clef-flash": {
@@ -795,169 +208,29 @@
         "image": false
       }
     },
-    "@cf/google/gemma-2b-it-lora": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "The input text prompt for the model to generate a response."
-        },
-        "lora": {
-          "type": "string",
-          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
-        },
-        "response_format": {
-          "type": "object"
-        },
-        "response_format.type": {
-          "type": "string",
-          "enum": ["json_object", "json_schema"]
-        },
-        "response_format.json_schema": {},
-        "raw": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
-        },
-        "stream": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
-        },
-        "max_tokens": {
-          "type": "integer",
-          "default": 256,
-          "description": "The maximum number of tokens to generate in the response."
-        },
-        "temperature": {
-          "type": "number",
-          "min": 0,
-          "max": 5,
-          "default": 0.6,
-          "description": "Controls the randomness of the output; higher values produce more random results."
-        },
-        "top_p": {
-          "type": "number",
-          "min": 0.001,
-          "max": 1,
-          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
-        },
-        "top_k": {
-          "type": "integer",
-          "min": 1,
-          "max": 50,
-          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
-        },
-        "seed": {
-          "type": "integer",
-          "min": 1,
-          "max": 9999999999,
-          "description": "Random seed for reproducibility of the generation."
-        },
-        "repetition_penalty": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Penalty for repeated tokens; higher values discourage repetition."
-        },
-        "frequency_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
-        },
-        "presence_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Increases the likelihood of the model introducing new topics."
-        }
-      },
-      "output": "image/png",
+    "@cf/cloudflare/clef": {
+      "params": {},
+      "output": "json",
       "multipart": false,
       "input": {
         "messages": false,
         "image": false
       }
     },
-    "@cf/google/gemma-7b-it-lora": {
+    "@cf/black-forest-labs/flux-2-dev": {
       "params": {
-        "prompt": {
-          "type": "string",
-          "description": "The input text prompt for the model to generate a response."
-        },
-        "lora": {
-          "type": "string",
-          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
-        },
-        "response_format": {
+        "multipart": {
           "type": "object"
         },
-        "response_format.type": {
-          "type": "string",
-          "enum": ["json_object", "json_schema"]
+        "multipart.body": {
+          "type": "object"
         },
-        "response_format.json_schema": {},
-        "raw": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
-        },
-        "stream": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
-        },
-        "max_tokens": {
-          "type": "integer",
-          "default": 256,
-          "description": "The maximum number of tokens to generate in the response."
-        },
-        "temperature": {
-          "type": "number",
-          "min": 0,
-          "max": 5,
-          "default": 0.6,
-          "description": "Controls the randomness of the output; higher values produce more random results."
-        },
-        "top_p": {
-          "type": "number",
-          "min": 0.001,
-          "max": 1,
-          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
-        },
-        "top_k": {
-          "type": "integer",
-          "min": 1,
-          "max": 50,
-          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
-        },
-        "seed": {
-          "type": "integer",
-          "min": 1,
-          "max": 9999999999,
-          "description": "Random seed for reproducibility of the generation."
-        },
-        "repetition_penalty": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Penalty for repeated tokens; higher values discourage repetition."
-        },
-        "frequency_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
-        },
-        "presence_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Increases the likelihood of the model introducing new topics."
+        "multipart.contentType": {
+          "type": "string"
         }
       },
-      "output": "image/png",
-      "multipart": false,
+      "output": "json",
+      "multipart": true,
       "input": {
         "messages": false,
         "image": false
@@ -1047,497 +320,11 @@
         "image": false
       }
     },
-    "@cf/runwayml/stable-diffusion-v1-5-inpainting": {
+    "@cf/nvidia/nemotron-3-120b-a12b": {
       "params": {
-        "prompt": {
-          "type": "string",
-          "description": "A text description of the image you want to generate"
-        },
-        "negative_prompt": {
-          "type": "string",
-          "description": "Text describing elements to avoid in the generated image"
-        },
-        "height": {
-          "type": "integer",
-          "min": 256,
-          "max": 2048,
-          "description": "The height of the generated image in pixels"
-        },
-        "width": {
-          "type": "integer",
-          "min": 256,
-          "max": 2048,
-          "description": "The width of the generated image in pixels"
-        },
-        "image": {
-          "type": "array",
-          "description": "For use with img2img tasks. An array of integers that represent the image data constrained to 8-bit unsigned integer values"
-        },
-        "image_b64": {
-          "type": "string",
-          "description": "For use with img2img tasks. A base64-encoded string of the input image"
-        },
-        "mask": {
-          "type": "array",
-          "description": "An array representing An array of integers that represent mask image data for inpainting constrained to 8-bit unsigned integer values"
-        },
-        "num_steps": {
-          "type": "integer",
-          "max": 20,
-          "default": 20,
-          "description": "The number of diffusion steps; higher values can improve quality but take longer"
-        },
-        "strength": {
-          "type": "number",
-          "default": 1,
-          "description": "A value between 0 and 1 indicating how strongly to apply the transformation during img2img tasks; lower values make the output closer to the input image"
-        },
-        "guidance": {
-          "type": "number",
-          "default": 7.5,
-          "description": "Controls how closely the generated image should adhere to the prompt; higher values make the image more aligned with the prompt"
-        },
-        "seed": {
-          "type": "integer",
-          "description": "Random seed for reproducibility of the image generation"
-        }
-      },
-      "output": "image/png",
-      "multipart": false,
-      "input": {
-        "messages": false,
-        "image": true
-      }
-    },
-    "@cf/aisingapore/gemma-sea-lion-v4-27b-it": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "The input text prompt for the model to generate a response."
-        },
-        "lora": {
-          "type": "string",
-          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
-        },
-        "response_format": {
-          "type": "object"
-        },
-        "response_format.type": {
-          "type": "string",
-          "enum": ["json_object", "json_schema"]
-        },
-        "response_format.json_schema": {},
-        "raw": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
-        },
-        "stream": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
-        },
-        "max_tokens": {
-          "type": "integer",
-          "default": 2000,
-          "description": "The maximum number of tokens to generate in the response."
-        },
-        "temperature": {
-          "type": "number",
-          "min": 0,
-          "max": 5,
-          "default": 0.6,
-          "description": "Controls the randomness of the output; higher values produce more random results."
-        },
-        "top_p": {
-          "type": "number",
-          "min": 0.001,
-          "max": 1,
-          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
-        },
-        "top_k": {
-          "type": "integer",
-          "min": 1,
-          "max": 50,
-          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
-        },
-        "seed": {
-          "type": "integer",
-          "min": 1,
-          "max": 9999999999,
-          "description": "Random seed for reproducibility of the generation."
-        },
-        "repetition_penalty": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Penalty for repeated tokens; higher values discourage repetition."
-        },
-        "frequency_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
-        },
-        "presence_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Increases the likelihood of the model introducing new topics."
-        }
-      },
-      "output": "image/png",
-      "multipart": false,
-      "input": {
-        "messages": false,
-        "image": false
-      }
-    },
-    "@cf/meta/llama-3.2-3b-instruct": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "The input text prompt for the model to generate a response."
-        },
-        "lora": {
-          "type": "string",
-          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
-        },
-        "response_format": {
-          "type": "object"
-        },
-        "response_format.type": {
-          "type": "string",
-          "enum": ["json_object", "json_schema"]
-        },
-        "response_format.json_schema": {},
-        "raw": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
-        },
-        "stream": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
-        },
-        "max_tokens": {
-          "type": "integer",
-          "default": 256,
-          "description": "The maximum number of tokens to generate in the response."
-        },
-        "temperature": {
-          "type": "number",
-          "min": 0,
-          "max": 5,
-          "default": 0.6,
-          "description": "Controls the randomness of the output; higher values produce more random results."
-        },
-        "top_p": {
-          "type": "number",
-          "min": 0.001,
-          "max": 1,
-          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
-        },
-        "top_k": {
-          "type": "integer",
-          "min": 1,
-          "max": 50,
-          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
-        },
-        "seed": {
-          "type": "integer",
-          "min": 1,
-          "max": 9999999999,
-          "description": "Random seed for reproducibility of the generation."
-        },
-        "repetition_penalty": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Penalty for repeated tokens; higher values discourage repetition."
-        },
-        "frequency_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
-        },
-        "presence_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Increases the likelihood of the model introducing new topics."
-        }
-      },
-      "output": "image/png",
-      "multipart": false,
-      "input": {
-        "messages": false,
-        "image": false
-      }
-    },
-    "@cf/meta/llama-3.3-70b-instruct-fp8-fast": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "The input text prompt for the model to generate a response."
-        },
-        "lora": {
-          "type": "string",
-          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
-        },
-        "response_format": {
-          "type": "object"
-        },
-        "response_format.type": {
-          "type": "string",
-          "enum": ["json_object", "json_schema"]
-        },
-        "response_format.json_schema": {},
-        "raw": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
-        },
-        "stream": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
-        },
-        "max_tokens": {
-          "type": "integer",
-          "default": 256,
-          "description": "The maximum number of tokens to generate in the response."
-        },
-        "temperature": {
-          "type": "number",
-          "min": 0,
-          "max": 5,
-          "default": 0.6,
-          "description": "Controls the randomness of the output; higher values produce more random results."
-        },
-        "top_p": {
-          "type": "number",
-          "min": 0.001,
-          "max": 1,
-          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
-        },
-        "top_k": {
-          "type": "integer",
-          "min": 1,
-          "max": 50,
-          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
-        },
-        "seed": {
-          "type": "integer",
-          "min": 1,
-          "max": 9999999999,
-          "description": "Random seed for reproducibility of the generation."
-        },
-        "repetition_penalty": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Penalty for repeated tokens; higher values discourage repetition."
-        },
-        "frequency_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
-        },
-        "presence_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Increases the likelihood of the model introducing new topics."
-        }
-      },
-      "output": "image/png",
-      "multipart": false,
-      "input": {
-        "messages": false,
-        "image": false
-      }
-    },
-    "@cf/mistral/mistral-7b-instruct-v0.2-lora": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "The input text prompt for the model to generate a response."
-        },
-        "lora": {
-          "type": "string",
-          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
-        },
-        "response_format": {
-          "type": "object"
-        },
-        "response_format.type": {
-          "type": "string",
-          "enum": ["json_object", "json_schema"]
-        },
-        "response_format.json_schema": {},
-        "raw": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
-        },
-        "stream": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
-        },
-        "max_tokens": {
-          "type": "integer",
-          "default": 256,
-          "description": "The maximum number of tokens to generate in the response."
-        },
-        "temperature": {
-          "type": "number",
-          "min": 0,
-          "max": 5,
-          "default": 0.6,
-          "description": "Controls the randomness of the output; higher values produce more random results."
-        },
-        "top_p": {
-          "type": "number",
-          "min": 0.001,
-          "max": 1,
-          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
-        },
-        "top_k": {
-          "type": "integer",
-          "min": 1,
-          "max": 50,
-          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
-        },
-        "seed": {
-          "type": "integer",
-          "min": 1,
-          "max": 9999999999,
-          "description": "Random seed for reproducibility of the generation."
-        },
-        "repetition_penalty": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Penalty for repeated tokens; higher values discourage repetition."
-        },
-        "frequency_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
-        },
-        "presence_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Increases the likelihood of the model introducing new topics."
-        }
-      },
-      "output": "image/png",
-      "multipart": false,
-      "input": {
-        "messages": false,
-        "image": false
-      }
-    },
-    "@cf/ibm-granite/granite-4.0-h-micro": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "The input text prompt for the model to generate a response."
-        },
-        "lora": {
-          "type": "string",
-          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
-        },
-        "response_format": {
-          "type": "object"
-        },
-        "response_format.type": {
-          "type": "string",
-          "enum": ["json_object", "json_schema"]
-        },
-        "response_format.json_schema": {},
-        "raw": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
-        },
-        "stream": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
-        },
-        "max_tokens": {
-          "type": "integer",
-          "default": 256,
-          "description": "The maximum number of tokens to generate in the response."
-        },
-        "temperature": {
-          "type": "number",
-          "min": 0,
-          "max": 5,
-          "default": 0.6,
-          "description": "Controls the randomness of the output; higher values produce more random results."
-        },
-        "top_p": {
-          "type": "number",
-          "min": 0.001,
-          "max": 1,
-          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
-        },
-        "top_k": {
-          "type": "integer",
-          "min": 1,
-          "max": 50,
-          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
-        },
-        "seed": {
-          "type": "integer",
-          "min": 1,
-          "max": 9999999999,
-          "description": "Random seed for reproducibility of the generation."
-        },
-        "repetition_penalty": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Penalty for repeated tokens; higher values discourage repetition."
-        },
-        "frequency_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
-        },
-        "presence_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Increases the likelihood of the model introducing new topics."
-        }
-      },
-      "output": "image/png",
-      "multipart": false,
-      "input": {
-        "messages": false,
-        "image": false
-      }
-    },
-    "@cf/qwen/qwen3.8-27b": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "The input text prompt for the model to generate a response."
-        },
         "model": {
           "type": "string",
-          "description": "ID of the model to use (e.g. '@cf/zai-org/glm-4.7-flash, etc')."
+          "description": "ID of the model to use (for example, '@cf/nvidia/nemotron-3-120b-a12b')."
         },
         "audio": {
           "type": "object"
@@ -1562,7 +349,7 @@
         },
         "max_tokens": {
           "type": "integer",
-          "description": "Deprecated in favor of max_completion_tokens. The maximum number of tokens to generate."
+          "description": "The maximum number of tokens to generate."
         },
         "max_completion_tokens": {
           "type": "integer",
@@ -1570,11 +357,11 @@
         },
         "metadata": {
           "type": "object",
-          "description": "Set of 16 key-value pairs that can be attached to the object."
+          "description": "Set of key-value pairs that can be attached to the object."
         },
         "modalities": {
           "type": "array",
-          "description": "Output types requested from the model (e.g. ['text'] or ['text', 'audio'])."
+          "description": "Output types requested from the model."
         },
         "n": {
           "type": "integer",
@@ -1594,24 +381,24 @@
           "default": 0,
           "description": "Penalizes new tokens based on whether they appear in the text so far."
         },
-        "reasoning_effort": {
-          "type": "string",
-          "default": "xhigh",
-          "enum": ["low", "medium", "xhigh"],
-          "description": "Reasoning effort. Supported levels: low, medium, xhigh."
-        },
         "chat_template_kwargs": {
-          "type": "object"
+          "type": "object",
+          "description": "Nemotron chat-template controls for normal reasoning, low-effort reasoning, and non-reasoning responses."
         },
         "chat_template_kwargs.enable_thinking": {
           "type": "boolean",
           "default": true,
-          "description": "Whether to enable reasoning for this model."
+          "description": "Whether to enable reasoning. Reasoning is enabled by default."
         },
-        "chat_template_kwargs.clear_thinking": {
+        "chat_template_kwargs.low_effort": {
           "type": "boolean",
           "default": false,
-          "description": "If false, preserves reasoning context between turns."
+          "description": "When reasoning is enabled, use Nemotron's low-effort reasoning mode, which uses significantly fewer reasoning tokens."
+        },
+        "chat_template_kwargs.force_nonempty_content": {
+          "type": "boolean",
+          "default": false,
+          "description": "For coding agent use, Nvidia suggests setting force_nonempty_content=true"
         },
         "response_format": {},
         "seed": {
@@ -1625,7 +412,7 @@
         "store": {
           "type": "boolean",
           "default": false,
-          "description": "Whether to store the output for model distillation / evals."
+          "description": "Whether to store the output for model distillation or evaluation."
         },
         "stream": {
           "type": "boolean",
@@ -1664,153 +451,9 @@
         "functions": {
           "type": "array"
         },
-        "messages": {
-          "type": "array",
-          "description": "A list of messages comprising the conversation so far."
-        }
-      },
-      "output": "image/png",
-      "multipart": false,
-      "input": {
-        "messages": true,
-        "image": true
-      }
-    },
-    "@cf/swiss-ai/apertus-v1.5-8b": {
-      "params": {},
-      "output": "json",
-      "multipart": false,
-      "input": {
-        "messages": false,
-        "image": false
-      }
-    },
-    "@cf/leonardo/phoenix-1.0": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "A text description of the image you want to generate."
-        },
-        "guidance": {
-          "type": "number",
-          "min": 2,
-          "max": 10,
-          "default": 2,
-          "description": "Controls how closely the generated image should adhere to the prompt; higher values make the image more aligned with the prompt"
-        },
-        "seed": {
-          "type": "integer",
-          "min": 0,
-          "description": "Random seed for reproducibility of the image generation"
-        },
-        "height": {
-          "type": "integer",
-          "min": 0,
-          "max": 2048,
-          "default": 1024,
-          "description": "The height of the generated image in pixels"
-        },
-        "width": {
-          "type": "integer",
-          "min": 0,
-          "max": 2048,
-          "default": 1024,
-          "description": "The width of the generated image in pixels"
-        },
-        "num_steps": {
-          "type": "integer",
-          "min": 1,
-          "max": 50,
-          "default": 25,
-          "description": "The number of diffusion steps; higher values can improve quality but take longer"
-        },
-        "negative_prompt": {
-          "type": "string",
-          "description": "Specify what to exclude from the generated images"
-        }
-      },
-      "output": "image/png",
-      "multipart": false,
-      "input": {
-        "messages": false,
-        "image": false
-      }
-    },
-    "@cf/meta/llama-3.1-8b-instruct-fp8": {
-      "params": {
         "prompt": {
           "type": "string",
           "description": "The input text prompt for the model to generate a response."
-        },
-        "lora": {
-          "type": "string",
-          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
-        },
-        "response_format": {
-          "type": "object"
-        },
-        "response_format.type": {
-          "type": "string",
-          "enum": ["json_object", "json_schema"]
-        },
-        "response_format.json_schema": {},
-        "raw": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
-        },
-        "stream": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
-        },
-        "max_tokens": {
-          "type": "integer",
-          "default": 256,
-          "description": "The maximum number of tokens to generate in the response."
-        },
-        "temperature": {
-          "type": "number",
-          "min": 0,
-          "max": 5,
-          "default": 0.6,
-          "description": "Controls the randomness of the output; higher values produce more random results."
-        },
-        "top_p": {
-          "type": "number",
-          "min": 0.001,
-          "max": 1,
-          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
-        },
-        "top_k": {
-          "type": "integer",
-          "min": 1,
-          "max": 50,
-          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
-        },
-        "seed": {
-          "type": "integer",
-          "min": 1,
-          "max": 9999999999,
-          "description": "Random seed for reproducibility of the generation."
-        },
-        "repetition_penalty": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Penalty for repeated tokens; higher values discourage repetition."
-        },
-        "frequency_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
-        },
-        "presence_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Increases the likelihood of the model introducing new topics."
         }
       },
       "output": "image/png",
@@ -1818,163 +461,6 @@
       "input": {
         "messages": false,
         "image": false
-      }
-    },
-    "@cf/utter-project/eurollm-9b-it": {
-      "params": {},
-      "output": "json",
-      "multipart": false,
-      "input": {
-        "messages": false,
-        "image": false
-      }
-    },
-    "@cf/zai-org/glm-5.3-flash": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "The input text prompt for the model to generate a response."
-        },
-        "model": {
-          "type": "string",
-          "description": "ID of the model to use (e.g. '@cf/zai-org/glm-4.7-flash, etc')."
-        },
-        "audio": {
-          "type": "object"
-        },
-        "frequency_penalty": {
-          "type": "number",
-          "default": 0,
-          "description": "Penalizes new tokens based on their existing frequency in the text so far."
-        },
-        "logit_bias": {
-          "type": "object",
-          "description": "Modify the likelihood of specified tokens appearing in the completion. Maps token IDs to bias values from -100 to 100."
-        },
-        "logprobs": {
-          "type": "boolean",
-          "default": false,
-          "description": "Whether to return log probabilities of the output tokens."
-        },
-        "top_logprobs": {
-          "type": "integer",
-          "description": "How many top log probabilities to return at each token position (0-20). Requires logprobs=true."
-        },
-        "max_tokens": {
-          "type": "integer",
-          "description": "Deprecated in favor of max_completion_tokens. The maximum number of tokens to generate."
-        },
-        "max_completion_tokens": {
-          "type": "integer",
-          "description": "An upper bound for the number of tokens that can be generated for a completion."
-        },
-        "metadata": {
-          "type": "object",
-          "description": "Set of 16 key-value pairs that can be attached to the object."
-        },
-        "modalities": {
-          "type": "array",
-          "description": "Output types requested from the model (e.g. ['text'] or ['text', 'audio'])."
-        },
-        "n": {
-          "type": "integer",
-          "default": 1,
-          "description": "How many chat completion choices to generate for each input message."
-        },
-        "parallel_tool_calls": {
-          "type": "boolean",
-          "default": true,
-          "description": "Whether to enable parallel function calling during tool use."
-        },
-        "prediction": {
-          "type": "object"
-        },
-        "presence_penalty": {
-          "type": "number",
-          "default": 0,
-          "description": "Penalizes new tokens based on whether they appear in the text so far."
-        },
-        "reasoning_effort": {
-          "type": "string",
-          "default": "max",
-          "enum": ["max", "high", "low"],
-          "description": "Reasoning effort. Supported levels: max, high, low. Reasoning cannot be disabled. Compatibility aliases: none maps to max; minimal maps to max; medium maps to max; xhigh maps to max."
-        },
-        "chat_template_kwargs": {
-          "type": "object"
-        },
-        "chat_template_kwargs.enable_thinking": {
-          "type": "boolean",
-          "default": true,
-          "enum": [true],
-          "description": "Reasoning is always enabled for this model and cannot be disabled."
-        },
-        "chat_template_kwargs.clear_thinking": {
-          "type": "boolean",
-          "default": false,
-          "description": "If false, preserves reasoning context between turns."
-        },
-        "response_format": {},
-        "seed": {
-          "type": "integer",
-          "description": "If specified, the system will make a best effort to sample deterministically."
-        },
-        "stop": {
-          "type": "null",
-          "description": "Up to 4 sequences where the API will stop generating further tokens."
-        },
-        "store": {
-          "type": "boolean",
-          "default": false,
-          "description": "Whether to store the output for model distillation / evals."
-        },
-        "stream": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, partial message deltas will be sent as server-sent events."
-        },
-        "stream_options": {
-          "type": "object"
-        },
-        "temperature": {
-          "type": "number",
-          "default": 1,
-          "description": "Sampling temperature between 0 and 2."
-        },
-        "tool_choice": {},
-        "tools": {
-          "type": "array",
-          "description": "A list of tools the model may call."
-        },
-        "top_p": {
-          "type": "number",
-          "default": 1,
-          "description": "Nucleus sampling: considers the results of the tokens with top_p probability mass."
-        },
-        "user": {
-          "type": "string",
-          "description": "A unique identifier representing your end-user, for abuse monitoring."
-        },
-        "web_search_options": {
-          "type": "object"
-        },
-        "function_call": {
-          "type": "string",
-          "enum": ["none", "auto"]
-        },
-        "functions": {
-          "type": "array"
-        },
-        "messages": {
-          "type": "array",
-          "description": "A list of messages comprising the conversation so far."
-        }
-      },
-      "output": "image/png",
-      "multipart": false,
-      "input": {
-        "messages": true,
-        "image": true
       }
     },
     "@cf/deepseek-ai/deepseek-v4-pro-0813": {
@@ -2208,16 +694,24 @@
         "image": false
       }
     },
-    "@cf/qwen/qwq-32b": {
+    "@cf/openai/gpt-oss-120b": {
       "params": {
         "prompt": {
           "type": "string",
           "description": "The input text prompt for the model to generate a response."
         },
-        "guided_json": {
-          "type": "object",
-          "description": "JSON schema that should be fulfilled for the response."
+        "lora": {
+          "type": "string",
+          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
         },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": ["json_object", "json_schema"]
+        },
+        "response_format.json_schema": {},
         "raw": {
           "type": "boolean",
           "default": false,
@@ -2237,13 +731,13 @@
           "type": "number",
           "min": 0,
           "max": 5,
-          "default": 0.15,
+          "default": 0.6,
           "description": "Controls the randomness of the output; higher values produce more random results."
         },
         "top_p": {
           "type": "number",
-          "min": 0,
-          "max": 2,
+          "min": 0.001,
+          "max": 1,
           "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
         },
         "top_k": {
@@ -2266,13 +760,170 @@
         },
         "frequency_penalty": {
           "type": "number",
-          "min": 0,
+          "min": -2,
           "max": 2,
           "description": "Decreases the likelihood of the model repeating the same lines verbatim."
         },
         "presence_penalty": {
           "type": "number",
+          "min": -2,
+          "max": 2,
+          "description": "Increases the likelihood of the model introducing new topics."
+        },
+        "messages": {
+          "type": "array",
+          "description": "An array of message objects representing the conversation history."
+        },
+        "functions": {
+          "type": "array"
+        },
+        "tools": {
+          "type": "array",
+          "description": "A list of tools available for the assistant to use."
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": true,
+        "image": false
+      }
+    },
+    "@cf/stabilityai/stable-diffusion-xl-base-1.0": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "A text description of the image you want to generate"
+        },
+        "negative_prompt": {
+          "type": "string",
+          "description": "Text describing elements to avoid in the generated image"
+        },
+        "height": {
+          "type": "integer",
+          "min": 256,
+          "max": 2048,
+          "description": "The height of the generated image in pixels"
+        },
+        "width": {
+          "type": "integer",
+          "min": 256,
+          "max": 2048,
+          "description": "The width of the generated image in pixels"
+        },
+        "image": {
+          "type": "array",
+          "description": "For use with img2img tasks. An array of integers that represent the image data constrained to 8-bit unsigned integer values"
+        },
+        "image_b64": {
+          "type": "string",
+          "description": "For use with img2img tasks. A base64-encoded string of the input image"
+        },
+        "mask": {
+          "type": "array",
+          "description": "An array representing An array of integers that represent mask image data for inpainting constrained to 8-bit unsigned integer values"
+        },
+        "num_steps": {
+          "type": "integer",
+          "max": 20,
+          "default": 20,
+          "description": "The number of diffusion steps; higher values can improve quality but take longer"
+        },
+        "strength": {
+          "type": "number",
+          "default": 1,
+          "description": "A value between 0 and 1 indicating how strongly to apply the transformation during img2img tasks; lower values make the output closer to the input image"
+        },
+        "guidance": {
+          "type": "number",
+          "default": 7.5,
+          "description": "Controls how closely the generated image should adhere to the prompt; higher values make the image more aligned with the prompt"
+        },
+        "seed": {
+          "type": "integer",
+          "description": "Random seed for reproducibility of the image generation"
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": false,
+        "image": true
+      }
+    },
+    "@cf/meta/llama-3.3-70b-instruct-fp8-fast": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "The input text prompt for the model to generate a response."
+        },
+        "lora": {
+          "type": "string",
+          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": ["json_object", "json_schema"]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256,
+          "description": "The maximum number of tokens to generate in the response."
+        },
+        "temperature": {
+          "type": "number",
           "min": 0,
+          "max": 5,
+          "default": 0.6,
+          "description": "Controls the randomness of the output; higher values produce more random results."
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1,
+          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50,
+          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999,
+          "description": "Random seed for reproducibility of the generation."
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Penalty for repeated tokens; higher values discourage repetition."
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2,
+          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
           "max": 2,
           "description": "Increases the likelihood of the model introducing new topics."
         }
@@ -2432,177 +1083,9 @@
         "image": true
       }
     },
-    "@cf/meta/llama-3.2-1b-instruct": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "The input text prompt for the model to generate a response."
-        },
-        "lora": {
-          "type": "string",
-          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
-        },
-        "response_format": {
-          "type": "object"
-        },
-        "response_format.type": {
-          "type": "string",
-          "enum": ["json_object", "json_schema"]
-        },
-        "response_format.json_schema": {},
-        "raw": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
-        },
-        "stream": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
-        },
-        "max_tokens": {
-          "type": "integer",
-          "default": 256,
-          "description": "The maximum number of tokens to generate in the response."
-        },
-        "temperature": {
-          "type": "number",
-          "min": 0,
-          "max": 5,
-          "default": 0.6,
-          "description": "Controls the randomness of the output; higher values produce more random results."
-        },
-        "top_p": {
-          "type": "number",
-          "min": 0.001,
-          "max": 1,
-          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
-        },
-        "top_k": {
-          "type": "integer",
-          "min": 1,
-          "max": 50,
-          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
-        },
-        "seed": {
-          "type": "integer",
-          "min": 1,
-          "max": 9999999999,
-          "description": "Random seed for reproducibility of the generation."
-        },
-        "repetition_penalty": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Penalty for repeated tokens; higher values discourage repetition."
-        },
-        "frequency_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
-        },
-        "presence_penalty": {
-          "type": "number",
-          "min": -2,
-          "max": 2,
-          "description": "Increases the likelihood of the model introducing new topics."
-        }
-      },
-      "output": "image/png",
-      "multipart": false,
-      "input": {
-        "messages": false,
-        "image": false
-      }
-    },
     "@cf/meta/llama-guard-3-8b": {
       "params": {},
       "output": "json",
-      "multipart": false,
-      "input": {
-        "messages": false,
-        "image": false
-      }
-    },
-    "@cf/qwen/qwen2.5-coder-32b-instruct": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "The input text prompt for the model to generate a response."
-        },
-        "lora": {
-          "type": "string",
-          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
-        },
-        "response_format": {
-          "type": "object"
-        },
-        "response_format.type": {
-          "type": "string",
-          "enum": ["json_object", "json_schema"]
-        },
-        "response_format.json_schema": {},
-        "raw": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
-        },
-        "stream": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
-        },
-        "max_tokens": {
-          "type": "integer",
-          "default": 256,
-          "description": "The maximum number of tokens to generate in the response."
-        },
-        "temperature": {
-          "type": "number",
-          "min": 0,
-          "max": 5,
-          "default": 0.6,
-          "description": "Controls the randomness of the output; higher values produce more random results."
-        },
-        "top_p": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
-        },
-        "top_k": {
-          "type": "integer",
-          "min": 1,
-          "max": 50,
-          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
-        },
-        "seed": {
-          "type": "integer",
-          "min": 1,
-          "max": 9999999999,
-          "description": "Random seed for reproducibility of the generation."
-        },
-        "repetition_penalty": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Penalty for repeated tokens; higher values discourage repetition."
-        },
-        "frequency_penalty": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
-        },
-        "presence_penalty": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Increases the likelihood of the model introducing new topics."
-        }
-      },
-      "output": "image/png",
       "multipart": false,
       "input": {
         "messages": false,
@@ -2751,7 +1234,284 @@
         "image": true
       }
     },
-    "@cf/openai/gpt-oss-120b": {
+    "@cf/swiss-ai/apertus-v1.5-8b": {
+      "params": {},
+      "output": "json",
+      "multipart": false,
+      "input": {
+        "messages": false,
+        "image": false
+      }
+    },
+    "@cf/leonardo/phoenix-1.0": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "A text description of the image you want to generate."
+        },
+        "guidance": {
+          "type": "number",
+          "min": 2,
+          "max": 10,
+          "default": 2,
+          "description": "Controls how closely the generated image should adhere to the prompt; higher values make the image more aligned with the prompt"
+        },
+        "seed": {
+          "type": "integer",
+          "min": 0,
+          "description": "Random seed for reproducibility of the image generation"
+        },
+        "height": {
+          "type": "integer",
+          "min": 0,
+          "max": 2048,
+          "default": 1024,
+          "description": "The height of the generated image in pixels"
+        },
+        "width": {
+          "type": "integer",
+          "min": 0,
+          "max": 2048,
+          "default": 1024,
+          "description": "The width of the generated image in pixels"
+        },
+        "num_steps": {
+          "type": "integer",
+          "min": 1,
+          "max": 50,
+          "default": 25,
+          "description": "The number of diffusion steps; higher values can improve quality but take longer"
+        },
+        "negative_prompt": {
+          "type": "string",
+          "description": "Specify what to exclude from the generated images"
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": false,
+        "image": false
+      }
+    },
+    "@cf/leonardo/lucid-origin": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "A text description of the image you want to generate."
+        },
+        "guidance": {
+          "type": "number",
+          "min": 0,
+          "max": 10,
+          "default": 4.5,
+          "description": "Controls how closely the generated image should adhere to the prompt; higher values make the image more aligned with the prompt"
+        },
+        "seed": {
+          "type": "integer",
+          "min": 0,
+          "description": "Random seed for reproducibility of the image generation"
+        },
+        "height": {
+          "type": "integer",
+          "min": 0,
+          "max": 2500,
+          "default": 1120,
+          "description": "The height of the generated image in pixels"
+        },
+        "width": {
+          "type": "integer",
+          "min": 0,
+          "max": 2500,
+          "default": 1120,
+          "description": "The width of the generated image in pixels"
+        },
+        "num_steps": {
+          "type": "integer",
+          "min": 1,
+          "max": 40,
+          "description": "The number of diffusion steps; higher values can improve quality but take longer"
+        },
+        "steps": {
+          "type": "integer",
+          "min": 1,
+          "max": 40,
+          "description": "The number of diffusion steps; higher values can improve quality but take longer"
+        }
+      },
+      "output": "json",
+      "multipart": false,
+      "input": {
+        "messages": false,
+        "image": false
+      }
+    },
+    "@cf/lykon/dreamshaper-8-lcm": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "A text description of the image you want to generate"
+        },
+        "negative_prompt": {
+          "type": "string",
+          "description": "Text describing elements to avoid in the generated image"
+        },
+        "height": {
+          "type": "integer",
+          "min": 256,
+          "max": 2048,
+          "description": "The height of the generated image in pixels"
+        },
+        "width": {
+          "type": "integer",
+          "min": 256,
+          "max": 2048,
+          "description": "The width of the generated image in pixels"
+        },
+        "image": {
+          "type": "array",
+          "description": "For use with img2img tasks. An array of integers that represent the image data constrained to 8-bit unsigned integer values"
+        },
+        "image_b64": {
+          "type": "string",
+          "description": "For use with img2img tasks. A base64-encoded string of the input image"
+        },
+        "mask": {
+          "type": "array",
+          "description": "An array representing An array of integers that represent mask image data for inpainting constrained to 8-bit unsigned integer values"
+        },
+        "num_steps": {
+          "type": "integer",
+          "max": 20,
+          "default": 20,
+          "description": "The number of diffusion steps; higher values can improve quality but take longer"
+        },
+        "strength": {
+          "type": "number",
+          "default": 1,
+          "description": "A value between 0 and 1 indicating how strongly to apply the transformation during img2img tasks; lower values make the output closer to the input image"
+        },
+        "guidance": {
+          "type": "number",
+          "default": 7.5,
+          "description": "Controls how closely the generated image should adhere to the prompt; higher values make the image more aligned with the prompt"
+        },
+        "seed": {
+          "type": "integer",
+          "description": "Random seed for reproducibility of the image generation"
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": false,
+        "image": true
+      }
+    },
+    "@cf/black-forest-labs/flux-1-schnell": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "A text description of the image you want to generate."
+        },
+        "steps": {
+          "type": "integer",
+          "max": 8,
+          "description": "The number of diffusion steps; higher values can improve quality but take longer. Default is 4"
+        }
+      },
+      "output": "json",
+      "multipart": false,
+      "input": {
+        "messages": false,
+        "image": false
+      }
+    },
+    "@cf/qwen/qwen2.5-coder-32b-instruct": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "The input text prompt for the model to generate a response."
+        },
+        "lora": {
+          "type": "string",
+          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": ["json_object", "json_schema"]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256,
+          "description": "The maximum number of tokens to generate in the response."
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6,
+          "description": "Controls the randomness of the output; higher values produce more random results."
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50,
+          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999,
+          "description": "Random seed for reproducibility of the generation."
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Penalty for repeated tokens; higher values discourage repetition."
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Increases the likelihood of the model introducing new topics."
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": false,
+        "image": false
+      }
+    },
+    "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b": {
       "params": {
         "prompt": {
           "type": "string",
@@ -2826,23 +1586,640 @@
           "min": -2,
           "max": 2,
           "description": "Increases the likelihood of the model introducing new topics."
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": false,
+        "image": false
+      }
+    },
+    "@cf/black-forest-labs/flux-2-klein-9b": {
+      "params": {
+        "multipart": {
+          "type": "object"
         },
-        "messages": {
+        "multipart.body": {
+          "type": "object"
+        },
+        "multipart.contentType": {
+          "type": "string"
+        }
+      },
+      "output": "json",
+      "multipart": true,
+      "input": {
+        "messages": false,
+        "image": false
+      }
+    },
+    "@cf/bytedance/stable-diffusion-xl-lightning": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "A text description of the image you want to generate"
+        },
+        "negative_prompt": {
+          "type": "string",
+          "description": "Text describing elements to avoid in the generated image"
+        },
+        "height": {
+          "type": "integer",
+          "min": 256,
+          "max": 2048,
+          "description": "The height of the generated image in pixels"
+        },
+        "width": {
+          "type": "integer",
+          "min": 256,
+          "max": 2048,
+          "description": "The width of the generated image in pixels"
+        },
+        "image": {
           "type": "array",
-          "description": "An array of message objects representing the conversation history."
+          "description": "For use with img2img tasks. An array of integers that represent the image data constrained to 8-bit unsigned integer values"
+        },
+        "image_b64": {
+          "type": "string",
+          "description": "For use with img2img tasks. A base64-encoded string of the input image"
+        },
+        "mask": {
+          "type": "array",
+          "description": "An array representing An array of integers that represent mask image data for inpainting constrained to 8-bit unsigned integer values"
+        },
+        "num_steps": {
+          "type": "integer",
+          "max": 20,
+          "default": 20,
+          "description": "The number of diffusion steps; higher values can improve quality but take longer"
+        },
+        "strength": {
+          "type": "number",
+          "default": 1,
+          "description": "A value between 0 and 1 indicating how strongly to apply the transformation during img2img tasks; lower values make the output closer to the input image"
+        },
+        "guidance": {
+          "type": "number",
+          "default": 7.5,
+          "description": "Controls how closely the generated image should adhere to the prompt; higher values make the image more aligned with the prompt"
+        },
+        "seed": {
+          "type": "integer",
+          "description": "Random seed for reproducibility of the image generation"
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": false,
+        "image": true
+      }
+    },
+    "@cf/meta/llama-3.1-8b-instruct-fp8": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "The input text prompt for the model to generate a response."
+        },
+        "lora": {
+          "type": "string",
+          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": ["json_object", "json_schema"]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256,
+          "description": "The maximum number of tokens to generate in the response."
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6,
+          "description": "Controls the randomness of the output; higher values produce more random results."
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1,
+          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50,
+          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999,
+          "description": "Random seed for reproducibility of the generation."
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Penalty for repeated tokens; higher values discourage repetition."
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2,
+          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2,
+          "description": "Increases the likelihood of the model introducing new topics."
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": false,
+        "image": false
+      }
+    },
+    "@cf/meta/llama-3.2-3b-instruct": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "The input text prompt for the model to generate a response."
+        },
+        "lora": {
+          "type": "string",
+          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": ["json_object", "json_schema"]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256,
+          "description": "The maximum number of tokens to generate in the response."
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6,
+          "description": "Controls the randomness of the output; higher values produce more random results."
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1,
+          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50,
+          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999,
+          "description": "Random seed for reproducibility of the generation."
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Penalty for repeated tokens; higher values discourage repetition."
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2,
+          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2,
+          "description": "Increases the likelihood of the model introducing new topics."
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": false,
+        "image": false
+      }
+    },
+    "@cf/zai-org/glm-5.3-flash": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "The input text prompt for the model to generate a response."
+        },
+        "model": {
+          "type": "string",
+          "description": "ID of the model to use (e.g. '@cf/zai-org/glm-4.7-flash, etc')."
+        },
+        "audio": {
+          "type": "object"
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "default": 0,
+          "description": "Penalizes new tokens based on their existing frequency in the text so far."
+        },
+        "logit_bias": {
+          "type": "object",
+          "description": "Modify the likelihood of specified tokens appearing in the completion. Maps token IDs to bias values from -100 to 100."
+        },
+        "logprobs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to return log probabilities of the output tokens."
+        },
+        "top_logprobs": {
+          "type": "integer",
+          "description": "How many top log probabilities to return at each token position (0-20). Requires logprobs=true."
+        },
+        "max_tokens": {
+          "type": "integer",
+          "description": "Deprecated in favor of max_completion_tokens. The maximum number of tokens to generate."
+        },
+        "max_completion_tokens": {
+          "type": "integer",
+          "description": "An upper bound for the number of tokens that can be generated for a completion."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Set of 16 key-value pairs that can be attached to the object."
+        },
+        "modalities": {
+          "type": "array",
+          "description": "Output types requested from the model (e.g. ['text'] or ['text', 'audio'])."
+        },
+        "n": {
+          "type": "integer",
+          "default": 1,
+          "description": "How many chat completion choices to generate for each input message."
+        },
+        "parallel_tool_calls": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to enable parallel function calling during tool use."
+        },
+        "prediction": {
+          "type": "object"
+        },
+        "presence_penalty": {
+          "type": "number",
+          "default": 0,
+          "description": "Penalizes new tokens based on whether they appear in the text so far."
+        },
+        "reasoning_effort": {
+          "type": "string",
+          "default": "max",
+          "enum": ["max", "high", "low"],
+          "description": "Reasoning effort. Supported levels: max, high, low. Reasoning cannot be disabled. Compatibility aliases: none maps to max; minimal maps to max; medium maps to max; xhigh maps to max."
+        },
+        "chat_template_kwargs": {
+          "type": "object"
+        },
+        "chat_template_kwargs.enable_thinking": {
+          "type": "boolean",
+          "default": true,
+          "enum": [true],
+          "description": "Reasoning is always enabled for this model and cannot be disabled."
+        },
+        "chat_template_kwargs.clear_thinking": {
+          "type": "boolean",
+          "default": false,
+          "description": "If false, preserves reasoning context between turns."
+        },
+        "response_format": {},
+        "seed": {
+          "type": "integer",
+          "description": "If specified, the system will make a best effort to sample deterministically."
+        },
+        "stop": {
+          "type": "null",
+          "description": "Up to 4 sequences where the API will stop generating further tokens."
+        },
+        "store": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to store the output for model distillation / evals."
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, partial message deltas will be sent as server-sent events."
+        },
+        "stream_options": {
+          "type": "object"
+        },
+        "temperature": {
+          "type": "number",
+          "default": 1,
+          "description": "Sampling temperature between 0 and 2."
+        },
+        "tool_choice": {},
+        "tools": {
+          "type": "array",
+          "description": "A list of tools the model may call."
+        },
+        "top_p": {
+          "type": "number",
+          "default": 1,
+          "description": "Nucleus sampling: considers the results of the tokens with top_p probability mass."
+        },
+        "user": {
+          "type": "string",
+          "description": "A unique identifier representing your end-user, for abuse monitoring."
+        },
+        "web_search_options": {
+          "type": "object"
+        },
+        "function_call": {
+          "type": "string",
+          "enum": ["none", "auto"]
         },
         "functions": {
           "type": "array"
         },
-        "tools": {
+        "messages": {
           "type": "array",
-          "description": "A list of tools available for the assistant to use."
+          "description": "A list of messages comprising the conversation so far."
         }
       },
       "output": "image/png",
       "multipart": false,
       "input": {
         "messages": true,
+        "image": true
+      }
+    },
+    "@cf/moonshotai/kimi-k2.6": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "The input text prompt for the model to generate a response."
+        },
+        "model": {
+          "type": "string",
+          "description": "ID of the model to use (e.g. '@cf/zai-org/glm-4.7-flash, etc')."
+        },
+        "audio": {
+          "type": "object"
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "default": 0,
+          "description": "Penalizes new tokens based on their existing frequency in the text so far."
+        },
+        "logit_bias": {
+          "type": "object",
+          "description": "Modify the likelihood of specified tokens appearing in the completion. Maps token IDs to bias values from -100 to 100."
+        },
+        "logprobs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to return log probabilities of the output tokens."
+        },
+        "top_logprobs": {
+          "type": "integer",
+          "description": "How many top log probabilities to return at each token position (0-20). Requires logprobs=true."
+        },
+        "max_tokens": {
+          "type": "integer",
+          "description": "Deprecated in favor of max_completion_tokens. The maximum number of tokens to generate."
+        },
+        "max_completion_tokens": {
+          "type": "integer",
+          "description": "An upper bound for the number of tokens that can be generated for a completion."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Set of 16 key-value pairs that can be attached to the object."
+        },
+        "modalities": {
+          "type": "array",
+          "description": "Output types requested from the model (e.g. ['text'] or ['text', 'audio'])."
+        },
+        "n": {
+          "type": "integer",
+          "default": 1,
+          "description": "How many chat completion choices to generate for each input message."
+        },
+        "parallel_tool_calls": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to enable parallel function calling during tool use."
+        },
+        "prediction": {
+          "type": "object"
+        },
+        "presence_penalty": {
+          "type": "number",
+          "default": 0,
+          "description": "Penalizes new tokens based on whether they appear in the text so far."
+        },
+        "reasoning_effort": {
+          "type": "string",
+          "default": "high",
+          "enum": ["high", "none"],
+          "description": "Reasoning effort. Supported levels: high, none. Compatibility aliases: low maps to high; medium maps to high; max maps to high."
+        },
+        "chat_template_kwargs": {
+          "type": "object"
+        },
+        "chat_template_kwargs.enable_thinking": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to enable reasoning for this model."
+        },
+        "chat_template_kwargs.clear_thinking": {
+          "type": "boolean",
+          "default": false,
+          "description": "If false, preserves reasoning context between turns."
+        },
+        "response_format": {},
+        "seed": {
+          "type": "integer",
+          "description": "If specified, the system will make a best effort to sample deterministically."
+        },
+        "stop": {
+          "type": "null",
+          "description": "Up to 4 sequences where the API will stop generating further tokens."
+        },
+        "store": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to store the output for model distillation / evals."
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, partial message deltas will be sent as server-sent events."
+        },
+        "stream_options": {
+          "type": "object"
+        },
+        "temperature": {
+          "type": "number",
+          "default": 1,
+          "description": "Sampling temperature between 0 and 2."
+        },
+        "tool_choice": {},
+        "tools": {
+          "type": "array",
+          "description": "A list of tools the model may call."
+        },
+        "top_p": {
+          "type": "number",
+          "default": 1,
+          "description": "Nucleus sampling: considers the results of the tokens with top_p probability mass."
+        },
+        "user": {
+          "type": "string",
+          "description": "A unique identifier representing your end-user, for abuse monitoring."
+        },
+        "web_search_options": {
+          "type": "object"
+        },
+        "function_call": {
+          "type": "string",
+          "enum": ["none", "auto"]
+        },
+        "functions": {
+          "type": "array"
+        },
+        "messages": {
+          "type": "array",
+          "description": "A list of messages comprising the conversation so far."
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": true,
+        "image": true
+      }
+    },
+    "@cf/google/gemma-7b-it-lora": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "The input text prompt for the model to generate a response."
+        },
+        "lora": {
+          "type": "string",
+          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": ["json_object", "json_schema"]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256,
+          "description": "The maximum number of tokens to generate in the response."
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6,
+          "description": "Controls the randomness of the output; higher values produce more random results."
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1,
+          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50,
+          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999,
+          "description": "Random seed for reproducibility of the generation."
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Penalty for repeated tokens; higher values discourage repetition."
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2,
+          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2,
+          "description": "Increases the likelihood of the model introducing new topics."
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": false,
         "image": false
       }
     },
@@ -2993,225 +2370,6 @@
         "image": true
       }
     },
-    "@cf/nvidia/nemotron-3-120b-a12b": {
-      "params": {
-        "model": {
-          "type": "string",
-          "description": "ID of the model to use (for example, '@cf/nvidia/nemotron-3-120b-a12b')."
-        },
-        "audio": {
-          "type": "object"
-        },
-        "frequency_penalty": {
-          "type": "number",
-          "default": 0,
-          "description": "Penalizes new tokens based on their existing frequency in the text so far."
-        },
-        "logit_bias": {
-          "type": "object",
-          "description": "Modify the likelihood of specified tokens appearing in the completion. Maps token IDs to bias values from -100 to 100."
-        },
-        "logprobs": {
-          "type": "boolean",
-          "default": false,
-          "description": "Whether to return log probabilities of the output tokens."
-        },
-        "top_logprobs": {
-          "type": "integer",
-          "description": "How many top log probabilities to return at each token position (0-20). Requires logprobs=true."
-        },
-        "max_tokens": {
-          "type": "integer",
-          "description": "The maximum number of tokens to generate."
-        },
-        "max_completion_tokens": {
-          "type": "integer",
-          "description": "An upper bound for the number of tokens that can be generated for a completion."
-        },
-        "metadata": {
-          "type": "object",
-          "description": "Set of key-value pairs that can be attached to the object."
-        },
-        "modalities": {
-          "type": "array",
-          "description": "Output types requested from the model."
-        },
-        "n": {
-          "type": "integer",
-          "default": 1,
-          "description": "How many chat completion choices to generate for each input message."
-        },
-        "parallel_tool_calls": {
-          "type": "boolean",
-          "default": true,
-          "description": "Whether to enable parallel function calling during tool use."
-        },
-        "prediction": {
-          "type": "object"
-        },
-        "presence_penalty": {
-          "type": "number",
-          "default": 0,
-          "description": "Penalizes new tokens based on whether they appear in the text so far."
-        },
-        "chat_template_kwargs": {
-          "type": "object",
-          "description": "Nemotron chat-template controls for normal reasoning, low-effort reasoning, and non-reasoning responses."
-        },
-        "chat_template_kwargs.enable_thinking": {
-          "type": "boolean",
-          "default": true,
-          "description": "Whether to enable reasoning. Reasoning is enabled by default."
-        },
-        "chat_template_kwargs.low_effort": {
-          "type": "boolean",
-          "default": false,
-          "description": "When reasoning is enabled, use Nemotron's low-effort reasoning mode, which uses significantly fewer reasoning tokens."
-        },
-        "chat_template_kwargs.force_nonempty_content": {
-          "type": "boolean",
-          "default": false,
-          "description": "For coding agent use, Nvidia suggests setting force_nonempty_content=true"
-        },
-        "response_format": {},
-        "seed": {
-          "type": "integer",
-          "description": "If specified, the system will make a best effort to sample deterministically."
-        },
-        "stop": {
-          "type": "null",
-          "description": "Up to 4 sequences where the API will stop generating further tokens."
-        },
-        "store": {
-          "type": "boolean",
-          "default": false,
-          "description": "Whether to store the output for model distillation or evaluation."
-        },
-        "stream": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, partial message deltas will be sent as server-sent events."
-        },
-        "stream_options": {
-          "type": "object"
-        },
-        "temperature": {
-          "type": "number",
-          "default": 1,
-          "description": "Sampling temperature between 0 and 2."
-        },
-        "tool_choice": {},
-        "tools": {
-          "type": "array",
-          "description": "A list of tools the model may call."
-        },
-        "top_p": {
-          "type": "number",
-          "default": 1,
-          "description": "Nucleus sampling: considers the results of the tokens with top_p probability mass."
-        },
-        "user": {
-          "type": "string",
-          "description": "A unique identifier representing your end-user, for abuse monitoring."
-        },
-        "web_search_options": {
-          "type": "object"
-        },
-        "function_call": {
-          "type": "string",
-          "enum": ["none", "auto"]
-        },
-        "functions": {
-          "type": "array"
-        },
-        "prompt": {
-          "type": "string",
-          "description": "The input text prompt for the model to generate a response."
-        }
-      },
-      "output": "image/png",
-      "multipart": false,
-      "input": {
-        "messages": false,
-        "image": false
-      }
-    },
-    "@cf/mistralai/mistral-small-3.1-24b-instruct": {
-      "params": {
-        "prompt": {
-          "type": "string",
-          "description": "The input text prompt for the model to generate a response."
-        },
-        "guided_json": {
-          "type": "object",
-          "description": "JSON schema that should be fulfilled for the response."
-        },
-        "raw": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
-        },
-        "stream": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
-        },
-        "max_tokens": {
-          "type": "integer",
-          "default": 256,
-          "description": "The maximum number of tokens to generate in the response."
-        },
-        "temperature": {
-          "type": "number",
-          "min": 0,
-          "max": 5,
-          "default": 0.15,
-          "description": "Controls the randomness of the output; higher values produce more random results."
-        },
-        "top_p": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
-        },
-        "top_k": {
-          "type": "integer",
-          "min": 1,
-          "max": 50,
-          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
-        },
-        "seed": {
-          "type": "integer",
-          "min": 1,
-          "max": 9999999999,
-          "description": "Random seed for reproducibility of the generation."
-        },
-        "repetition_penalty": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Penalty for repeated tokens; higher values discourage repetition."
-        },
-        "frequency_penalty": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
-        },
-        "presence_penalty": {
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "description": "Increases the likelihood of the model introducing new topics."
-        }
-      },
-      "output": "image/png",
-      "multipart": false,
-      "input": {
-        "messages": false,
-        "image": false
-      }
-    },
     "@cf/meta/llama-4-scout-17b-16e-instruct": {
       "params": {
         "prompt": {
@@ -3285,6 +2443,90 @@
         "presence_penalty": {
           "type": "number",
           "min": 0,
+          "max": 2,
+          "description": "Increases the likelihood of the model introducing new topics."
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": false,
+        "image": false
+      }
+    },
+    "@cf/google/gemma-2b-it-lora": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "The input text prompt for the model to generate a response."
+        },
+        "lora": {
+          "type": "string",
+          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": ["json_object", "json_schema"]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256,
+          "description": "The maximum number of tokens to generate in the response."
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6,
+          "description": "Controls the randomness of the output; higher values produce more random results."
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1,
+          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50,
+          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999,
+          "description": "Random seed for reproducibility of the generation."
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Penalty for repeated tokens; higher values discourage repetition."
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2,
+          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
           "max": 2,
           "description": "Increases the likelihood of the model introducing new topics."
         }
@@ -3433,6 +2675,773 @@
         "image": false
       }
     },
+    "@cf/meta/llama-3.2-1b-instruct": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "The input text prompt for the model to generate a response."
+        },
+        "lora": {
+          "type": "string",
+          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": ["json_object", "json_schema"]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256,
+          "description": "The maximum number of tokens to generate in the response."
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6,
+          "description": "Controls the randomness of the output; higher values produce more random results."
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1,
+          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50,
+          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999,
+          "description": "Random seed for reproducibility of the generation."
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Penalty for repeated tokens; higher values discourage repetition."
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2,
+          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2,
+          "description": "Increases the likelihood of the model introducing new topics."
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": false,
+        "image": false
+      }
+    },
+    "@cf/google/gemma-4-26b-a4b-it": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "The input text prompt for the model to generate a response."
+        },
+        "skip_special_tokens": {
+          "type": "boolean",
+          "default": false
+        },
+        "model": {
+          "type": "string",
+          "description": "ID of the model to use (e.g. '@cf/zai-org/glm-4.7-flash, etc')."
+        },
+        "audio": {
+          "type": "object"
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "default": 0,
+          "description": "Penalizes new tokens based on their existing frequency in the text so far."
+        },
+        "logit_bias": {
+          "type": "object",
+          "description": "Modify the likelihood of specified tokens appearing in the completion. Maps token IDs to bias values from -100 to 100."
+        },
+        "logprobs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to return log probabilities of the output tokens."
+        },
+        "top_logprobs": {
+          "type": "integer",
+          "description": "How many top log probabilities to return at each token position (0-20). Requires logprobs=true."
+        },
+        "max_tokens": {
+          "type": "integer",
+          "description": "Deprecated in favor of max_completion_tokens. The maximum number of tokens to generate."
+        },
+        "max_completion_tokens": {
+          "type": "integer",
+          "description": "An upper bound for the number of tokens that can be generated for a completion."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Set of 16 key-value pairs that can be attached to the object."
+        },
+        "modalities": {
+          "type": "array",
+          "description": "Output types requested from the model (e.g. ['text'] or ['text', 'audio'])."
+        },
+        "n": {
+          "type": "integer",
+          "default": 1,
+          "description": "How many chat completion choices to generate for each input message."
+        },
+        "parallel_tool_calls": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to enable parallel function calling during tool use."
+        },
+        "prediction": {
+          "type": "object"
+        },
+        "presence_penalty": {
+          "type": "number",
+          "default": 0,
+          "description": "Penalizes new tokens based on whether they appear in the text so far."
+        },
+        "chat_template_kwargs": {
+          "type": "object"
+        },
+        "chat_template_kwargs.enable_thinking": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to enable reasoning for this model."
+        },
+        "chat_template_kwargs.clear_thinking": {
+          "type": "boolean",
+          "default": false,
+          "description": "If false, preserves reasoning context between turns."
+        },
+        "response_format": {},
+        "seed": {
+          "type": "integer",
+          "description": "If specified, the system will make a best effort to sample deterministically."
+        },
+        "stop": {
+          "type": "null",
+          "description": "Up to 4 sequences where the API will stop generating further tokens."
+        },
+        "store": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to store the output for model distillation / evals."
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, partial message deltas will be sent as server-sent events."
+        },
+        "stream_options": {
+          "type": "object"
+        },
+        "temperature": {
+          "type": "number",
+          "default": 1,
+          "description": "Sampling temperature between 0 and 2."
+        },
+        "tool_choice": {},
+        "tools": {
+          "type": "array",
+          "description": "A list of tools the model may call."
+        },
+        "top_p": {
+          "type": "number",
+          "default": 1,
+          "description": "Nucleus sampling: considers the results of the tokens with top_p probability mass."
+        },
+        "user": {
+          "type": "string",
+          "description": "A unique identifier representing your end-user, for abuse monitoring."
+        },
+        "web_search_options": {
+          "type": "object"
+        },
+        "function_call": {
+          "type": "string",
+          "enum": ["none", "auto"]
+        },
+        "functions": {
+          "type": "array"
+        },
+        "messages": {
+          "type": "array",
+          "description": "A list of messages comprising the conversation so far."
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": true,
+        "image": true
+      }
+    },
+    "@cf/ibm-granite/granite-4.0-h-micro": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "The input text prompt for the model to generate a response."
+        },
+        "lora": {
+          "type": "string",
+          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": ["json_object", "json_schema"]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256,
+          "description": "The maximum number of tokens to generate in the response."
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6,
+          "description": "Controls the randomness of the output; higher values produce more random results."
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1,
+          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50,
+          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999,
+          "description": "Random seed for reproducibility of the generation."
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Penalty for repeated tokens; higher values discourage repetition."
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2,
+          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2,
+          "description": "Increases the likelihood of the model introducing new topics."
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": false,
+        "image": false
+      }
+    },
+    "@cf/qwen/qwen3.8-27b": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "The input text prompt for the model to generate a response."
+        },
+        "model": {
+          "type": "string",
+          "description": "ID of the model to use (e.g. '@cf/zai-org/glm-4.7-flash, etc')."
+        },
+        "audio": {
+          "type": "object"
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "default": 0,
+          "description": "Penalizes new tokens based on their existing frequency in the text so far."
+        },
+        "logit_bias": {
+          "type": "object",
+          "description": "Modify the likelihood of specified tokens appearing in the completion. Maps token IDs to bias values from -100 to 100."
+        },
+        "logprobs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to return log probabilities of the output tokens."
+        },
+        "top_logprobs": {
+          "type": "integer",
+          "description": "How many top log probabilities to return at each token position (0-20). Requires logprobs=true."
+        },
+        "max_tokens": {
+          "type": "integer",
+          "description": "Deprecated in favor of max_completion_tokens. The maximum number of tokens to generate."
+        },
+        "max_completion_tokens": {
+          "type": "integer",
+          "description": "An upper bound for the number of tokens that can be generated for a completion."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Set of 16 key-value pairs that can be attached to the object."
+        },
+        "modalities": {
+          "type": "array",
+          "description": "Output types requested from the model (e.g. ['text'] or ['text', 'audio'])."
+        },
+        "n": {
+          "type": "integer",
+          "default": 1,
+          "description": "How many chat completion choices to generate for each input message."
+        },
+        "parallel_tool_calls": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to enable parallel function calling during tool use."
+        },
+        "prediction": {
+          "type": "object"
+        },
+        "presence_penalty": {
+          "type": "number",
+          "default": 0,
+          "description": "Penalizes new tokens based on whether they appear in the text so far."
+        },
+        "reasoning_effort": {
+          "type": "string",
+          "default": "xhigh",
+          "enum": ["low", "medium", "xhigh"],
+          "description": "Reasoning effort. Supported levels: low, medium, xhigh."
+        },
+        "chat_template_kwargs": {
+          "type": "object"
+        },
+        "chat_template_kwargs.enable_thinking": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to enable reasoning for this model."
+        },
+        "chat_template_kwargs.clear_thinking": {
+          "type": "boolean",
+          "default": false,
+          "description": "If false, preserves reasoning context between turns."
+        },
+        "response_format": {},
+        "seed": {
+          "type": "integer",
+          "description": "If specified, the system will make a best effort to sample deterministically."
+        },
+        "stop": {
+          "type": "null",
+          "description": "Up to 4 sequences where the API will stop generating further tokens."
+        },
+        "store": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to store the output for model distillation / evals."
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, partial message deltas will be sent as server-sent events."
+        },
+        "stream_options": {
+          "type": "object"
+        },
+        "temperature": {
+          "type": "number",
+          "default": 1,
+          "description": "Sampling temperature between 0 and 2."
+        },
+        "tool_choice": {},
+        "tools": {
+          "type": "array",
+          "description": "A list of tools the model may call."
+        },
+        "top_p": {
+          "type": "number",
+          "default": 1,
+          "description": "Nucleus sampling: considers the results of the tokens with top_p probability mass."
+        },
+        "user": {
+          "type": "string",
+          "description": "A unique identifier representing your end-user, for abuse monitoring."
+        },
+        "web_search_options": {
+          "type": "object"
+        },
+        "function_call": {
+          "type": "string",
+          "enum": ["none", "auto"]
+        },
+        "functions": {
+          "type": "array"
+        },
+        "messages": {
+          "type": "array",
+          "description": "A list of messages comprising the conversation so far."
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": true,
+        "image": true
+      }
+    },
+    "@cf/mistral/mistral-7b-instruct-v0.2-lora": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "The input text prompt for the model to generate a response."
+        },
+        "lora": {
+          "type": "string",
+          "description": "Name of the LoRA (Low-Rank Adaptation) model to fine-tune the base model."
+        },
+        "response_format": {
+          "type": "object"
+        },
+        "response_format.type": {
+          "type": "string",
+          "enum": ["json_object", "json_schema"]
+        },
+        "response_format.json_schema": {},
+        "raw": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256,
+          "description": "The maximum number of tokens to generate in the response."
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.6,
+          "description": "Controls the randomness of the output; higher values produce more random results."
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0.001,
+          "max": 1,
+          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50,
+          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999,
+          "description": "Random seed for reproducibility of the generation."
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Penalty for repeated tokens; higher values discourage repetition."
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2,
+          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": -2,
+          "max": 2,
+          "description": "Increases the likelihood of the model introducing new topics."
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": false,
+        "image": false
+      }
+    },
+    "@cf/mistralai/mistral-small-3.1-24b-instruct": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "The input text prompt for the model to generate a response."
+        },
+        "guided_json": {
+          "type": "object",
+          "description": "JSON schema that should be fulfilled for the response."
+        },
+        "raw": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, a chat template is not applied and you must adhere to the specific model's expected formatting."
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, the response will be streamed back incrementally using SSE, Server Sent Events."
+        },
+        "max_tokens": {
+          "type": "integer",
+          "default": 256,
+          "description": "The maximum number of tokens to generate in the response."
+        },
+        "temperature": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "default": 0.15,
+          "description": "Controls the randomness of the output; higher values produce more random results."
+        },
+        "top_p": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Adjusts the creativity of the AI's responses by controlling how many possible words it considers. Lower values make outputs more predictable; higher values allow for more varied and creative responses."
+        },
+        "top_k": {
+          "type": "integer",
+          "min": 1,
+          "max": 50,
+          "description": "Limits the AI to choose from the top 'k' most probable words. Lower values make responses more focused; higher values introduce more variety and potential surprises."
+        },
+        "seed": {
+          "type": "integer",
+          "min": 1,
+          "max": 9999999999,
+          "description": "Random seed for reproducibility of the generation."
+        },
+        "repetition_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Penalty for repeated tokens; higher values discourage repetition."
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Decreases the likelihood of the model repeating the same lines verbatim."
+        },
+        "presence_penalty": {
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "description": "Increases the likelihood of the model introducing new topics."
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": false,
+        "image": false
+      }
+    },
+    "@cf/deepseek-ai/deepseek-v4-flash-0731": {
+      "params": {
+        "prompt": {
+          "type": "string",
+          "description": "The input text prompt for the model to generate a response."
+        },
+        "model": {
+          "type": "string",
+          "description": "ID of the model to use (e.g. '@cf/zai-org/glm-4.7-flash, etc')."
+        },
+        "audio": {
+          "type": "object"
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "default": 0,
+          "description": "Penalizes new tokens based on their existing frequency in the text so far."
+        },
+        "logit_bias": {
+          "type": "object",
+          "description": "Modify the likelihood of specified tokens appearing in the completion. Maps token IDs to bias values from -100 to 100."
+        },
+        "logprobs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to return log probabilities of the output tokens."
+        },
+        "top_logprobs": {
+          "type": "integer",
+          "description": "How many top log probabilities to return at each token position (0-20). Requires logprobs=true."
+        },
+        "max_tokens": {
+          "type": "integer",
+          "description": "Deprecated in favor of max_completion_tokens. The maximum number of tokens to generate."
+        },
+        "max_completion_tokens": {
+          "type": "integer",
+          "description": "An upper bound for the number of tokens that can be generated for a completion."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Set of 16 key-value pairs that can be attached to the object."
+        },
+        "modalities": {
+          "type": "array",
+          "description": "Output types requested from the model (e.g. ['text'] or ['text', 'audio'])."
+        },
+        "n": {
+          "type": "integer",
+          "default": 1,
+          "description": "How many chat completion choices to generate for each input message."
+        },
+        "parallel_tool_calls": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to enable parallel function calling during tool use."
+        },
+        "prediction": {
+          "type": "object"
+        },
+        "presence_penalty": {
+          "type": "number",
+          "default": 0,
+          "description": "Penalizes new tokens based on whether they appear in the text so far."
+        },
+        "reasoning_effort": {
+          "type": "string",
+          "default": "high",
+          "enum": ["max", "high", "low", "none"],
+          "description": "Reasoning effort. Supported levels: max, high, low, none. Compatibility aliases: minimal maps to low; medium maps to high; xhigh maps to high."
+        },
+        "chat_template_kwargs": {
+          "type": "object"
+        },
+        "chat_template_kwargs.enable_thinking": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to enable reasoning for this model."
+        },
+        "chat_template_kwargs.clear_thinking": {
+          "type": "boolean",
+          "default": false,
+          "description": "If false, preserves reasoning context between turns."
+        },
+        "response_format": {},
+        "seed": {
+          "type": "integer",
+          "description": "If specified, the system will make a best effort to sample deterministically."
+        },
+        "stop": {
+          "type": "null",
+          "description": "Up to 4 sequences where the API will stop generating further tokens."
+        },
+        "store": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to store the output for model distillation / evals."
+        },
+        "stream": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, partial message deltas will be sent as server-sent events."
+        },
+        "stream_options": {
+          "type": "object"
+        },
+        "temperature": {
+          "type": "number",
+          "default": 1,
+          "description": "Sampling temperature between 0 and 2."
+        },
+        "tool_choice": {},
+        "tools": {
+          "type": "array",
+          "description": "A list of tools the model may call."
+        },
+        "top_p": {
+          "type": "number",
+          "default": 1,
+          "description": "Nucleus sampling: considers the results of the tokens with top_p probability mass."
+        },
+        "user": {
+          "type": "string",
+          "description": "A unique identifier representing your end-user, for abuse monitoring."
+        },
+        "web_search_options": {
+          "type": "object"
+        },
+        "function_call": {
+          "type": "string",
+          "enum": ["none", "auto"]
+        },
+        "functions": {
+          "type": "array"
+        },
+        "messages": {
+          "type": "array",
+          "description": "A list of messages comprising the conversation so far."
+        }
+      },
+      "output": "image/png",
+      "multipart": false,
+      "input": {
+        "messages": true,
+        "image": true
+      }
+    },
     "@cf/openai/gpt-oss-20b": {
       "params": {
         "prompt": {
@@ -3528,7 +3537,7 @@
         "image": false
       }
     },
-    "@cf/stabilityai/stable-diffusion-xl-base-1.0": {
+    "@cf/runwayml/stable-diffusion-v1-5-inpainting": {
       "params": {
         "prompt": {
           "type": "string",

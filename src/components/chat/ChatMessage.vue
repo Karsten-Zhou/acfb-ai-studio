@@ -290,9 +290,7 @@ async function copy() {
                     <span>{{ t("chat.reasoning") }}</span>
                     <ChevronRight
                       class="transition-transform"
-                      :class="
-                        reasoningOpen ? 'rotate-90' : 'rtl:-rotate-90'
-                      "
+                      :class="reasoningOpen ? 'rotate-90' : 'rtl:-rotate-90'"
                     />
                   </Button>
                 </CollapsibleTrigger>

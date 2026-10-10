@@ -57,6 +57,7 @@ function isFreeImageModel(m: ModelInfo): m is FreeImageModel {
 const EXCLUDED_MODEL_NAMES: ReadonlySet<string> = new Set([
   "@cf/cloudflare/clef", // not a text-generation model, mislabeled upstream
   "@cf/cloudflare/clef-flash", // not a text-generation model, mislabeled upstream
+  "@cf/cloudflare/clef-omni", // not a text-generation model, mislabeled upstream
   "@cf/swiss-ai/apertus-v1.5-8b", // not universally available currently
   "@cf/utter-project/eurollm-9b-it", // not universally available currently
 ]);

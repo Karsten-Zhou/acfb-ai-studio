@@ -75,9 +75,7 @@ function toggle(id: string): void {
           </span>
           <ChevronRight
             class="transition-transform"
-            :class="
-              open[step.call.id] ? 'rotate-90' : 'rtl:-rotate-90'
-            "
+            :class="open[step.call.id] ? 'rotate-90' : 'rtl:-rotate-90'"
           />
         </Button>
       </CollapsibleTrigger>

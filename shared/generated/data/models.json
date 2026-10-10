@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-10-08T10:20:54.295Z",
+  "generatedAt": "2026-10-10T14:18:25.885Z",
   "models": [
     {
       "id": "41ca173f-72d5-4420-8915-49e835d2676e",
@@ -216,12 +216,42 @@
       "pricing": [
         {
           "unit": "per M input tokens",
-          "price": 0.09,
+          "price": 0.038,
           "currency": "USD"
         }
       ],
       "terms": "https://huggingface.co/Cloudflare/clef-flash/blob/main/LICENSE",
       "createdAt": "2026-09-29 09:25:44.258"
+    },
+    {
+      "id": "543fea3d-dcff-4c3b-af79-b83f601aa1cb",
+      "name": "@cf/cloudflare/clef-omni",
+      "urlPath": "clef-omni",
+      "provider": "cloudflare",
+      "task": "text-generation",
+      "description": "Clef-omni is a multimodal decision model built on a 30B-parameter mixture-of-experts (3B active) backbone. It turns a state and a schema of typed questions into decisions, reads the state as text, JSON, images, audio, or video, and returns a probability for every allowed option of every question.",
+      "capabilities": {
+        "streaming": true,
+        "functionCalling": false,
+        "reasoning": false,
+        "vision": true,
+        "lora": false,
+        "beta": false,
+        "partner": false,
+        "asyncQueue": false,
+        "realtime": false,
+        "requireWorkersPaid": false
+      },
+      "contextWindow": 65536,
+      "pricing": [
+        {
+          "unit": "per M input tokens",
+          "price": 0.15,
+          "currency": "USD"
+        }
+      ],
+      "terms": null,
+      "createdAt": "2026-10-09 01:37:45.295"
     },
     {
       "id": "ad01ab83-baf8-4e7b-8fed-a0a219d4eb45",
@@ -859,7 +889,7 @@
         "streaming": true,
         "functionCalling": true,
         "reasoning": false,
-        "vision": false,
+        "vision": true,
         "lora": false,
         "beta": false,
         "partner": false,

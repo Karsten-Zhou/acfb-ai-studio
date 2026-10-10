@@ -36,7 +36,9 @@ async function waitFor(host: HTMLElement, predicate: () => boolean) {
     if (predicate()) return;
     await new Promise((resolve) => setTimeout(resolve, 25));
   }
-  throw new Error(`Timed out waiting for Markdown render. Current text: ${host.textContent}`);
+  throw new Error(
+    `Timed out waiting for Markdown render. Current text: ${host.textContent}`,
+  );
 }
 
 async function mountMarkdown(source: string) {

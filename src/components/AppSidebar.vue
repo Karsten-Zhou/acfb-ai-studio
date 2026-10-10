@@ -108,11 +108,7 @@ function switchMode(to: string): void {
               class="min-w-56 rounded-lg"
               align="start"
               :side="
-                isMobile
-                  ? 'bottom'
-                  : direction === 'rtl'
-                    ? 'left'
-                    : 'right'
+                isMobile ? 'bottom' : direction === 'rtl' ? 'left' : 'right'
               "
               :side-offset="4"
             >
