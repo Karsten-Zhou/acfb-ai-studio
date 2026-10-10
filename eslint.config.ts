@@ -38,7 +38,17 @@ export default defineConfig(
       },
     },
     rules: {
-      // your rules
+      // Vue I18n's documented global schema augmentation uses an empty
+      // interface extending MessageSchema so useI18n() can infer translation
+      // keys across components. The interface is intentionally empty; its
+      // inherited members are the schema. Allow this specific interface name
+      // without disabling the rule for other empty interfaces.
+      "@typescript-eslint/no-empty-object-type": [
+        "error",
+        {
+          allowWithName: "DefineLocaleMessage",
+        },
+      ],
     },
   },
   {
@@ -47,12 +57,26 @@ export default defineConfig(
       // Test harnesses mount components through anonymous render roots.
       "vue/one-component-per-file": "off",
     },
-  }, // i18n key checks via @intlify/eslint-plugin-vue-i18n: keys must exist in
-  // every locale and dead keys are rejected. These rules walk the *locale*
-  // AST, so `flat/base` parses the *.json / *.yaml locales as JSON. Scoping
-  // below to the locale files avoids misreporting every key of unrelated *.json
-  // as unused.
+  },
+  // i18n checks via @intlify/eslint-plugin-vue-i18n.
+  // flat/base enables parsing support for locale files.
   ...pluginVueI18n.configs["flat/base"],
+
+  // Application source: catch missing static translation keys.
+  {
+    files: ["src/**/*.{ts,vue}"],
+    settings: {
+      "vue-i18n": {
+        localeDir: "src/locales/*.json",
+        messageSyntaxVersion: "^11.0.0",
+      },
+    },
+    rules: {
+      "@intlify/vue-i18n/no-missing-keys": "error",
+    },
+  },
+
+  // Locale files: enforce consistency and detect dead translation keys.
   {
     files: ["src/locales/*.json"],
     settings: {
@@ -62,7 +86,6 @@ export default defineConfig(
       },
     },
     rules: {
-      "@intlify/vue-i18n/no-missing-keys": "error",
       "@intlify/vue-i18n/no-missing-keys-in-other-locales": "error",
       "@intlify/vue-i18n/no-duplicate-keys-in-locale": "error",
       "@intlify/vue-i18n/no-unused-keys": [

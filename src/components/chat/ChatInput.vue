@@ -217,8 +217,9 @@ const reasoningLabel = computed(() => {
       <Textarea
         v-model="draft"
         :rows="1"
+        dir="auto"
         :placeholder="t('chat.inputPlaceholder')"
-        class="max-h-40 min-h-6 w-full resize-none border-0 bg-transparent px-1 text-sm shadow-none outline-none placeholder:text-muted-foreground focus-visible:ring-0"
+        class="max-h-40 min-h-6 w-full resize-none border-0 bg-transparent px-1 text-start text-sm shadow-none outline-none placeholder:text-muted-foreground focus-visible:ring-0"
         :disabled="streaming"
         @keydown="onKeydown"
       />

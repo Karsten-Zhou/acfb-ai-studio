@@ -43,7 +43,7 @@ Deploy your own private, self-hosted instance in under a minute with one click:
 │   ├── stores/               # Pinia state management (chat, draw, preferences, sync)
 │   ├── composables/          # Vue composables (chat-defaults, sync)
 │   ├── lib/                  # Utilities (api-error, markdown, i18n, query-client)
-│   ├── locales/              # i18n translations (de, en, fr, hi, ja, zh)
+│   ├── locales/              # i18n translations (ar, de, en, fr, hi, ja, zh)
 │   ├── router/               # Vue Router configuration
 │   └── shikithemes/          # Code syntax highlighting themes
 │
@@ -117,6 +117,7 @@ bun run deploy
 - [ ] MCP support for chatting AIs.
 - [ ] Custom OpenAI compatible endpoint support for chatting AIs
 - [ ] Optimise the remaining token calculation.
+- [ ] Chat input is too crowded in mobile view.
 - [ ] `8001: Invalid input` happens when chat model switched, sometimes.
 - [ ] When using `Qwen3.8 27B` without toolsets:
     ```

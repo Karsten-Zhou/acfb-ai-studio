@@ -28,7 +28,7 @@ const emit = defineEmits<{ (e: "remove", id: string): void }>();
         v-if="!readonly"
         variant="secondary"
         size="icon-xs"
-        class="absolute right-1 top-1 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+        class="absolute inset-e-1 top-1 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
         :aria-label="$t('chat.removeAttachment')"
         @click="emit('remove', a.id)"
       >

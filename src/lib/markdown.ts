@@ -4,6 +4,7 @@
 import {
   Lexer,
   Marked,
+  Renderer,
   type HooksObject,
   type Token,
   type TokensList,
@@ -269,6 +270,74 @@ function collectCodeBlocks(tokens: Token[], ctx: RenderContext): void {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Bidirectional text policy
+//
+// The browser implements the Unicode Bidirectional Algorithm; we never do.
+// The only policy here is *where* direction is established:
+//   - Independent leaf text blocks (paragraphs, headings) and list items and
+//     tables carry dir="auto", so an Arabic block inside an LTR document (and
+//     vice versa) resolves itself from its first strong character.
+//   - Structural containers (blockquote, ul/ol) carry no direction and follow
+//     the document/shell direction: their children with dir="auto" are
+//     bidi-isolated, so dir="auto" on the container would see no strong
+//     characters and the spec forces an LTR fallback.
+//   - Leaf blocks inside a list item (the <p> wrappers of loose lists) are
+//     left without dir; the list item itself establishes the direction.
+//   - Code and math are pinned to isolated LTR runs via CSS.
+// ---------------------------------------------------------------------------
+
+/** Pristine renderer: wrappers delegate and only add the dir attribute. */
+const baseRenderer = new Renderer();
+
+// Depth while rendering a list item body; leaf blocks inside inherit the
+// item's direction instead of establishing their own. Depth handles nesting.
+let listItemDepth = 0;
+
+function isTagWhitespace(ch: string): boolean {
+  return ch === " " || ch === "\t" || ch === "\n" || ch === "\f" || ch === "\r";
+}
+
+/** Whether an opening tag (passed without its closing ">") has a dir attribute. */
+function hasDirAttribute(tag: string): boolean {
+  let i = 0;
+  while (i < tag.length && !isTagWhitespace(tag[i])) i += 1; // tag name
+  while (i < tag.length) {
+    while (i < tag.length && isTagWhitespace(tag[i])) i += 1;
+    let name = "";
+    while (
+      i < tag.length &&
+      !isTagWhitespace(tag[i]) &&
+      tag[i] !== "=" &&
+      tag[i] !== "/"
+    ) {
+      name += tag[i];
+      i += 1;
+    }
+    if (name === "dir") return true;
+    if (tag[i] === "=") {
+      i += 1;
+      const quote = tag[i];
+      if (quote === '"' || quote === "'") {
+        const end = tag.indexOf(quote, i + 1);
+        i = end === -1 ? tag.length : end + 1;
+      } else {
+        while (i < tag.length && !isTagWhitespace(tag[i])) i += 1;
+      }
+    }
+  }
+  return false;
+}
+
+/** Add dir="auto" to a block's first opening tag, preserving an explicit dir. */
+function withAutoDir(html: string): string {
+  const close = html.indexOf(">");
+  if (close === -1) return html;
+  const tag = html.slice(0, close);
+  if (hasDirAttribute(tag)) return html;
+  return `${tag} dir="auto"${html.slice(close)}`;
+}
+
 // Per-render state for the hook; parse is synchronous, so no await can
 // interleave between assignment and the hook reading it.
 let renderContext: RenderContext | null = null;
@@ -285,6 +354,29 @@ const hooks: HooksObject = { processAllTokens };
 
 const marked = new Marked({ gfm: true, breaks: true });
 marked.use(markedKatex(KATEX_OPTIONS));
+marked.use({
+  renderer: {
+    paragraph(token) {
+      const html = baseRenderer.paragraph.call(this, token);
+      return listItemDepth > 0 ? html : withAutoDir(html);
+    },
+    heading(token) {
+      const html = baseRenderer.heading.call(this, token);
+      return listItemDepth > 0 ? html : withAutoDir(html);
+    },
+    listitem(token) {
+      listItemDepth += 1;
+      try {
+        return withAutoDir(baseRenderer.listitem.call(this, token));
+      } finally {
+        listItemDepth -= 1;
+      }
+    },
+    table(token) {
+      return withAutoDir(baseRenderer.table.call(this, token));
+    },
+  },
+});
 marked.use({ hooks });
 
 export async function renderMarkdown(

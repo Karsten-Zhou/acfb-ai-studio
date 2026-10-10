@@ -1,16 +1,6 @@
-// i18n for the client (en / zh / de), with an "auto" (browser) option.
-//
-// Backed by vue-i18n (Composition API). `en` is the master message schema and
-// `MessageKey` is a recursive dotted-path type over it, so `t()` keys are
-// compile-time checked (a mistyped key fails typecheck).
-//
-// The *preference* (auto/en/zh/de) lives in the preferences store
-// (`stores/preferences.ts`); this module owns the vue-i18n instance, the
-// global `t()` helper (for stores and composables, which have no component
-// scope) and the locale-aware formatting helpers.
-
 import { match } from "@formatjs/intl-localematcher";
 import { createI18n } from "vue-i18n";
+import ar from "@/locales/ar.json";
 import de from "@/locales/de.json";
 import en from "@/locales/en.json";
 import fr from "@/locales/fr.json";
@@ -18,84 +8,132 @@ import hi from "@/locales/hi.json";
 import ja from "@/locales/ja.json";
 import zh from "@/locales/zh.json";
 
-export type Locale = "de" | "en" | "fr" | "hi" | "ja" | "zh";
+// ---------------------------------------------------------------------------
+// Locale schema and types
+// ---------------------------------------------------------------------------
+
+export const supportedLocales = [
+  "ar",
+  "de",
+  "en",
+  "fr",
+  "hi",
+  "ja",
+  "zh",
+] as const;
+
+export type Locale = (typeof supportedLocales)[number];
 export type LocaleSetting = "auto" | Locale;
+export type Direction = "ltr" | "rtl";
 
-export const supportedLocales = ["de", "en", "fr", "hi", "ja", "zh"] as const;
+type MessageSchema = typeof en;
 
-/** True when `value` is a valid locale preference (guards persisted data). */
+// Only paths that resolve to string leaves are valid translation keys.
+type StringLeafPaths<T> = {
+  [K in keyof T & string]: T[K] extends string
+    ? K
+    : T[K] extends Record<string, unknown>
+      ? `${K}.${StringLeafPaths<T[K]>}`
+      : never;
+}[keyof T & string];
+
+export type MessageKey = StringLeafPaths<MessageSchema>;
+
+export type MessageParams =
+  Record<string, string | number> | Array<string | number>;
+
+// Extend Vue I18n's global message schema so useI18n() can infer
+// translation keys from the English master locale.
+declare module "vue-i18n" {
+  export interface DefineLocaleMessage extends MessageSchema {}
+}
+
+// ---------------------------------------------------------------------------
+// Locale utilities
+// ---------------------------------------------------------------------------
+
+/** True when value is a valid locale preference (guards persisted data). */
 export function isLocaleSetting(value: unknown): value is LocaleSetting {
   return (
     value === "auto" ||
-    (typeof value === "string" && supportedLocales.includes(value as Locale))
+    (typeof value === "string" &&
+      (supportedLocales as readonly string[]).includes(value))
   );
 }
 
-/** Resolve the browser's preferred supported locale (the "auto" setting). */
+/** Resolve the browser's preferred supported locale. */
 export function resolveBrowserLocale(): Locale {
   return match(
-    navigator.languages ?? [navigator.language],
+    navigator.languages.length > 0 ? navigator.languages : [navigator.language],
     [...supportedLocales],
     "en",
   ) as Locale;
 }
 
-// Recursive dotted-path type over the (nested) en locale: yields keys like
-// "common.settings" or "chat.reasoningLevel.high".
-type Paths<T, P extends string = ""> = {
-  [K in keyof T]: T[K] extends string
-    ? P extends ""
-      ? `${K & string}`
-      : `${P}.${K & string}`
-    : Paths<T[K], P extends "" ? `${K & string}` : `${P}.${K & string}`>;
-}[keyof T];
+/**
+ * Infer the natural writing direction from the locale's internationalization
+ * data. Requires Intl.Locale.prototype.getTextInfo() support.
+ */
+export function dirForLocale(locale: Locale): Direction {
+  const localeInfo = new Intl.Locale(locale) as Intl.Locale & {
+    getTextInfo(): { direction: Direction };
+  };
 
-export type MessageKey = Paths<typeof en>;
+  return localeInfo.getTextInfo().direction;
+}
 
-export type MessageParams =
-  Record<string, string | number> | Array<string | number>;
+// ---------------------------------------------------------------------------
+// Vue I18n
+// ---------------------------------------------------------------------------
 
-// Missing keys fall back to `en`, then to the raw key. Correctness is enforced
-// by the `MessageKey` type instead of runtime warnings (which would spam the
-// console for the locale files that are still being translated).
-const i18n = createI18n({
+// Missing and fallback warnings are enabled explicitly so incomplete locale
+// files and incorrect translation keys remain visible during development.
+const i18n = createI18n<MessageSchema, Locale, false>({
   legacy: false,
   locale: resolveBrowserLocale(),
   fallbackLocale: "en",
-  messages: { de, en, fr, hi, ja, zh },
-  missingWarn: false,
-  fallbackWarn: false,
+  messages: { ar, de, en, fr, hi, ja, zh },
 });
 
-/** The plugin instance — installed in `main.ts` for `useI18n()` in components. */
+/** The plugin instance — install in main.ts for useI18n(). */
 export { i18n };
 
-/** The locale currently in effect (reactive). */
+/** The locale currently in effect. */
 export function currentLocale(): Locale {
   return i18n.global.locale.value as Locale;
 }
 
-/**
- * Switch the active language and keep `<html lang>` in sync.
- * Called by the preferences store; components re-render automatically.
- */
-export function applyLocale(setting: LocaleSetting): Locale {
-  const locale = setting === "auto" ? resolveBrowserLocale() : setting;
-  i18n.global.locale.value = locale;
-  document.documentElement.lang = locale;
-  return locale;
+/** The direction for the currently active locale. */
+export function currentDirection(): Direction {
+  return dirForLocale(currentLocale());
 }
 
 /**
- * Translate a (compile-time checked) key.
+ * Switch the active language and keep <html lang> and <html dir> in sync.
+ * Called by the preferences store.
+ */
+export function applyLocale(setting: LocaleSetting): Locale {
+  const locale = setting === "auto" ? resolveBrowserLocale() : setting;
+
+  i18n.global.locale.value = locale;
+
+  document.documentElement.lang = locale;
+  document.documentElement.dir = dirForLocale(locale);
+
+  return locale;
+}
+
+// ---------------------------------------------------------------------------
+// Translation
+// ---------------------------------------------------------------------------
+
+/**
+ * Translate a compile-time checked key.
  *
- * For components prefer vue-i18n's `useI18n()`; this
- * helper exists for modules without a component instance (stores, composables)
- * and is equally reactive because it reads the global locale ref.
+ * For components, prefer Vue I18n's useI18n(). This helper is for modules
+ * without a component instance, such as stores and composables.
  */
 export function t(key: MessageKey, params?: MessageParams): string {
-  // Split the union explicitly: vue-i18n's overloads distinguish a named
-  // record ({count}) from a positional list ([count]).
   return (
     Array.isArray(params)
       ? i18n.global.t(key, params)
@@ -103,65 +141,78 @@ export function t(key: MessageKey, params?: MessageParams): string {
   ) as string;
 }
 
+// ---------------------------------------------------------------------------
+// Formatting
+// ---------------------------------------------------------------------------
+
 /**
- * Human-readable name of a language, written in the *current* app language
- * (e.g. "German" / "Deutsch" / "德语"). Falls back to the tag itself when the
- * runtime has no display name for it.
+ * Human-readable language name in the current app language.
+ * Falls back to the locale tag if Intl.DisplayNames cannot provide a name.
  */
 export function languageLabel(locale: Locale): string {
   try {
-    const names = new Intl.DisplayNames([currentLocale()], {
-      type: "language",
-    });
-    return names.of(locale) ?? locale;
+    return (
+      new Intl.DisplayNames([currentLocale()], {
+        type: "language",
+      }).of(locale) ?? locale
+    );
   } catch {
     return locale;
   }
 }
 
-/** Full date + time in the app locale — used for the About panel's build time. */
+/** Full date + time in the app locale. */
 export function formatDateTime(value: string | number | Date): string {
   const date = new Date(value);
+
   if (Number.isNaN(date.getTime())) return "";
+
   return new Intl.DateTimeFormat(currentLocale(), {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(date);
 }
 
-/** A number in the app locale; `null`/`undefined` render as an empty string. */
+/** A number in the app locale. Nullish values and NaN render as empty. */
 export function formatNumber(value: number | null | undefined): string {
-  if (value === null || value === undefined || Number.isNaN(value)) return "";
+  if (value == null || Number.isNaN(value)) return "";
+
   return new Intl.NumberFormat(currentLocale()).format(value);
 }
 
-const BYTES_PER_MB = 1024 * 1024;
+/**
+ * Format a byte count in mebibytes (MiB).
+ * Uses binary conversion: 1 MiB = 1,048,576 bytes.
+ */
+const BYTES_PER_MEBIBYTE = 1024 * 1024;
 
-/** A byte count in the locale's megabyte unit (e.g. `18,4 MB`). */
-export function formatMegabytes(bytes: number): string {
-  return new Intl.NumberFormat(currentLocale(), {
-    style: "unit",
-    unit: "megabyte",
-    unitDisplay: "short",
+/** Format a byte count in mebibytes (MiB). */
+export function formatMebibytes(bytes: number): string {
+  const value = new Intl.NumberFormat(currentLocale(), {
     maximumFractionDigits: 1,
-  }).format(bytes / BYTES_PER_MB);
+  }).format(bytes / BYTES_PER_MEBIBYTE);
+
+  return `${value} MiB`;
 }
 
-/** Short relative stamp ("42s ago" / "3m ago" / "yesterday"). */
+/** Short relative timestamp, such as "42 sec. ago" or "yesterday". */
+
 export function formatRelativeTime(
   timestamp: number,
-  now: number = Date.now(),
+  now = Date.now(),
 ): string {
-  const format = new Intl.RelativeTimeFormat(currentLocale(), {
+  const relativeTime = new Intl.RelativeTimeFormat(currentLocale(), {
     numeric: "auto",
     style: "narrow",
   });
-  const seconds = Math.max(0, Math.round((now - timestamp) / 1000));
-  if (seconds < 10) return format.format(0, "second");
-  if (seconds < 60) return format.format(-seconds, "second");
-  const minutes = Math.round(seconds / 60);
-  if (minutes < 60) return format.format(-minutes, "minute");
-  const hours = Math.round(minutes / 60);
-  if (hours < 24) return format.format(-hours, "hour");
-  return format.format(-Math.round(hours / 24), "day");
+
+  const seconds = (timestamp - now) / 1000;
+  const abs = Math.abs(seconds);
+
+  if (abs < 60) return relativeTime.format(Math.round(seconds), "second");
+  if (abs < 3600)
+    return relativeTime.format(Math.round(seconds / 60), "minute");
+  if (abs < 86400)
+    return relativeTime.format(Math.round(seconds / 3600), "hour");
+  return relativeTime.format(Math.round(seconds / 86400), "day");
 }

@@ -12,7 +12,7 @@ import { useI18n } from "vue-i18n";
 import { Button } from "@/components/ui/button";
 import { requestSync, resetSyncState } from "@/composables/sync";
 import { useSyncStore } from "@/stores/sync";
-import { formatMegabytes, formatRelativeTime } from "@/lib/i18n";
+import { formatMebibytes, formatRelativeTime } from "@/lib/i18n";
 
 const { t } = useI18n();
 const sync = useSyncStore();
@@ -70,14 +70,14 @@ const percent = computed(() =>
 
 const usageLabel = computed(() =>
   t("sync.usage", {
-    used: formatMegabytes(sync.storageUsage.bytes),
-    total: formatMegabytes(sync.storageUsage.max),
+    used: formatMebibytes(sync.storageUsage.bytes),
+    total: formatMebibytes(sync.storageUsage.max),
   }),
 );
 
 const usageCompact = computed(
   () =>
-    `${formatMegabytes(sync.storageUsage.bytes)}/${formatMegabytes(sync.storageUsage.max)}`,
+    `${formatMebibytes(sync.storageUsage.bytes)} / ${formatMebibytes(sync.storageUsage.max)}`,
 );
 
 const barTone = computed(() => {

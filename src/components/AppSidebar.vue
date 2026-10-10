@@ -9,6 +9,7 @@ import {
   Settings,
 } from "@lucide/vue";
 
+import { currentDirection } from "@/lib/i18n";
 import SyncStatus from "@/components/SyncStatus.vue";
 import ChatSidebarGroup from "@/components/chat/ChatSidebarGroup.vue";
 import DrawSidebarGroup from "@/components/draw/DrawSidebarGroup.vue";
@@ -37,6 +38,10 @@ const { t } = useI18n();
 const { isMobile, setOpenMobile } = useSidebar();
 const route = useRoute();
 const router = useRouter();
+
+// Reactive layout direction: the sidebar docks on the inline-start side and
+// its mode menu opens toward inline-end.
+const direction = computed(() => currentDirection());
 
 const settingsOpen = ref(false);
 
@@ -70,7 +75,7 @@ function switchMode(to: string): void {
 </script>
 
 <template>
-  <Sidebar>
+  <Sidebar :side="direction === 'rtl' ? 'right' : 'left'">
     <SidebarHeader>
       <SidebarMenu>
         <SidebarMenuItem>
@@ -86,7 +91,7 @@ function switchMode(to: string): void {
                   <component :is="activeMode.icon" class="size-4" />
                 </div>
 
-                <div class="grid flex-1 text-left text-sm leading-tight">
+                <div class="grid flex-1 text-start text-sm leading-tight">
                   <span class="truncate font-medium">
                     {{ activeMode.name }}
                   </span>
@@ -95,14 +100,20 @@ function switchMode(to: string): void {
                   </span>
                 </div>
 
-                <ChevronsUpDown class="ml-auto" />
+                <ChevronsUpDown class="ms-auto" />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent
               class="min-w-56 rounded-lg"
               align="start"
-              :side="isMobile ? 'bottom' : 'right'"
+              :side="
+                isMobile
+                  ? 'bottom'
+                  : direction === 'rtl'
+                    ? 'left'
+                    : 'right'
+              "
               :side-offset="4"
             >
               <DropdownMenuLabel class="text-xs text-muted-foreground">

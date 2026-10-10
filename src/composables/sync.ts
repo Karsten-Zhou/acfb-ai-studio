@@ -29,7 +29,7 @@ import {
 } from "@shared/sync";
 import { CORRUPT_STATE } from "@shared/errors";
 import { readApiError } from "@/lib/api-error";
-import { formatMegabytes, t } from "@/lib/i18n";
+import { formatMebibytes, t } from "@/lib/i18n";
 import { defaultOptions } from "@/composables/chat-defaults";
 import { useChatStore } from "@/stores/chat";
 import { useDrawStore } from "@/stores/draw";
@@ -269,8 +269,8 @@ async function applyPayload(payload: SyncPayload): Promise<boolean> {
 function tooLargeError(bytes: number): SyncRequestError {
   return new SyncRequestError(
     t("sync.tooLarge", {
-      size: formatMegabytes(bytes),
-      limit: formatMegabytes(SYNC_MAX_BYTES),
+      size: formatMebibytes(bytes),
+      limit: formatMebibytes(SYNC_MAX_BYTES),
     }),
   );
 }

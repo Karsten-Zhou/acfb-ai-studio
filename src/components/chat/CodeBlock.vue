@@ -39,9 +39,10 @@ async function copy() {
 </script>
 
 <template>
-  <div class="my-3 overflow-hidden rounded-lg border">
+  <!-- Code is always LTR, even inside an RTL UI. -->
+  <div dir="ltr" class="my-3 overflow-hidden rounded-lg border">
     <div
-      class="flex items-center justify-between border-b bg-muted/50 py-1.5 pl-3 pr-1.5"
+      class="flex items-center justify-between border-b bg-muted/50 py-1.5 ps-3 pe-1.5"
     >
       <span class="font-mono text-xs text-muted-foreground">
         {{ language }}

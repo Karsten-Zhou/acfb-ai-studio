@@ -132,11 +132,11 @@ function handleConfirm(): void {
       <div class="space-y-4">
         <div class="relative">
           <Search
-            class="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
+            class="absolute top-1/2 inset-s-2.5 size-4 -translate-y-1/2 text-muted-foreground"
           />
           <Input
             v-model="searchQuery"
-            class="pl-8"
+            class="ps-8"
             :placeholder="t('settings.searchConversations')"
           />
         </div>
@@ -158,13 +158,13 @@ function handleConfirm(): void {
             <table class="w-full">
               <thead class="sticky top-0 z-10 bg-muted">
                 <tr class="border-b">
-                  <th class="w-12 p-3 text-left">
+                  <th class="w-12 p-3 text-start">
                     <Checkbox v-model="headerChecked" />
                   </th>
-                  <th class="p-3 text-left text-sm font-medium">
+                  <th class="p-3 text-start text-sm font-medium">
                     {{ t("settings.conversationName") }}
                   </th>
-                  <th class="w-24 p-3 text-left text-sm font-medium">
+                  <th class="w-24 p-3 text-start text-sm font-medium">
                     {{ t("settings.messages") }}
                   </th>
                 </tr>

@@ -30,7 +30,7 @@ import { Marker, MarkerContent, MarkerIcon } from "@/components/ui/marker";
 import { Spinner } from "@/components/ui/spinner";
 import { AlertCircleIcon } from "@lucide/vue";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { formatNumber } from "@/lib/i18n";
+import { currentDirection, formatNumber } from "@/lib/i18n";
 import MarkdownContent from "./MarkdownContent.vue";
 import AttachmentList from "./AttachmentList.vue";
 import ToolCallList from "./ToolCallList.vue";
@@ -57,6 +57,9 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+
+/** RTL flips the sibling-nav chevrons so "previous" stays on the start side. */
+const isRtl = computed(() => currentDirection() === "rtl");
 
 type AssistantPart =
   { type: "content"; text: string } | { type: "tools"; calls: ToolCall[] };
@@ -234,7 +237,8 @@ async function copy() {
               <div class="relative">
                 <p
                   ref="contentEl"
-                  class="whitespace-pre-wrap"
+                  dir="auto"
+                  class="whitespace-pre-wrap text-start"
                   :class="{ 'overflow-hidden': collapsed }"
                   :style="
                     collapsed
@@ -260,7 +264,7 @@ async function copy() {
                 </span>
                 <ChevronDown
                   class="size-3.5 transition-transform"
-                  :class="{ 'rotate-180': !collapsed }"
+                  :class="{ '-rotate-90': !collapsed }"
                 />
               </button>
             </div>
@@ -286,7 +290,9 @@ async function copy() {
                     <span>{{ t("chat.reasoning") }}</span>
                     <ChevronRight
                       class="transition-transform"
-                      :class="{ 'rotate-90': reasoningOpen }"
+                      :class="
+                        reasoningOpen ? 'rotate-90' : 'rtl:-rotate-90'
+                      "
                     />
                   </Button>
                 </CollapsibleTrigger>
@@ -387,7 +393,8 @@ async function copy() {
             :disabled="streaming || siblingIndex <= 1"
             @click="emit('switchSibling', message.id, -1)"
           >
-            <ChevronLeft />
+            <ChevronRight v-if="isRtl" />
+            <ChevronLeft v-else />
           </Button>
           <span class="text-xs tabular-nums text-muted-foreground">
             {{ formatNumber(siblingIndex) }}/{{ formatNumber(siblingCount) }}
@@ -399,7 +406,8 @@ async function copy() {
             :disabled="streaming || siblingIndex >= siblingCount"
             @click="emit('switchSibling', message.id, 1)"
           >
-            <ChevronRight />
+            <ChevronLeft v-if="isRtl" />
+            <ChevronRight v-else />
           </Button>
         </div>
       </MessageFooter>

@@ -132,4 +132,30 @@
 
 pre.shiki {
   @apply border w-full;
+  /* Syntax-highlighted code is always LTR. */
+  direction: ltr;
+}
+
+/* ---------------------------------------------------------------------------
+ * Bidirectional prose
+ *
+ * Block direction is resolved per markdown block from its first strong
+ * character by stamping the HTML `dir="auto"` *attribute* at the markdown
+ * render boundary (lib/markdown.ts) — CSS `direction: auto` alone does not
+ * trigger the heuristic on generic elements in Chrome. An Arabic reply thus
+ * flows RTL and an English reply LTR even when the surrounding chrome uses
+ * the other direction. Code and math below are pinned to isolated LTR runs.
+ * ------------------------------------------------------------------------- */
+
+/* `unicode-bidi: isolate` (not just `direction`) keeps punctuation, brackets
+ * and numbers from reordering when the fragment sits in an Arabic sentence. */
+.prose :where(pre, code, .katex) {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* Links form their own bidi run so a URL/email inside Arabic prose doesn't
+ * drag surrounding neutral characters (., ()، …) across the boundary. */
+.prose a {
+  unicode-bidi: isolate;
 }

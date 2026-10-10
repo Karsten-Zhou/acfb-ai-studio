@@ -62,16 +62,16 @@ const contentRenderer = defineComponent({
         });
       }
 
-      const props: Record<string, string> = {};
+      const vnodeProps: Record<string, string> = {};
       for (const attribute of Array.from(element.attributes)) {
-        props[attribute.name] = attribute.value;
+        vnodeProps[attribute.name] = attribute.value;
       }
 
       const children = Array.from(element.childNodes)
         .map(toVNode)
         .filter((child) => child !== null);
 
-      return h(tag, props, children.length ? children : undefined);
+      return h(tag, vnodeProps, children.length ? children : undefined);
     }
 
     return () => {

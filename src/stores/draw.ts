@@ -24,7 +24,7 @@ import {
 } from "@shared/api";
 import type { GalleryItem } from "@shared/draw";
 import { readApiError } from "@/lib/api-error";
-import { formatMegabytes, t } from "@/lib/i18n";
+import { formatMebibytes, t } from "@/lib/i18n";
 import { toastError } from "@/lib/toast";
 import { autoTitle, generateTitle } from "@/lib/titles";
 
@@ -190,8 +190,8 @@ export const useDrawStore = defineStore("draw", () => {
       toastError(
         t("draw.notEnoughSpaceTitle"),
         t("draw.storageFullMessage", {
-          used: formatMegabytes(usedBytes),
-          total: formatMegabytes(SYNC_MAX_BYTES),
+          used: formatMebibytes(usedBytes),
+          total: formatMebibytes(SYNC_MAX_BYTES),
         }),
       );
       return;
