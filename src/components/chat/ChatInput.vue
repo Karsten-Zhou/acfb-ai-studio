@@ -40,7 +40,6 @@ import { TOOLS } from "@shared/tools";
 import { defaultOptions } from "@/composables/chat-defaults";
 import { readAttachments } from "@/composables/use-attachments";
 import { toastError } from "@/lib/toast";
-import { currentDirection } from "@/lib/i18n";
 import AttachmentList from "./AttachmentList.vue";
 
 const props = defineProps<{
@@ -199,10 +198,7 @@ const optionsLabel = computed(() => t("chat.generationOptions"));
 </script>
 
 <template>
-  <div
-    :dir="currentDirection()"
-    class="border-t border-border bg-background px-2 pb-3 pt-2 sm:px-3"
-  >
+  <div class="border-t border-border bg-background px-2 pb-3 pt-2 sm:px-3">
     <div
       class="mx-auto flex w-full max-w-3xl flex-col gap-1.5 rounded-xl border border-input bg-card p-2 shadow-xs focus-within:ring-2 focus-within:ring-ring/50"
     >
@@ -228,14 +224,11 @@ const optionsLabel = computed(() => t("chat.generationOptions"));
         The model selector has a consistent content-sized width across
         breakpoints, preventing the Options button from shifting.
       -->
-      <div
-        :dir="currentDirection()"
-        class="flex items-center justify-between gap-2"
-      >
+      <div class="flex items-center justify-between gap-2">
         <!-- Model, reasoning, options, and attachment controls -->
         <div class="flex min-w-0 items-center gap-1">
           <!-- Model selector -->
-          <DropdownMenu :dir="currentDirection()">
+          <DropdownMenu>
             <DropdownMenuTrigger as-child>
               <Button
                 variant="ghost"
@@ -253,11 +246,7 @@ const optionsLabel = computed(() => t("chat.generationOptions"));
               </Button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent
-              :dir="currentDirection()"
-              align="start"
-              class="max-h-72 w-64"
-            >
+            <DropdownMenuContent align="start" class="max-h-72 w-64">
               <DropdownMenuRadioGroup
                 :model-value="model"
                 @update:model-value="(id) => emit('update:model', id as string)"
@@ -310,10 +299,7 @@ const optionsLabel = computed(() => t("chat.generationOptions"));
           </Button>
 
           <!-- Adjustable reasoning and tools share one Options menu. -->
-          <DropdownMenu
-            v-if="canAdjustReasoning || canUseTools"
-            :dir="currentDirection()"
-          >
+          <DropdownMenu v-if="canAdjustReasoning || canUseTools">
             <DropdownMenuTrigger as-child>
               <Button
                 variant="ghost"
@@ -328,7 +314,6 @@ const optionsLabel = computed(() => t("chat.generationOptions"));
             </DropdownMenuTrigger>
 
             <DropdownMenuContent
-              :dir="currentDirection()"
               align="start"
               class="max-h-72 w-60 overflow-y-auto"
             >

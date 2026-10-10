@@ -9,7 +9,7 @@ import {
   Settings,
 } from "@lucide/vue";
 
-import { currentDirection } from "@/lib/i18n";
+import { useDirection } from "reka-ui";
 import SyncStatus from "@/components/SyncStatus.vue";
 import ChatSidebarGroup from "@/components/chat/ChatSidebarGroup.vue";
 import DrawSidebarGroup from "@/components/draw/DrawSidebarGroup.vue";
@@ -41,7 +41,7 @@ const router = useRouter();
 
 // Reactive layout direction: the sidebar docks on the inline-start side and
 // its mode menu opens toward inline-end.
-const direction = computed(() => currentDirection());
+const direction = useDirection();
 
 const settingsOpen = ref(false);
 

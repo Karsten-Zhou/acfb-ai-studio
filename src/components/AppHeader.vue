@@ -10,7 +10,7 @@ import {
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import { currentDirection } from "@/lib/i18n";
+import { useDirection } from "reka-ui";
 
 const props = defineProps<{
   title: string;
@@ -19,7 +19,8 @@ const props = defineProps<{
 // The ui SidebarTrigger hardcodes a left-panel glyph; mirror it here so the
 // icon depicts the side the sidebar actually docks on.
 const { toggleSidebar } = useSidebar();
-const isRtl = computed(() => currentDirection() === "rtl");
+const dir = useDirection();
+const isRtl = computed(() => dir.value === "rtl");
 </script>
 
 <template>

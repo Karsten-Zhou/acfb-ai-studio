@@ -132,11 +132,6 @@ export function currentLocale(): Locale {
   return i18n.global.locale.value as Locale;
 }
 
-/** The direction for the currently active locale. */
-export function currentDirection(): Direction {
-  return dirForLocale(currentLocale());
-}
-
 /**
  * Switch the active language and keep <html lang> and <html dir> in sync.
  * Called by the preferences store.

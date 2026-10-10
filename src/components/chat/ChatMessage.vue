@@ -30,7 +30,8 @@ import { Marker, MarkerContent, MarkerIcon } from "@/components/ui/marker";
 import { Spinner } from "@/components/ui/spinner";
 import { AlertCircleIcon } from "@lucide/vue";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { currentDirection, formatNumber } from "@/lib/i18n";
+import { useDirection } from "reka-ui";
+import { formatNumber } from "@/lib/i18n";
 import MarkdownContent from "./MarkdownContent.vue";
 import AttachmentList from "./AttachmentList.vue";
 import ToolCallList from "./ToolCallList.vue";
@@ -59,7 +60,8 @@ const emit = defineEmits<{
 const { t } = useI18n();
 
 /** RTL flips the sibling-nav chevrons so "previous" stays on the start side. */
-const isRtl = computed(() => currentDirection() === "rtl");
+const dir = useDirection();
+const isRtl = computed(() => dir.value === "rtl");
 
 type AssistantPart =
   { type: "content"; text: string } | { type: "tools"; calls: ToolCall[] };

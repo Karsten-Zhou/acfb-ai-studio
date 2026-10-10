@@ -55,7 +55,6 @@ const systemPrompt = computed<string>({
         <Switch
           id="settings-auto-title"
           class="shrink-0"
-          dir="auto"
           :model-value="autoTitle"
           @update:model-value="(value) => (autoTitle = value === true)"
         />

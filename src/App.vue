@@ -7,17 +7,24 @@ import { useTitle } from "@vueuse/core";
 import { computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
+import { ConfigProvider } from "reka-ui";
 import "vue-sonner/style.css";
 import { Toaster } from "@/components/ui/sonner";
+import { dirForLocale, type Direction, type Locale } from "@/lib/i18n";
 
 // Mounted once for the lifetime of app: polls for changes made on other
 // devices and uploads local edits.
 useSyncEngine();
 
 const chatStore = useChatStore();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const route = useRoute();
 const router = useRouter();
+
+// Reka UI primitives (menus, poppers, navigation) resolve RTL behaviour from
+// the ConfigProvider direction, so derive it from the active locale here and
+// let the whole component tree inherit it.
+const dir = computed<Direction>(() => dirForLocale(locale.value as Locale));
 
 const title = computed(() => {
   if (route.name === "chat" || route.name === "chat-conversation") {
@@ -83,15 +90,17 @@ watch(
 </script>
 
 <template>
-  <SidebarProvider class="h-full min-h-0">
-    <AppSidebar />
-    <SidebarInset class="h-full min-w-0">
-      <RouterView />
-    </SidebarInset>
-  </SidebarProvider>
-  <Toaster
-    :toast-options="{
-      descriptionClass: 'overflow-y-auto max-h-24',
-    }"
-  />
+  <ConfigProvider :dir="dir" :locale="locale">
+    <SidebarProvider class="h-full min-h-0">
+      <AppSidebar />
+      <SidebarInset class="h-full min-w-0">
+        <RouterView />
+      </SidebarInset>
+    </SidebarProvider>
+    <Toaster
+      :toast-options="{
+        descriptionClass: 'overflow-y-auto max-h-24',
+      }"
+    />
+  </ConfigProvider>
 </template>
