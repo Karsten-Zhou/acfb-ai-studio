@@ -85,7 +85,9 @@
     "toolArguments": "Argumente",
     "toolResult": "Ergebnis",
     "showToolCall": "Werkzeugaufruf anzeigen",
-    "hideToolCall": "Werkzeugaufruf ausblenden"
+    "hideToolCall": "Werkzeugaufruf ausblenden",
+    "options": "Optionen",
+    "generationOptions": "Generierungsoptionen"
   },
   "draw": {
     "auto": "Automatisch",

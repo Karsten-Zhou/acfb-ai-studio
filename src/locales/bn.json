@@ -85,7 +85,9 @@
     "toolArguments": "আর্গুমেন্ট",
     "toolResult": "ফলাফল",
     "showToolCall": "টুল কল দেখান",
-    "hideToolCall": "টুল কল লুকান"
+    "hideToolCall": "টুল কল লুকান",
+    "options": "বিকল্পসমূহ",
+    "generationOptions": "জেনারেশন বিকল্পসমূহ"
   },
   "draw": {
     "auto": "স্বয়ংক্রিয়",

@@ -85,7 +85,9 @@
     "toolArguments": "Arguments",
     "toolResult": "Result",
     "showToolCall": "Show tool call",
-    "hideToolCall": "Hide tool call"
+    "hideToolCall": "Hide tool call",
+    "options": "Options",
+    "generationOptions": "Generation options"
   },
   "draw": {
     "auto": "Auto",

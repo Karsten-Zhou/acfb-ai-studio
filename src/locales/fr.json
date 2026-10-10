@@ -85,7 +85,9 @@
     "toolArguments": "Arguments",
     "toolResult": "Résultat",
     "showToolCall": "Afficher l'appel d'outil",
-    "hideToolCall": "Masquer l'appel d'outil"
+    "hideToolCall": "Masquer l'appel d'outil",
+    "options": "Options",
+    "generationOptions": "Options de génération"
   },
   "draw": {
     "auto": "Auto",

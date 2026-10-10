@@ -85,7 +85,9 @@
     "toolArguments": "المعاملات",
     "toolResult": "النتيجة",
     "showToolCall": "عرض استدعاء الأداة",
-    "hideToolCall": "إخفاء استدعاء الأداة"
+    "hideToolCall": "إخفاء استدعاء الأداة",
+    "options": "الخيارات",
+    "generationOptions": "خيارات التوليد"
   },
   "draw": {
     "auto": "تلقائي",

@@ -85,7 +85,9 @@
     "toolArguments": "引数",
     "toolResult": "結果",
     "showToolCall": "ツール呼び出しを表示",
-    "hideToolCall": "ツール呼び出しを非表示"
+    "hideToolCall": "ツール呼び出しを非表示",
+    "options": "オプション",
+    "generationOptions": "生成オプション"
   },
   "draw": {
     "auto": "自動",

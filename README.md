@@ -116,7 +116,6 @@ bun run deploy
 - [ ] MCP support for chatting AIs.
 - [ ] Custom OpenAI compatible endpoint support for chatting AIs
 - [ ] Optimise the remaining token calculation.
-- [ ] Chat input is too crowded in mobile view.
 - [ ] `8001: Invalid input` happens when chat model switched, sometimes.
 - [ ] When using `Qwen3.8 27B` without toolsets:
   ```

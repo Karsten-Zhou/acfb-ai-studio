@@ -85,7 +85,9 @@
     "toolArguments": "参数",
     "toolResult": "结果",
     "showToolCall": "显示工具调用",
-    "hideToolCall": "隐藏工具调用"
+    "hideToolCall": "隐藏工具调用",
+    "options": "选项",
+    "generationOptions": "生成选项"
   },
   "draw": {
     "auto": "自动",

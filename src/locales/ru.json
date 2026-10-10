@@ -85,7 +85,9 @@
     "toolArguments": "Аргументы",
     "toolResult": "Результат",
     "showToolCall": "Показать вызов инструмента",
-    "hideToolCall": "Скрыть вызов инструмента"
+    "hideToolCall": "Скрыть вызов инструмента",
+    "options": "Параметры",
+    "generationOptions": "Параметры генерации"
   },
   "draw": {
     "auto": "Авто",

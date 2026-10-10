@@ -85,7 +85,9 @@
     "toolArguments": "आर्ग्युमेंट्स",
     "toolResult": "परिणाम",
     "showToolCall": "टूल कॉल दिखाएँ",
-    "hideToolCall": "टूल कॉल छिपाएँ"
+    "hideToolCall": "टूल कॉल छिपाएँ",
+    "options": "विकल्प",
+    "generationOptions": "जनरेशन विकल्प"
   },
   "draw": {
     "auto": "ऑटो",

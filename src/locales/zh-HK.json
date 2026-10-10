@@ -85,7 +85,9 @@
     "toolArguments": "參數",
     "toolResult": "結果",
     "showToolCall": "顯示工具呼叫",
-    "hideToolCall": "隱藏工具呼叫"
+    "hideToolCall": "隱藏工具呼叫",
+    "options": "選項",
+    "generationOptions": "生成選項"
   },
   "draw": {
     "auto": "自動",

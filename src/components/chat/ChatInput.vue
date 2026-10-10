@@ -30,6 +30,8 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
@@ -188,22 +190,12 @@ watch(
   { immediate: true },
 );
 
-const reasoningLabel = computed(() => {
-  if (!canAdjustReasoning.value) {
-    // No knob: a reasoning-capable model that always reasons reads "Fixed";
-    // anything else has no reasoning to speak of.
-    return selectedModel.value?.capabilities.reasoning
-      ? t("chat.fixed")
-      : t("chat.reasoningLevel.none");
-  }
-  return selectedEffort.value
-    ? effortLabel(selectedEffort.value)
-    : t("chat.reasoning");
-});
+/** Accessible name for the consolidated generation-options menu. */
+const optionsLabel = computed(() => t("chat.generationOptions"));
 </script>
 
 <template>
-  <div class="border-t border-border bg-background px-3 pb-3 pt-2">
+  <div class="border-t border-border bg-background px-2 pb-3 pt-2 sm:px-3">
     <div
       class="mx-auto flex w-full max-w-3xl flex-col gap-1.5 rounded-xl border border-input bg-card p-2 shadow-xs focus-within:ring-2 focus-within:ring-ring/50"
     >
@@ -224,15 +216,23 @@ const reasoningLabel = computed(() => {
         @keydown="onKeydown"
       />
 
-      <!-- Compact toolbar: model + settings on the left, actions on the right -->
-      <div class="flex items-center gap-1.5">
+      <!-- Model selector expands into available space; actions stay right-aligned. -->
+      <div class="flex min-w-0 items-center gap-1">
+        <!-- Model picker -->
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
-            <Button variant="ghost" size="sm">
-              {{ currentModel }}
-              <ChevronsUpDown class="text-muted-foreground" />
+            <Button
+              variant="ghost"
+              size="sm"
+              class="min-w-0 flex-1 justify-start gap-1.5 px-2"
+              :aria-label="t('chat.chooseModel') + ': ' + currentModel"
+              :title="currentModel"
+            >
+              <span class="min-w-0 truncate">{{ currentModel }}</span>
+              <ChevronsUpDown class="shrink-0 text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
+
           <DropdownMenuContent align="start" class="max-h-72 w-64">
             <DropdownMenuRadioGroup
               :model-value="model"
@@ -246,6 +246,7 @@ const reasoningLabel = computed(() => {
                 <span class="min-w-0 flex-1 truncate">
                   {{ modelLabel(m.name) }}
                 </span>
+
                 <span
                   class="flex shrink-0 items-center gap-1 text-muted-foreground"
                 >
@@ -267,104 +268,136 @@ const reasoningLabel = computed(() => {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <!-- Reasoning settings -->
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button variant="ghost" size="sm" :disabled="!canAdjustReasoning">
-              <Brain />
-              {{ reasoningLabel }}
-              <ChevronsUpDown
-                v-if="canAdjustReasoning"
-                class="text-muted-foreground"
-              />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="start"
-            class="max-h-72 max-w-52 overflow-y-auto"
+        <!-- Actions have fixed intrinsic widths and remain together on the right. -->
+        <div class="flex shrink-0 items-center gap-1">
+          <!-- Reasoning exists but cannot be configured for this model. -->
+          <Button
+            v-if="selectedModel?.capabilities.reasoning && !canAdjustReasoning"
+            variant="ghost"
+            size="sm"
+            disabled
+            class="h-8 shrink-0 gap-1 px-1.5 disabled:opacity-80"
+            :aria-label="t('chat.reasoning') + ': ' + t('chat.fixed')"
+            :title="t('chat.reasoning') + ': ' + t('chat.fixed')"
           >
-            <DropdownMenuRadioGroup
-              :model-value="selectedEffort"
-              @update:model-value="
-                (v) => emit('update:reasoningEffort', v as ReasoningEffort)
-              "
-            >
-              <DropdownMenuRadioItem
-                v-for="e in reasoningOptions"
-                :key="e"
-                :value="e"
+            <Brain class="size-4 shrink-0" />
+            <span>{{ t("chat.fixed") }}</span>
+          </Button>
+
+          <!-- Adjustable reasoning and tools share one clearly labelled menu. -->
+          <DropdownMenu v-if="canAdjustReasoning || canUseTools">
+            <DropdownMenuTrigger as-child>
+              <Button
+                variant="ghost"
+                size="sm"
+                class="h-8 shrink-0 gap-1 px-1.5"
+                :aria-label="optionsLabel"
+                :title="optionsLabel"
               >
-                {{ effortLabel(e) }}
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+                <span>{{ t("chat.options") }}</span>
+                <ChevronsUpDown class="size-3 shrink-0 text-muted-foreground" />
+              </Button>
+            </DropdownMenuTrigger>
 
-        <!-- Tools: only offered when the model's schema declares tool calling -->
-        <DropdownMenu v-if="canUseTools">
-          <DropdownMenuTrigger as-child>
-            <Button variant="ghost" size="sm">
-              <Wrench />
-              {{ t("chat.tools") }}
-              <ChevronsUpDown class="text-muted-foreground" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" class="max-w-64">
-            <DropdownMenuCheckboxItem
-              v-for="tool in TOOLS"
-              :key="tool.id"
-              :model-value="isToolEnabled(tool.id)"
-              @update:model-value="(v) => setToolEnabled(tool.id, v === true)"
-              @select.prevent
+            <DropdownMenuContent
+              align="end"
+              class="max-h-72 w-60 overflow-y-auto"
             >
-              <span class="min-w-0 flex-1 truncate">{{ tool.label }}</span>
-            </DropdownMenuCheckboxItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <template v-if="canAdjustReasoning">
+                <DropdownMenuLabel class="flex items-center gap-2">
+                  <Brain class="size-4" />
+                  {{ t("chat.reasoning") }}
+                </DropdownMenuLabel>
 
-        <!-- Attachment picker: only shown when the model documents image input -->
-        <Button
-          v-if="canAttach"
-          variant="ghost"
-          size="icon-sm"
-          :disabled="streaming"
-          :aria-label="t('chat.attachFile')"
-          :title="t('chat.attachFile')"
-          @click="openPicker"
-        >
-          <Paperclip />
-        </Button>
-        <input
-          ref="fileInput"
-          type="file"
-          class="hidden"
-          multiple
-          :accept="IMAGE_ACCEPT_ATTRIBUTE"
-          @change="onFilesChosen"
-        />
+                <DropdownMenuRadioGroup
+                  :model-value="selectedEffort"
+                  @update:model-value="
+                    (v) => emit('update:reasoningEffort', v as ReasoningEffort)
+                  "
+                >
+                  <DropdownMenuRadioItem
+                    v-for="e in reasoningOptions"
+                    :key="e"
+                    :value="e"
+                  >
+                    {{ effortLabel(e) }}
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </template>
 
-        <div class="flex-1" />
+              <template v-if="canAdjustReasoning && canUseTools">
+                <DropdownMenuSeparator />
+              </template>
 
-        <Button
-          v-if="streaming"
-          size="icon-sm"
-          variant="secondary"
-          class="rounded-full"
-          :aria-label="t('chat.stopGenerating')"
-          @click="emit('stop')"
-        >
-          <Square class="fill-current" />
-        </Button>
-        <Button
-          v-else
-          size="icon-sm"
-          :disabled="!draft.trim() && attachments.length === 0"
-          class="rounded-full"
-          :aria-label="t('chat.send')"
-          @click="submit"
-        >
-          <ArrowUp />
-        </Button>
+              <template v-if="canUseTools">
+                <DropdownMenuLabel class="flex items-center gap-2">
+                  <Wrench class="size-4" />
+                  {{ t("chat.tools") }}
+                </DropdownMenuLabel>
+
+                <DropdownMenuCheckboxItem
+                  v-for="tool in TOOLS"
+                  :key="tool.id"
+                  :model-value="isToolEnabled(tool.id)"
+                  @update:model-value="
+                    (v) => setToolEnabled(tool.id, v === true)
+                  "
+                  @select.prevent
+                >
+                  <span class="min-w-0 flex-1 truncate">
+                    {{ tool.label }}
+                  </span>
+                </DropdownMenuCheckboxItem>
+              </template>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <!-- Attachment picker -->
+          <Button
+            v-if="canAttach"
+            variant="ghost"
+            size="icon-sm"
+            class="shrink-0"
+            :disabled="streaming"
+            :aria-label="t('chat.attachFile')"
+            :title="t('chat.attachFile')"
+            @click="openPicker"
+          >
+            <Paperclip />
+          </Button>
+
+          <input
+            ref="fileInput"
+            type="file"
+            class="hidden"
+            multiple
+            :accept="IMAGE_ACCEPT_ATTRIBUTE"
+            @change="onFilesChosen"
+          />
+
+          <!-- Send / stop -->
+          <Button
+            v-if="streaming"
+            size="icon-sm"
+            variant="secondary"
+            class="shrink-0 rounded-full"
+            :aria-label="t('chat.stopGenerating')"
+            @click="emit('stop')"
+          >
+            <Square class="fill-current" />
+          </Button>
+
+          <Button
+            v-else
+            size="icon-sm"
+            class="shrink-0 rounded-full"
+            :disabled="!draft.trim() && attachments.length === 0"
+            :aria-label="t('chat.send')"
+            @click="submit"
+          >
+            <ArrowUp />
+          </Button>
+        </div>
       </div>
     </div>
   </div>

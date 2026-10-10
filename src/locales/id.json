@@ -85,7 +85,9 @@
     "toolArguments": "Argumen",
     "toolResult": "Hasil",
     "showToolCall": "Tampilkan pemanggilan alat",
-    "hideToolCall": "Sembunyikan pemanggilan alat"
+    "hideToolCall": "Sembunyikan pemanggilan alat",
+    "options": "Opsi",
+    "generationOptions": "Opsi generasi"
   },
   "draw": {
     "auto": "Otomatis",
