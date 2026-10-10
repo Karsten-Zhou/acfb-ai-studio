@@ -113,7 +113,6 @@ bun run deploy
 
 ## TODO
 
-- [ ] Add more language translations.
 - [ ] MCP support for chatting AIs.
 - [ ] Custom OpenAI compatible endpoint support for chatting AIs
 - [ ] Optimise the remaining token calculation.

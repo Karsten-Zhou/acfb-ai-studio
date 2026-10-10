@@ -1,12 +1,19 @@
 import { match } from "@formatjs/intl-localematcher";
 import { createI18n } from "vue-i18n";
 import ar from "@/locales/ar.json";
+import bn from "@/locales/bn.json";
 import de from "@/locales/de.json";
 import en from "@/locales/en.json";
+import es from "@/locales/es.json";
 import fr from "@/locales/fr.json";
 import hi from "@/locales/hi.json";
+import id from "@/locales/id.json";
 import ja from "@/locales/ja.json";
-import zh from "@/locales/zh.json";
+import ptBR from "@/locales/pt-BR.json";
+import ptPT from "@/locales/pt-PT.json";
+import ru from "@/locales/ru.json";
+import zhCN from "@/locales/zh-CN.json";
+import zhHK from "@/locales/zh-HK.json";
 
 // ---------------------------------------------------------------------------
 // Locale schema and types
@@ -14,12 +21,19 @@ import zh from "@/locales/zh.json";
 
 export const supportedLocales = [
   "ar",
+  "bn",
   "de",
   "en",
+  "es",
   "fr",
   "hi",
+  "id",
   "ja",
-  "zh",
+  "pt-BR",
+  "pt-PT",
+  "ru",
+  "zh-CN",
+  "zh-HK",
 ] as const;
 
 export type Locale = (typeof supportedLocales)[number];
@@ -92,7 +106,22 @@ const i18n = createI18n<MessageSchema, Locale, false>({
   legacy: false,
   locale: resolveBrowserLocale(),
   fallbackLocale: "en",
-  messages: { ar, de, en, fr, hi, ja, zh },
+  messages: {
+    ar,
+    bn,
+    de,
+    en,
+    es,
+    fr,
+    hi,
+    id,
+    ja,
+    "pt-BR": ptBR,
+    "pt-PT": ptPT,
+    ru,
+    "zh-CN": zhCN,
+    "zh-HK": zhHK,
+  },
 });
 
 /** The plugin instance — install in main.ts for useI18n(). */

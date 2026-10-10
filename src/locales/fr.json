@@ -106,7 +106,7 @@
     "seed": "Seed",
     "stopGenerating": "Arrêter la génération",
     "storageFullDescription": "Supprimez des images ou des conversations dans la barre latérale pour libérer de l’espace, puis réessayez.",
-    "storageFullMessage": "L’historique utilise {used} sur la limite de synchronisation de {total}. Supprimez des images ou des conversations avant d’en générer d’autres.",
+    "storageFullMessage": "Votre historique de conversations et d’images utilise {used} sur {total} de l’espace de stockage disponible pour la synchronisation. Supprimez quelques conversations ou images avant d’en générer d’autres.",
     "storageFullTitle": "Espace de synchronisation presque plein",
     "steps": "Étapes",
     "width": "Largeur"
