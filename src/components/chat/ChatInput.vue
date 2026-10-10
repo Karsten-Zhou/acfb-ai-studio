@@ -40,6 +40,7 @@ import { TOOLS } from "@shared/tools";
 import { defaultOptions } from "@/composables/chat-defaults";
 import { readAttachments } from "@/composables/use-attachments";
 import { toastError } from "@/lib/toast";
+import { currentDirection } from "@/lib/i18n";
 import AttachmentList from "./AttachmentList.vue";
 
 const props = defineProps<{
@@ -97,7 +98,9 @@ const currentModel = computed(() =>
 function submit() {
   const text = draft.value.trim();
   const files = attachments.value;
+
   if ((!text && files.length === 0) || props.streaming) return;
+
   emit("send", text, files);
   draft.value = "";
   attachments.value = [];
@@ -118,13 +121,18 @@ async function onFilesChosen(e: Event) {
   const input = e.target as HTMLInputElement;
   const files = Array.from(input.files ?? []);
   input.value = "";
+
   if (files.length === 0) return;
 
   const { attachments: added, errors } = await readAttachments(
     files,
     attachments.value.length,
   );
-  if (added.length > 0) attachments.value = [...attachments.value, ...added];
+
+  if (added.length > 0) {
+    attachments.value = [...attachments.value, ...added];
+  }
+
   for (const error of errors) {
     toastError(
       t("chat.attachmentFailed"),
@@ -140,9 +148,8 @@ function removeAttachment(id: string) {
 // ---------------------------------------------------------------------------
 // Reasoning controls
 //
-// The offered levels come from the model's own schema (see
-// shared/reasoning.ts): a graded `reasoning_effort` enum, a binary chat-template
-// toggle, both, or neither. Nothing is hardcoded here.
+// Available levels come from the selected model's schema. A model can expose
+// graded reasoning levels, a binary toggle, both, or neither.
 // ---------------------------------------------------------------------------
 
 /** Levels the selected model offers, ascending; empty when not adjustable. */
@@ -157,11 +164,6 @@ const selectedEffort = computed<ReasoningEffort | undefined>(() =>
   normalizeReasoningEffort(props.reasoningEffort, reasoningOptions.value),
 );
 
-/**
- * One literal `t()` call per level so i18n tooling can see every message is
- * used. Covers the full canonical scale; `getReasoningOptions` only ever
- * yields a subset of these.
- */
 const EFFORT_LABELS: Record<ReasoningEffort, () => string> = {
   none: () => t("chat.reasoningLevel.none"),
   minimal: () => t("chat.reasoningLevel.minimal"),
@@ -171,18 +173,20 @@ const EFFORT_LABELS: Record<ReasoningEffort, () => string> = {
   xhigh: () => t("chat.reasoningLevel.xhigh"),
   max: () => t("chat.reasoningLevel.max"),
 };
+
 const effortLabel = (effort: ReasoningEffort): string =>
   EFFORT_LABELS[effort]();
+
 /**
- * When the model changes, its offered levels change with it. Snap the stored
- * default to the nearest offered level so the control reflects what will
- * actually be sent (the server snaps identically). Skipped while there is no
- * model, to avoid clobbering the persisted default during init.
+ * When the model changes, snap the stored effort to the nearest level that
+ * model offers. Skip while there is no model to avoid overwriting the
+ * persisted default during initialization.
  */
 watch(
   [() => props.model, reasoningOptions],
   () => {
     const snapped = selectedEffort.value;
+
     if (props.model && snapped && snapped !== props.reasoningEffort) {
       emit("update:reasoningEffort", snapped);
     }
@@ -195,7 +199,10 @@ const optionsLabel = computed(() => t("chat.generationOptions"));
 </script>
 
 <template>
-  <div class="border-t border-border bg-background px-2 pb-3 pt-2 sm:px-3">
+  <div
+    :dir="currentDirection()"
+    class="border-t border-border bg-background px-2 pb-3 pt-2 sm:px-3"
+  >
     <div
       class="mx-auto flex w-full max-w-3xl flex-col gap-1.5 rounded-xl border border-input bg-card p-2 shadow-xs focus-within:ring-2 focus-within:ring-ring/50"
     >
@@ -216,61 +223,79 @@ const optionsLabel = computed(() => t("chat.generationOptions"));
         @keydown="onKeydown"
       />
 
-      <!-- Model selector expands into available space; actions stay right-aligned. -->
-      <div class="flex min-w-0 items-center gap-1">
-        <!-- Model picker -->
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button
-              variant="ghost"
-              size="sm"
-              class="min-w-0 flex-1 justify-start gap-1.5 px-2"
-              :aria-label="t('chat.chooseModel') + ': ' + currentModel"
-              :title="currentModel"
-            >
-              <span class="min-w-0 truncate">{{ currentModel }}</span>
-              <ChevronsUpDown class="shrink-0 text-muted-foreground" />
-            </Button>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent align="start" class="max-h-72 w-64">
-            <DropdownMenuRadioGroup
-              :model-value="model"
-              @update:model-value="(id) => emit('update:model', id as string)"
-            >
-              <DropdownMenuRadioItem
-                v-for="m in models"
-                :key="m.name"
-                :value="m.name"
+      <!--
+        Keep controls grouped at inline-start and Send/Stop at inline-end.
+        The model selector has a consistent content-sized width across
+        breakpoints, preventing the Options button from shifting.
+      -->
+      <div
+        :dir="currentDirection()"
+        class="flex items-center justify-between gap-2"
+      >
+        <!-- Model, reasoning, options, and attachment controls -->
+        <div class="flex min-w-0 items-center gap-1">
+          <!-- Model selector -->
+          <DropdownMenu :dir="currentDirection()">
+            <DropdownMenuTrigger as-child>
+              <Button
+                variant="ghost"
+                size="sm"
+                class="h-8 min-w-0 max-w-[min(12rem,34vw)] shrink-0 justify-start gap-1.5 px-2"
+                :aria-label="t('chat.chooseModel') + ': ' + currentModel"
+                :title="currentModel"
               >
-                <span class="min-w-0 flex-1 truncate">
-                  {{ modelLabel(m.name) }}
+                <span dir="auto" class="min-w-0 truncate">
+                  {{ currentModel }}
                 </span>
+                <ChevronsUpDown
+                  class="size-3.5 shrink-0 text-muted-foreground"
+                />
+              </Button>
+            </DropdownMenuTrigger>
 
-                <span
-                  class="flex shrink-0 items-center gap-1 text-muted-foreground"
+            <DropdownMenuContent
+              :dir="currentDirection()"
+              align="start"
+              class="max-h-72 w-64"
+            >
+              <DropdownMenuRadioGroup
+                :model-value="model"
+                @update:model-value="(id) => emit('update:model', id as string)"
+              >
+                <DropdownMenuRadioItem
+                  v-for="m in models"
+                  :key="m.name"
+                  :value="m.name"
                 >
-                  <Brain
-                    v-if="m.capabilities.reasoning"
-                    :title="t('chat.reasoning')"
-                  />
-                  <Wrench
-                    v-if="supportsToolCalling(m.name)"
-                    :title="t('chat.tools')"
-                  />
-                  <ImageIcon
-                    v-if="supportsImageInput(m.name)"
-                    :title="t('chat.attachFile')"
-                  />
-                </span>
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+                  <span dir="auto" class="min-w-0 flex-1 truncate">
+                    {{ modelLabel(m.name) }}
+                  </span>
 
-        <!-- Actions have fixed intrinsic widths and remain together on the right. -->
-        <div class="flex shrink-0 items-center gap-1">
-          <!-- Reasoning exists but cannot be configured for this model. -->
+                  <span
+                    class="ms-auto flex shrink-0 items-center gap-1 text-muted-foreground"
+                  >
+                    <Brain
+                      v-if="m.capabilities.reasoning"
+                      :title="t('chat.reasoning')"
+                    />
+                    <Wrench
+                      v-if="supportsToolCalling(m.name)"
+                      :title="t('chat.tools')"
+                    />
+                    <ImageIcon
+                      v-if="supportsImageInput(m.name)"
+                      :title="t('chat.attachFile')"
+                    />
+                  </span>
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <!--
+            Fixed reasoning indicator: shown only when the model can reason
+            but doesn't expose an adjustable reasoning setting.
+          -->
           <Button
             v-if="selectedModel?.capabilities.reasoning && !canAdjustReasoning"
             variant="ghost"
@@ -284,8 +309,11 @@ const optionsLabel = computed(() => t("chat.generationOptions"));
             <span>{{ t("chat.fixed") }}</span>
           </Button>
 
-          <!-- Adjustable reasoning and tools share one clearly labelled menu. -->
-          <DropdownMenu v-if="canAdjustReasoning || canUseTools">
+          <!-- Adjustable reasoning and tools share one Options menu. -->
+          <DropdownMenu
+            v-if="canAdjustReasoning || canUseTools"
+            :dir="currentDirection()"
+          >
             <DropdownMenuTrigger as-child>
               <Button
                 variant="ghost"
@@ -294,18 +322,19 @@ const optionsLabel = computed(() => t("chat.generationOptions"));
                 :aria-label="optionsLabel"
                 :title="optionsLabel"
               >
-                <span>{{ t("chat.options") }}</span>
+                {{ t("chat.options") }}
                 <ChevronsUpDown class="size-3 shrink-0 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent
-              align="end"
+              :dir="currentDirection()"
+              align="start"
               class="max-h-72 w-60 overflow-y-auto"
             >
               <template v-if="canAdjustReasoning">
                 <DropdownMenuLabel class="flex items-center gap-2">
-                  <Brain class="size-4" />
+                  <Brain class="size-4 shrink-0" />
                   {{ t("chat.reasoning") }}
                 </DropdownMenuLabel>
 
@@ -331,7 +360,7 @@ const optionsLabel = computed(() => t("chat.generationOptions"));
 
               <template v-if="canUseTools">
                 <DropdownMenuLabel class="flex items-center gap-2">
-                  <Wrench class="size-4" />
+                  <Wrench class="size-4 shrink-0" />
                   {{ t("chat.tools") }}
                 </DropdownMenuLabel>
 
@@ -344,7 +373,7 @@ const optionsLabel = computed(() => t("chat.generationOptions"));
                   "
                   @select.prevent
                 >
-                  <span class="min-w-0 flex-1 truncate">
+                  <span dir="auto" class="min-w-0 flex-1 truncate">
                     {{ tool.label }}
                   </span>
                 </DropdownMenuCheckboxItem>
@@ -374,8 +403,10 @@ const optionsLabel = computed(() => t("chat.generationOptions"));
             :accept="IMAGE_ACCEPT_ATTRIBUTE"
             @change="onFilesChosen"
           />
+        </div>
 
-          <!-- Send / stop -->
+        <!-- Send/Stop remains at the opposite end. -->
+        <div class="flex shrink-0 items-center">
           <Button
             v-if="streaming"
             size="icon-sm"

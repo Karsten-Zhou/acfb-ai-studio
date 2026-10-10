@@ -114,6 +114,7 @@ bun run deploy
 ## TODO
 
 - [ ] MCP support for chatting AIs.
+- [ ] Use `ConfigProvider` to simplify RTL layout support.
 - [ ] Custom OpenAI compatible endpoint support for chatting AIs
 - [ ] Optimise the remaining token calculation.
 - [ ] `8001: Invalid input` happens when chat model switched, sometimes.
