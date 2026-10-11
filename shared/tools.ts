@@ -53,15 +53,24 @@ export function resolveTools(ids: readonly string[]): ToolDefinition[] {
 }
 
 /**
- * Encode tool ids into the `tools` array Workers AI expects. The documented
- * traditional function-calling flow uses the flat `{ name, description,
- * parameters }` shape (Cloudflare's schema also accepts the OpenAI nested
- * form, but the flat one is what the docs and examples use).
+ * Encode tool ids into the `tools` array Workers AI expects.
+ *
+ * The nested OpenAI form (`{ type: "function", function: { ... } }`) is used
+ * deliberately. Cloudflare's docs also show a flat `{ name, description,
+ * parameters }` form, but the OpenAI-compatible models do not all accept it:
+ * verified against the live API, `@cf/openai/gpt-oss-20b`,
+ * `@cf/nvidia/nemotron-3-120b-a12b` and `@cf/zai-org/glm-4.7-flash` reject the
+ * flat shape with `8001: Invalid input` — which looks exactly like a bad model
+ * switch — while the nested shape is accepted by every tool-capable model. Do
+ * not "simplify" this back to the flat form.
  */
 export function toWireTools(ids: readonly string[]): unknown[] {
   return resolveTools(ids).map((tool) => ({
-    name: tool.id,
-    description: tool.description,
-    parameters: tool.parameters,
+    type: "function",
+    function: {
+      name: tool.id,
+      description: tool.description,
+      parameters: tool.parameters,
+    },
   }));
 }

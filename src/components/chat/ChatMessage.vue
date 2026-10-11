@@ -304,10 +304,7 @@ async function copy() {
                 </CollapsibleContent>
               </Collapsible>
 
-              <Alert
-                v-if="message.error && !message.content"
-                variant="destructive"
-              >
+              <Alert v-if="message.error" variant="destructive">
                 <AlertCircleIcon />
                 <AlertTitle>{{ t("chat.generationFailed") }}</AlertTitle>
                 <AlertDescription class="line-clamp-4">

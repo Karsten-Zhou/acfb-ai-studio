@@ -23,11 +23,11 @@ import {
   readInferenceResult,
   readStreamChunk,
   readToolCalls,
-  readUpstreamErrorMessage,
   type WireToolCall,
 } from "./inference";
 import { executeToolCall, type ToolExecution } from "./tools";
 import { encodeSseEvent } from "./sse";
+import { LineBuffer, UpstreamSseParser, readSseError } from "./sse-parse";
 
 /** Hard cap on model↔tool round trips within a single reply. */
 const MAX_STEPS = 5;
@@ -121,7 +121,7 @@ export function streamingToolAgent(
           let failed = false;
 
           for await (const chunk of parseUpstreamSse(stream)) {
-            const error = readUpstreamError(chunk);
+            const error = readSseError(chunk);
             if (error) {
               emit({ type: "error", message: error });
               failed = true;
@@ -252,44 +252,32 @@ export async function nonStreamingToolAgent(
 
 /**
  * Parse an upstream Workers AI SSE stream into the JSON payload of each `data:`
- * line. Non-JSON sentinels and `[DONE]` are skipped, exactly as the canonical
- * transform does.
+ * event. Framing and failure rules are shared with the transform (`./sse-parse`)
+ * so both consumers behave identically. A stream that ends without `[DONE]`
+ * throws, so the agent loop reports it instead of finishing silently.
  */
 async function* parseUpstreamSse(
   stream: ReadableStream<Uint8Array>,
 ): AsyncGenerator<unknown> {
   const reader = stream.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
+  const lines = new LineBuffer();
+  const parser = new UpstreamSseParser();
   try {
     for (;;) {
       const { value, done } = await reader.read();
       if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      let newline: number;
-      while ((newline = buffer.indexOf("\n")) >= 0) {
-        const line = buffer.slice(0, newline).replace(/\r$/, "");
-        buffer = buffer.slice(newline + 1);
-        if (!line.startsWith("data:")) continue;
-        const payload = line.slice(5).trim();
-        if (!payload || payload === "[DONE]") continue;
-        try {
-          yield JSON.parse(payload) as unknown;
-        } catch {
-          // A non-JSON upstream line carries no contract event.
-        }
+      for (const line of lines.push(value)) {
+        const payload = parser.push(line);
+        if (payload !== undefined) yield payload;
       }
     }
+    for (const line of lines.flush()) {
+      const payload = parser.push(line);
+      if (payload !== undefined) yield payload;
+    }
+    const failure = parser.finish();
+    if (failure !== undefined) throw new Error(failure);
   } finally {
     reader.releaseLock();
   }
-}
-
-/** Read a human-readable message out of an upstream `{ error }` payload. */
-function readUpstreamError(value: unknown): string | undefined {
-  if (!value || typeof value !== "object" || !("error" in value)) return;
-  return (
-    readUpstreamErrorMessage((value as { error: unknown }).error) ??
-    "The model stream failed."
-  );
 }

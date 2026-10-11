@@ -226,6 +226,11 @@ export const useChatStore = defineStore("chat", () => {
     }
     const assistant: ChatMessage = resolved;
 
+    // Remember the branch we are replacing so a stop that produces nothing can
+    // restore it (see the catch below).
+    const prevActiveChildId = replyTo.activeChildId;
+    const prevLeafId = conv.leafId;
+
     delete assistant.error;
     delete assistant.reasoning;
     delete assistant.toolCalls;
@@ -310,13 +315,43 @@ export const useChatStore = defineStore("chat", () => {
       return true;
     } catch (err) {
       const { live, msg } = currentTurn();
-      // Keep the failed turn in the tree rather than deleting it: this
-      // preserves user/assistant alternation for both the UI and the next
-      // request, and lets the user see — and retry — exactly what failed,
-      // like ChatGPT's error bubble.
-      if (live && msg && !msg.content) {
-        msg.error = describeChatError(err);
-        touch(live);
+      const stopped = err instanceof DOMException && err.name === "AbortError";
+
+      if (live && msg) {
+        const producedNothing =
+          !msg.content && (msg.toolCalls?.length ?? 0) === 0;
+
+        if (stopped && producedNothing) {
+          // Stopping before anything was transmitted is a non-event: drop the
+          // placeholder and restore the branch it replaced, so no empty bubble
+          // is left behind.
+          //
+          // Re-resolve the parent against `live`: adopting remote state can
+          // replace the conversation objects, leaving the captured `replyTo`
+          // detached (same reason as `currentTurn`).
+          const liveParent = live.messages.find((m) => m.id === replyTo.id);
+          live.messages = live.messages.filter((m) => m.id !== assistant.id);
+          if (liveParent && liveParent.activeChildId === assistant.id) {
+            liveParent.activeChildId =
+              prevActiveChildId && prevActiveChildId !== assistant.id
+                ? prevActiveChildId
+                : undefined;
+          }
+          if (live.leafId === assistant.id) {
+            live.leafId =
+              prevLeafId && prevLeafId !== assistant.id
+                ? prevLeafId
+                : replyTo.id;
+          }
+          touch(live);
+        } else if (!stopped) {
+          // A real failure is kept in the tree — preserving user/assistant
+          // alternation and enabling retry — and shown even alongside partial
+          // content, so a broken stream never ends silently. A stop that did
+          // produce content keeps that content and reports nothing.
+          msg.error = describeChatError(err);
+          touch(live);
+        }
       }
       return false;
     } finally {
@@ -557,11 +592,8 @@ export const useChatStore = defineStore("chat", () => {
     await retryAt(conv.id, last.id);
   }
 
-  /** Human-readable reason for a failed or stopped stream. */
+  /** Human-readable reason for a failed stream. */
   function describeChatError(err: unknown): string {
-    if (err instanceof DOMException && err.name === "AbortError") {
-      return t("common.stoppedByYou");
-    }
     // `fetch` rejects with a TypeError when the request never reached the
     // server; the browser's own "Failed to fetch" is not actionable, so say
     // something useful instead.

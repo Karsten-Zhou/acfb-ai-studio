@@ -6,6 +6,7 @@ import {
 } from "./inference";
 import { executeToolCall } from "./tools";
 import { supportsToolCalling } from "@shared/generated/traits";
+import { toWireTools } from "@shared/tools";
 
 describe("readToolCalls", () => {
   it("reads OpenAI-style function tool calls", () => {
@@ -117,5 +118,27 @@ describe("supportsToolCalling", () => {
     expect(
       supportsToolCalling("@cf/meta/llama-3.3-70b-instruct-fp8-fast"),
     ).toBe(false);
+  });
+});
+
+describe("toWireTools", () => {
+  it("emits the nested OpenAI function shape", () => {
+    // Regression: the flat `{ name, description, parameters }` form is
+    // rejected with `8001: Invalid input` by several OpenAI-compatible models
+    // (verified against the live API), while the nested form is accepted by
+    // every tool-capable model.
+    const wire = toWireTools(["get_current_datetime"]);
+    expect(wire).toHaveLength(1);
+    const first = wire[0] as Record<string, unknown>;
+    expect(first.type).toBe("function");
+    expect(first).toHaveProperty("function");
+    const fn = first.function as Record<string, unknown>;
+    expect(fn.name).toBe("get_current_datetime");
+    expect(typeof fn.description).toBe("string");
+    expect(fn.parameters).toBeTruthy();
+  });
+
+  it("drops unknown ids", () => {
+    expect(toWireTools(["does_not_exist"])).toEqual([]);
   });
 });

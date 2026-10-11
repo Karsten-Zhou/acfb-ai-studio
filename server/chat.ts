@@ -55,9 +55,14 @@ app.post(
     // schema actually declares the `tools` parameter. A model that does not
     // would otherwise be sent an unsupported field and fail upstream.
     const requestedTools = body.tools ?? [];
-    const toolsEnabled =
-      requestedTools.length > 0 && supportsToolCalling(known.name);
-    const wireTools = toolsEnabled ? toWireTools(requestedTools) : [];
+    // `toWireTools` drops ids that no longer resolve (e.g. a tool removed since
+    // the request was stored), so a non-empty request can still yield nothing.
+    // An empty `tools` array is rejected by some models with `8007`, so tool
+    // calling is enabled only when at least one real definition survives.
+    const wireTools = supportsToolCalling(known.name)
+      ? toWireTools(requestedTools)
+      : [];
+    const toolsEnabled = wireTools.length > 0;
 
     // Attachments are stored inline (base64 data URLs) in the conversation tree,
     // which lives in the single-KV sync payload. Sending more would only push it
@@ -127,8 +132,15 @@ app.post(
       messages.reduce((acc, msg) => acc + (msg.content?.length ?? 0), 0) +
       Math.ceil(0.01 * (known.contextWindow || 0));
     if (acceptsParam(known.name, "max_completion_tokens")) {
+      // `Infinity` is correct and deliberate: `env.AI.run` receives the params
+      // object directly (no JSON.stringify), so the runtime forwards the JS
+      // number unchanged and it means "let the model size its own reply". Do
+      // not "fix" this to a finite number or null — that silently truncates.
       cfParams.max_completion_tokens = Infinity;
     } else if (acceptsParam(known.name, "max_tokens") && known.contextWindow) {
+      // Always forward the remaining budget. The point of the estimate is to
+      // lift these models above their small documented default (256–2000
+      // tokens); omitting the field would silently fall back to that default.
       cfParams.max_tokens = known.contextWindow - contextUsed;
     }
     // Reasoning: map the canonical level onto whatever the model declares — a
