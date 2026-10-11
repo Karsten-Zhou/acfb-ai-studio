@@ -1,10 +1,10 @@
-// Transform Cloudflare's upstream SSE into the canonical stream events
-// (`streamEventSchema` in `@shared/chat`). Framing and failure rules live in
-// `./sse-parse`, shared with the agent's own reader; `./inference` owns the
-// per-event shape parsing.
+// Turn the parsed upstream frames from `./sse-parse` into the canonical stream
+// events (`streamEventSchema` in `@shared/chat`). Framing and failure rules
+// live in `./sse-parse`, shared with the agent's own reader; `./inference`
+// owns the per-event shape parsing.
 
 import { readStreamChunk } from "./inference";
-import { LineBuffer, UpstreamSseParser, readSseError } from "./sse-parse";
+import { readSseError, type UpstreamFrame } from "./sse-parse";
 
 const encoder = new TextEncoder();
 
@@ -12,21 +12,30 @@ export function encodeSseEvent(event: object): Uint8Array {
   return encoder.encode(`data: ${JSON.stringify(event)}\n\n`);
 }
 
+/**
+ * Map {@link UpstreamFrame}s onto canonical SSE bytes. Feed it the readable
+ * side of `upstreamFrames()`: `upstream.pipeThrough(upstreamFrames())
+ * .pipeThrough(canonicalEventStream())`.
+ *
+ * `done` is emitted only on an unequivocally successful stream — never after a
+ * frame-level or in-band error — so the client can treat its absence (once the
+ * body ends) as a failure.
+ */
 export function canonicalEventStream(): TransformStream<
-  Uint8Array,
+  UpstreamFrame,
   Uint8Array
 > {
-  const lines = new LineBuffer();
-  const parser = new UpstreamSseParser();
+  let errored = false;
 
+  // Returns true when the payload was an in-band `{ error }` event.
   function emitPayload(
     payload: unknown,
     controller: TransformStreamDefaultController<Uint8Array>,
-  ): void {
+  ): boolean {
     const error = readSseError(payload);
     if (error !== undefined) {
       controller.enqueue(encodeSseEvent({ type: "error", message: error }));
-      return;
+      return true;
     }
 
     const { content, reasoning } = readStreamChunk(payload);
@@ -39,30 +48,25 @@ export function canonicalEventStream(): TransformStream<
         }),
       );
     }
+    return false;
   }
 
-  return new TransformStream<Uint8Array, Uint8Array>({
-    transform(chunk, controller) {
-      for (const line of lines.push(chunk)) {
-        const payload = parser.push(line);
-        if (payload !== undefined) emitPayload(payload, controller);
+  return new TransformStream<UpstreamFrame, Uint8Array>({
+    transform(frame, controller) {
+      if (frame.kind === "failure") {
+        // A stream that never saw `[DONE]` failed inside the 200 response —
+        // the only failure signal available once the headers are sent.
+        controller.enqueue(
+          encodeSseEvent({ type: "error", message: frame.message }),
+        );
+        errored = true;
+        return;
       }
+      if (emitPayload(frame.payload, controller)) errored = true;
     },
 
     flush(controller) {
-      for (const line of lines.flush()) {
-        const payload = parser.push(line);
-        if (payload !== undefined) emitPayload(payload, controller);
-      }
-
-      // A stream that never saw `[DONE]` failed inside the 200 response — the
-      // only failure signal available once the headers are sent. Emitting
-      // nothing here is what made the UI show an empty, successful reply.
-      const failure = parser.finish();
-      if (failure !== undefined) {
-        controller.enqueue(encodeSseEvent({ type: "error", message: failure }));
-      }
-      controller.enqueue(encodeSseEvent({ type: "done" }));
+      if (!errored) controller.enqueue(encodeSseEvent({ type: "done" }));
     },
   });
 }

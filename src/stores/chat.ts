@@ -10,12 +10,13 @@
 import { defineStore } from "pinia";
 import { ref, watch } from "vue";
 import { throttleFilter, useStorage } from "@vueuse/core";
-import { STORAGE_KEY, streamEventSchema } from "@shared/chat";
+import { STORAGE_KEY } from "@shared/chat";
 import type { ChatRequest } from "@shared/api";
 import { FREE_TEXT_GENERATION_MODELS } from "@shared/generated/models";
 import { defaultOptions, setDefaults } from "@/composables/chat-defaults";
 import { useSyncStore } from "@/stores/sync";
 import { readApiError } from "@/lib/api-error";
+import { consumeChatStream, type StreamDelta } from "@/lib/chat-stream";
 import { t } from "@/lib/i18n";
 import { autoTitle, generateTitle } from "@/lib/titles";
 import {
@@ -31,7 +32,6 @@ import type {
   Conversation,
   GenerationParams,
   ReasoningEffort,
-  ToolCall,
   WireChatMessage,
 } from "@shared/chat";
 
@@ -636,13 +636,6 @@ export const useChatStore = defineStore("chat", () => {
 // SSE stream helper
 // ---------------------------------------------------------------------------
 
-type StreamDelta = {
-  content?: string;
-  reasoning?: string;
-  toolCall?: ToolCall;
-  toolResult?: { id: string; name: string; result: string; error?: string };
-};
-
 async function streamChat(
   req: ChatRequest,
   onDelta: (delta: StreamDelta) => void,
@@ -660,67 +653,7 @@ async function streamChat(
     throw new Error((await readApiError(res)).message);
   }
 
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let done = false;
-
-  // Handle one canonical `streamEventSchema` event.
-  function handlePayload(payload: string): void {
-    if (!payload) return;
-    let json: unknown;
-    try {
-      json = JSON.parse(payload);
-    } catch {
-      // Ignore any non-JSON sentinel.
-      return;
-    }
-    const parsed = streamEventSchema.safeParse(json);
-    if (!parsed.success) return;
-
-    const event = parsed.data;
-    if (event.type === "error") {
-      throw new Error(event.message);
-    }
-    if (event.type === "delta" && (event.delta || event.reasoning)) {
-      onDelta({ content: event.delta, reasoning: event.reasoning });
-    }
-    if (event.type === "tool_call") {
-      onDelta({
-        toolCall: {
-          id: event.id,
-          name: event.name,
-          arguments: event.arguments,
-        },
-      });
-    }
-    if (event.type === "tool_result") {
-      onDelta({
-        toolResult: {
-          id: event.id,
-          name: event.name,
-          result: event.result,
-          error: event.error,
-        },
-      });
-    }
-  }
-
-  while (!done) {
-    const { value, done: readerDone } = await reader.read();
-    done = readerDone;
-    buffer += decoder.decode(value ?? new Uint8Array(), { stream: true });
-    let nlIdx;
-    while ((nlIdx = buffer.indexOf("\n")) >= 0) {
-      const line = buffer.slice(0, nlIdx).replace(/\r$/, "");
-      buffer = buffer.slice(nlIdx + 1);
-      if (!line.startsWith("data:")) continue;
-      handlePayload(line.slice(5).trimStart());
-    }
-  }
-
-  const trailing = buffer.trim();
-  if (trailing.startsWith("data:")) {
-    handlePayload(trailing.slice(5).trimStart());
-  }
+  // Framing, event validation and the terminal-`done` contract live in the
+  // testable `@/lib/chat-stream` helper.
+  await consumeChatStream(res.body, onDelta, signal);
 }

@@ -34,6 +34,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dompurify": "^3.4.16",
+    "eventsource-parser": "^4.1.1",
     "fflate": "^0.8.3",
     "hono": "^4.13.13",
     "image-size": "^2.0.4",
@@ -52,7 +53,6 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^2.0.0-beta.sha-c82c3efb3",
-    "@cloudflare/workers-types": "^5.20261010.1",
     "@eslint/js": "^10.0.1",
     "@intlify/eslint-plugin-vue-i18n": "^4.5.1",
     "@tailwindcss/typography": "^0.5.20",

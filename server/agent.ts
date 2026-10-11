@@ -27,7 +27,7 @@ import {
 } from "./inference";
 import { executeToolCall, type ToolExecution } from "./tools";
 import { encodeSseEvent } from "./sse";
-import { LineBuffer, UpstreamSseParser, readSseError } from "./sse-parse";
+import { upstreamFrames, readSseError } from "./sse-parse";
 
 /** Hard cap on model↔tool round trips within a single reply. */
 const MAX_STEPS = 5;
@@ -259,25 +259,20 @@ export async function nonStreamingToolAgent(
 async function* parseUpstreamSse(
   stream: ReadableStream<Uint8Array>,
 ): AsyncGenerator<unknown> {
-  const reader = stream.getReader();
-  const lines = new LineBuffer();
-  const parser = new UpstreamSseParser();
+  // Framing + completion policy are shared with the transform (`./sse-parse`).
+  const frameReader = stream.pipeThrough(upstreamFrames()).getReader();
   try {
     for (;;) {
-      const { value, done } = await reader.read();
+      const { value: frame, done } = await frameReader.read();
       if (done) break;
-      for (const line of lines.push(value)) {
-        const payload = parser.push(line);
-        if (payload !== undefined) yield payload;
+      if (frame.kind === "failure") {
+        // A stream that ends without `[DONE]` (or with malformed data) throws,
+        // so the agent loop reports it instead of finishing silently.
+        throw new Error(frame.message);
       }
+      yield frame.payload;
     }
-    for (const line of lines.flush()) {
-      const payload = parser.push(line);
-      if (payload !== undefined) yield payload;
-    }
-    const failure = parser.finish();
-    if (failure !== undefined) throw new Error(failure);
   } finally {
-    reader.releaseLock();
+    frameReader.releaseLock();
   }
 }

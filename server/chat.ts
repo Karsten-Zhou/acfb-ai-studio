@@ -20,6 +20,7 @@ import { toWireTools } from "@shared/tools";
 import { errorResponse, upstreamError } from "./errors";
 import { readInferenceResult } from "./inference";
 import { canonicalEventStream } from "./sse";
+import { upstreamFrames } from "./sse-parse";
 import { nonStreamingToolAgent, streamingToolAgent } from "./agent";
 import { zodErrorHook } from "./validation";
 import { buildChatInput } from "./attachments";
@@ -235,14 +236,19 @@ app.post(
       return errorResponse(upstreamError(err));
     }
 
-    return new Response(upstream.pipeThrough(canonicalEventStream()), {
-      headers: {
-        "content-type": "text/event-stream; charset=utf-8",
-        "cache-control": "no-cache",
-        "x-accel-buffering": "no",
-        connection: "keep-alive",
+    return new Response(
+      upstream
+        .pipeThrough(upstreamFrames())
+        .pipeThrough(canonicalEventStream()),
+      {
+        headers: {
+          "content-type": "text/event-stream; charset=utf-8",
+          "cache-control": "no-cache",
+          "x-accel-buffering": "no",
+          connection: "keep-alive",
+        },
       },
-    });
+    );
   },
 );
 
