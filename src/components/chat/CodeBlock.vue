@@ -58,7 +58,7 @@ async function copy() {
         <Copy v-else />
       </Button>
     </div>
-    <!-- eslint-disable vue/no-v-html -- highlightedHtml is sanitized in lib/markdown -->
+    <!-- eslint-disable vue/no-v-html -- highlightedHtml is sanitized in lib/code-highlight -->
     <div v-if="highlightedHtml" v-html="highlightedHtml" />
     <!-- eslint-enable vue/no-v-html -->
     <pre v-else class="m-0 w-full overflow-x-auto p-4 text-sm">

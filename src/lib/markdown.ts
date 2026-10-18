@@ -12,50 +12,17 @@ import {
 import markedKatex from "marked-katex-extension";
 import type { MarkedKatexOptions } from "marked-katex-extension";
 import katex from "katex";
-import {
-  createHighlighter,
-  type Highlighter,
-  type ThemeRegistrationRaw,
-} from "shiki";
 import DOMPurify from "dompurify";
 
-import dark2026Raw from "../shikithemes/2026-dark.json";
-import light2026Raw from "../shikithemes/2026-light.json";
-
-const THEMES = { dark: "2026 Dark", light: "2026 Light" } as const;
-type ThemeName = (typeof THEMES)[keyof typeof THEMES];
-const dark2026 = dark2026Raw as ThemeRegistrationRaw;
-const light2026 = light2026Raw as ThemeRegistrationRaw;
-
-const PRELOADED_LANGS = [
-  "text",
-  "plaintext",
-  "javascript",
-  "typescript",
-  "jsx",
-  "tsx",
-  "vue",
-  "html",
-  "css",
-  "json",
-  "bash",
-  "markdown",
-  "python",
-  "sql",
-];
-
-let highlighterPromise: Promise<Highlighter> | null = null;
-async function getHighlighter(): Promise<Highlighter> {
-  if (!highlighterPromise) {
-    highlighterPromise = createHighlighter({
-      themes: [dark2026, light2026],
-      langs: [...PRELOADED_LANGS],
-    });
-  }
-  return highlighterPromise;
-}
-
-const LOADABLE_LANGS = new Set<string>(PRELOADED_LANGS);
+import {
+  firstLangTag,
+  getHighlighter,
+  highlightCode,
+  loadLanguages,
+  resolveTheme,
+  type Highlighter,
+  type ThemeName,
+} from "./code-highlight";
 
 /** Structured code-block data; the UI is owned by Vue, never by HTML strings here. */
 export interface CodeBlockData {
@@ -73,20 +40,6 @@ export interface RenderedMarkdown {
 /** Inert marker swapped for a mounted <CodeBlock/>; the only custom element the sanitizer allows. */
 function codeBlockMarker(index: number): string {
   return `<code-block data-block="${index}"></code-block>`;
-}
-
-/** First whitespace-delimited token of a language tag, lowercased ("ts title=x" → "ts"). */
-function firstLangTag(value: string): string {
-  let end = 0;
-  while (
-    end < value.length &&
-    value[end] !== " " &&
-    value[end] !== "\t" &&
-    value[end] !== "\n"
-  ) {
-    end++;
-  }
-  return value.slice(0, end).toLowerCase();
 }
 
 /** Collect fenced-code langs via AST (robust against backticks/math in code). */
@@ -240,27 +193,16 @@ function collectCodeBlocks(tokens: Token[], ctx: RenderContext): void {
         continue;
       }
 
-      const supported = normalized === "text" || LOADABLE_LANGS.has(normalized);
-      let highlighted: string;
-      try {
-        highlighted = ctx.highlighter.codeToHtml(code.text, {
-          lang: supported ? normalized : "text",
-          theme: ctx.theme,
-          defaultColor: false,
-        });
-      } catch {
-        highlighted = ctx.highlighter.codeToHtml(code.text, {
-          lang: "text",
-          theme: ctx.theme,
-        });
-      }
       // Sanitize Shiki output so one trust boundary covers everything reaching <CodeBlock/>.
       ctx.codeBlocks.push({
         language: normalized,
         code: code.text,
-        highlightedHtml: DOMPurify.sanitize(highlighted, {
-          USE_PROFILES: { html: true },
-        }),
+        highlightedHtml: highlightCode(
+          ctx.highlighter,
+          code.text,
+          normalized,
+          ctx.theme,
+        ),
       });
       code.type = "html";
       code.text = codeBlockMarker(ctx.codeBlocks.length - 1);
@@ -384,16 +326,9 @@ export async function renderMarkdown(
   isDark = true,
 ): Promise<RenderedMarkdown> {
   const highlighter = await getHighlighter();
+  await loadLanguages(findCodeLangs(source));
 
-  const toLoad = [...new Set(findCodeLangs(source))].filter(
-    (l) => l !== "text" && !LOADABLE_LANGS.has(l),
-  );
-  await Promise.allSettled(
-    toLoad.map((l) => highlighter.loadLanguage(l as never)),
-  );
-  toLoad.forEach((l) => LOADABLE_LANGS.add(l));
-
-  const theme = isDark ? THEMES.dark : THEMES.light;
+  const theme = resolveTheme(isDark);
   const codeBlocks: CodeBlockData[] = [];
   renderContext = { highlighter, theme, codeBlocks };
   try {
