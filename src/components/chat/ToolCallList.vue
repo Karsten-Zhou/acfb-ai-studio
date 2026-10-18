@@ -15,7 +15,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { TOOL_BY_ID } from "@shared/tools";
-import CodeBlock from "./CodeBlock.vue";
 
 const props = defineProps<{
   toolCalls: ToolCall[];
@@ -85,17 +84,22 @@ function toggle(id: string): void {
           <div class="mb-1 font-medium text-muted-foreground">
             {{ t("chat.toolArguments") }}
           </div>
-          <CodeBlock :code="step.args" language="json" />
+          <pre
+            class="overflow-x-auto rounded bg-muted p-2 font-mono whitespace-pre-wrap"
+          >
+            {{ step.args }}
+          </pre>
         </div>
         <div v-if="step.result !== undefined || step.call.error">
           <div class="mb-1 font-medium text-muted-foreground">
             {{ t("chat.toolResult") }}
           </div>
-          <CodeBlock
+          <pre
             v-if="step.result !== undefined"
-            :code="step.result"
-            language="json"
-          />
+            class="overflow-x-auto rounded bg-muted p-2 font-mono whitespace-pre-wrap"
+          >
+            {{ step.result }}
+          </pre>
           <p v-if="step.call.error" class="text-destructive">
             {{ step.call.error }}
           </p>

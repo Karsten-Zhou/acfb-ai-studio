@@ -102,17 +102,14 @@ async function copy() {
       </Button>
     </div>
     <!-- eslint-disable vue/no-v-html -- HTML is sanitized in lib/code-highlight -->
-    <div class="p-4 text-sm" v-html="html" />
+    <div v-html="html" />
     <!-- eslint-enable vue/no-v-html -->
   </div>
 </template>
 
 <style scoped>
-/* Reset the global pre.shiki frame so the wrapper owns border/radius. */
 :deep(pre.shiki) {
   margin: 0;
-  width: 100%;
   border: 0;
-  border-radius: 0;
 }
 </style>
