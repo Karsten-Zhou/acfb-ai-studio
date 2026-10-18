@@ -48,7 +48,14 @@ async function mountMarkdown(source: string) {
   app.use(createPinia());
   app.use(i18n);
   app.mount(host);
-  await waitFor(host, () => host.querySelectorAll("button").length === 2);
+  // Buttons render synchronously; highlighted code arrives after the async
+  // Shiki pass, so wait for both before asserting on content.
+  await waitFor(
+    host,
+    () =>
+      host.querySelectorAll("button").length === 2 &&
+      host.querySelectorAll("pre.shiki").length === 2,
+  );
   return { host, app };
 }
 
@@ -79,7 +86,12 @@ describe("MarkdownContent", () => {
     app.use(i18n);
     app.mount(host);
 
-    await waitFor(host, () => host.querySelectorAll("button").length === 2);
+    await waitFor(
+      host,
+      () =>
+        host.querySelectorAll("button").length === 2 &&
+        host.querySelectorAll("pre.shiki").length === 2,
+    );
 
     const originalButtons = Array.from(host.querySelectorAll("button"));
     const updatedSource = [
@@ -98,7 +110,8 @@ describe("MarkdownContent", () => {
       host,
       () =>
         host.textContent?.includes("const y = 2") === true &&
-        host.querySelectorAll("button").length === 2,
+        host.querySelectorAll("button").length === 2 &&
+        host.querySelectorAll("pre.shiki").length === 2,
     );
 
     const updatedButtons = Array.from(host.querySelectorAll("button"));

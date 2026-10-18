@@ -1,9 +1,10 @@
-// Shiki-based code highlighting, shared by the Markdown pipeline.
+// Shiki-based code highlighting, shared by <CodeBlock/>.
 //
-// This module owns the highlighter singleton, the Shiki themes, the set of
-// loaded languages, and the HTML sanitization boundary. It lives on its own so
-// that <CodeBlock/> stays a purely presentational component (no async Shiki
-// work inside Vue render) and markdown.ts remains a Markdown -> HTML concern.
+// Owns the highlighter singleton, the Shiki themes, the set of loaded
+// languages, and the HTML sanitization boundary. Exposes a synchronous fast
+// path so an already-warm highlighter can highlight during first render;
+// callers fall back to the async path only while the highlighter is
+// initializing or a language is still loading.
 import {
   createHighlighter,
   type Highlighter,
@@ -40,6 +41,8 @@ const PRELOADED_LANGS = [
 ];
 
 let highlighterPromise: Promise<Highlighter> | null = null;
+/** Resolved highlighter, set once initialization completes (for sync use). */
+let readyHighlighter: Highlighter | null = null;
 
 /** Lazily create the shared Shiki highlighter (idempotent, cached). */
 export function getHighlighter(): Promise<Highlighter> {
@@ -47,6 +50,9 @@ export function getHighlighter(): Promise<Highlighter> {
     highlighterPromise = createHighlighter({
       themes: [dark2026, light2026],
       langs: [...PRELOADED_LANGS],
+    }).then((highlighter) => {
+      readyHighlighter = highlighter;
+      return highlighter;
     });
   }
   return highlighterPromise;
@@ -114,4 +120,19 @@ export function highlightCode(
     });
   }
   return DOMPurify.sanitize(highlighted, { USE_PROFILES: { html: true } });
+}
+
+/**
+ * Highlight synchronously when the highlighter is already initialized and the
+ * language is loaded. Returns null otherwise — the caller should then await
+ * `loadLanguages` + `highlightCode`.
+ */
+export function highlightCodeSync(
+  code: string,
+  language: string,
+  theme: ThemeName,
+): string | null {
+  if (!readyHighlighter) return null;
+  if (language !== "text" && !LOADABLE_LANGS.has(language)) return null;
+  return highlightCode(readyHighlighter, code, language, theme);
 }

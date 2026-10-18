@@ -1,17 +1,60 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { storeToRefs } from "pinia";
 import { Check, Copy } from "@lucide/vue";
 import { Button } from "@/components/ui/button";
+import { usePreferencesStore } from "@/stores/preferences";
+import {
+  getHighlighter,
+  highlightCode,
+  highlightCodeSync,
+  loadLanguages,
+  resolveTheme,
+} from "@/lib/code-highlight";
 
 const props = defineProps<{
   code: string;
   language: string;
-  /** Shiki-generated HTML, already sanitized at the markdown boundary. */
-  highlightedHtml?: string;
 }>();
 
 const { t } = useI18n();
+const { isDark } = storeToRefs(usePreferencesStore());
+
+// Highlighting is owned here: theme-aware, and only the block whose `code`
+// changed re-highlights (Vue reuses keyed instances while a message streams).
+const html = ref("");
+
+watch(
+  () => [props.code, props.language, isDark.value] as const,
+  async ([code, language, dark], _, onCleanup) => {
+    if (!code) {
+      html.value = "";
+      return;
+    }
+    const lang = language || "text";
+    const theme = resolveTheme(dark);
+
+    // Fast path: warm highlighter + loaded language → highlight synchronously,
+    // so a streaming message updates without waiting on the async path.
+    const sync = highlightCodeSync(code, lang, theme);
+    if (sync !== null) {
+      html.value = sync;
+      return;
+    }
+
+    // Cold path: drop stale HTML, then load the language and highlight.
+    html.value = "";
+    let cancelled = false;
+    onCleanup(() => (cancelled = true));
+
+    await loadLanguages([lang]);
+    const highlighter = await getHighlighter();
+    if (cancelled) return;
+    html.value = highlightCode(highlighter, code, lang, theme);
+  },
+  { immediate: true },
+);
 
 const copied = ref(false);
 
@@ -58,12 +101,9 @@ async function copy() {
         <Copy v-else />
       </Button>
     </div>
-    <!-- eslint-disable vue/no-v-html -- highlightedHtml is sanitized in lib/code-highlight -->
-    <div v-if="highlightedHtml" v-html="highlightedHtml" />
+    <!-- eslint-disable vue/no-v-html -- HTML is sanitized in lib/code-highlight -->
+    <div class="p-4 text-sm" v-html="html" />
     <!-- eslint-enable vue/no-v-html -->
-    <pre v-else class="m-0 w-full overflow-x-auto p-4 text-sm">
-    <code>{{ code }}</code>
-  </pre>
   </div>
 </template>
 

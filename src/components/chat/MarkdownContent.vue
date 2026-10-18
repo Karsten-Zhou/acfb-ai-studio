@@ -1,44 +1,23 @@
 <script setup lang="ts">
-import {
-  defineComponent,
-  h,
-  onBeforeUnmount,
-  ref,
-  watch,
-  type VNodeChild,
-} from "vue";
-import { storeToRefs } from "pinia";
+import { defineComponent, h, ref, watch, type VNodeChild } from "vue";
 import { cachedMarkdown, type RenderedMarkdown } from "@/lib/markdown";
-import { usePreferencesStore } from "@/stores/preferences";
 import CodeBlock from "./CodeBlock.vue";
 
 const props = defineProps<{ source: string }>();
-const { isDark } = storeToRefs(usePreferencesStore());
 
 const result = ref<RenderedMarkdown>({ html: "", codeBlocks: [] });
-let renderId = 0;
 
+// Rendering is synchronous and no longer depends on the theme: <CodeBlock/>
+// owns highlighting and reacts to theme changes on its own.
 watch(
-  [() => props.source, isDark],
-  async () => {
-    const currentRenderId = ++renderId;
-
-    if (!props.source) {
-      result.value = { html: "", codeBlocks: [] };
-      return;
-    }
-
-    const rendered = await cachedMarkdown(props.source, isDark.value);
-    if (currentRenderId !== renderId) return;
-
-    result.value = rendered;
+  () => props.source,
+  (source) => {
+    result.value = source
+      ? cachedMarkdown(source)
+      : { html: "", codeBlocks: [] };
   },
   { immediate: true },
 );
-
-onBeforeUnmount(() => {
-  renderId++;
-});
 
 /**
  * Convert sanitized Markdown HTML into Vue VNodes. Code-block markers become
@@ -65,7 +44,6 @@ const contentRenderer = defineComponent({
           key: `code-block-${index}`,
           code: data.code,
           language: data.language,
-          highlightedHtml: data.highlightedHtml,
         });
       }
 

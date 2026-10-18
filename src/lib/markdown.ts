@@ -1,8 +1,9 @@
 // Markdown → marked → hooks (AST math + code-block extraction) → DOMPurify.
-// The Marked instance and extensions are configured once; only the per-render
-// context changes. Parsing is synchronous, so the shared context can't interleave.
+// Highlighting is NOT done here: fenced blocks are extracted as plain
+// `{ language, code }` data and <CodeBlock/> owns Shiki. That keeps this module
+// synchronous and lets <CodeBlock/> re-highlight only the block that changed
+// (e.g. the one still streaming) instead of every fence on every render.
 import {
-  Lexer,
   Marked,
   Renderer,
   type HooksObject,
@@ -14,22 +15,12 @@ import type { MarkedKatexOptions } from "marked-katex-extension";
 import katex from "katex";
 import DOMPurify from "dompurify";
 
-import {
-  firstLangTag,
-  getHighlighter,
-  highlightCode,
-  loadLanguages,
-  resolveTheme,
-  type Highlighter,
-  type ThemeName,
-} from "./code-highlight";
+import { firstLangTag } from "./code-highlight";
 
-/** Structured code-block data; the UI is owned by Vue, never by HTML strings here. */
+/** Structured code-block data; highlighting is owned by <CodeBlock/>. */
 export interface CodeBlockData {
   language: string;
   code: string;
-  /** Sanitized Shiki HTML, rendered via v-html in <CodeBlock/>. */
-  highlightedHtml: string;
 }
 
 export interface RenderedMarkdown {
@@ -40,30 +31,6 @@ export interface RenderedMarkdown {
 /** Inert marker swapped for a mounted <CodeBlock/>; the only custom element the sanitizer allows. */
 function codeBlockMarker(index: number): string {
   return `<code-block data-block="${index}"></code-block>`;
-}
-
-/** Collect fenced-code langs via AST (robust against backticks/math in code). */
-function findCodeLangs(source: string): string[] {
-  try {
-    const tokens = Lexer.lex(source);
-    const langs = new Set<string>();
-
-    const walk = (tokens: Token[]) => {
-      for (const t of tokens) {
-        if (t.type === "code" && t.lang) {
-          langs.add(firstLangTag(t.lang));
-        }
-        if ("tokens" in t && Array.isArray(t.tokens)) {
-          walk(t.tokens);
-        }
-      }
-    };
-    walk(tokens);
-    return [...langs];
-  } catch (e) {
-    console.warn("Failed to parse markdown for language detection:", e);
-    return [];
-  }
 }
 
 const KATEX_OPTIONS: MarkedKatexOptions = {
@@ -157,8 +124,6 @@ interface MutableToken {
 }
 
 interface RenderContext {
-  highlighter: Highlighter;
-  theme: ThemeName;
   codeBlocks: CodeBlockData[];
 }
 
@@ -182,28 +147,14 @@ function collectCodeBlocks(tokens: Token[], ctx: RenderContext): void {
           });
         } catch {
           // Fallback: plain block rendered by <CodeBlock/>.
-          ctx.codeBlocks.push({
-            language: "text",
-            code: code.text,
-            highlightedHtml: "",
-          });
+          ctx.codeBlocks.push({ language: "text", code: code.text });
           code.type = "html";
           code.text = codeBlockMarker(ctx.codeBlocks.length - 1);
         }
         continue;
       }
 
-      // Sanitize Shiki output so one trust boundary covers everything reaching <CodeBlock/>.
-      ctx.codeBlocks.push({
-        language: normalized,
-        code: code.text,
-        highlightedHtml: highlightCode(
-          ctx.highlighter,
-          code.text,
-          normalized,
-          ctx.theme,
-        ),
-      });
+      ctx.codeBlocks.push({ language: normalized, code: code.text });
       code.type = "html";
       code.text = codeBlockMarker(ctx.codeBlocks.length - 1);
     } else if ("tokens" in token && Array.isArray(token.tokens)) {
@@ -321,19 +272,17 @@ marked.use({
 });
 marked.use({ hooks });
 
-export async function renderMarkdown(
-  source: string,
-  isDark = true,
-): Promise<RenderedMarkdown> {
-  const highlighter = await getHighlighter();
-  await loadLanguages(findCodeLangs(source));
-
-  const theme = resolveTheme(isDark);
+/**
+ * Render Markdown to sanitized HTML plus plain code-block data.
+ * Synchronous: no highlighting here, so there is no async work to await.
+ */
+export function renderMarkdown(source: string): RenderedMarkdown {
   const codeBlocks: CodeBlockData[] = [];
-  renderContext = { highlighter, theme, codeBlocks };
+  renderContext = { codeBlocks };
   try {
-    const result = marked.parse(source);
-    const raw = typeof result === "string" ? result : await result;
+    // marked is configured with synchronous extensions only; the cast reflects
+    // that `parse` cannot return a Promise in this configuration.
+    const raw = marked.parse(source) as string;
 
     // Allow KaTeX SVG/MathML plus the code-block marker; nothing else custom passes.
     const html = DOMPurify.sanitize(raw, {
@@ -349,16 +298,13 @@ export async function renderMarkdown(
   }
 }
 
-const cache = new Map<string, { dark: boolean; result: RenderedMarkdown }>();
+const cache = new Map<string, RenderedMarkdown>();
 const MAX_CACHE = 200;
-export async function cachedMarkdown(
-  source: string,
-  isDark = true,
-): Promise<RenderedMarkdown> {
+export function cachedMarkdown(source: string): RenderedMarkdown {
   const hit = cache.get(source);
-  if (hit && hit.dark === isDark) return hit.result;
-  const result = await renderMarkdown(source, isDark);
-  cache.set(source, { dark: isDark, result });
+  if (hit) return hit;
+  const result = renderMarkdown(source);
+  cache.set(source, result);
   if (cache.size > MAX_CACHE) {
     const oldest = cache.keys().next().value;
     if (oldest !== undefined) cache.delete(oldest);
