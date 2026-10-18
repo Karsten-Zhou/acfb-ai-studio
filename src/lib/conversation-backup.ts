@@ -21,6 +21,7 @@
 import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 import type { Attachment, ChatMessage, Conversation } from "@shared/chat";
 import { autoTitle } from "@/lib/titles";
+import { segmentsFromLegacy } from "@shared/chat-migration";
 
 // Format markers, taken verbatim from llama.cpp's UI constants/enums.
 const HARNESS = "llama.app";
@@ -600,15 +601,17 @@ function buildConversation(
         ? allImages.map((url) => buildAttachment(url))
         : undefined);
 
+    const reasoning = asString(m.reasoningContent) || undefined;
     return {
       id: idMap.get(oldId ?? "") ?? crypto.randomUUID(),
       parentId: parent && idMap.has(parent) ? idMap.get(parent)! : null,
       role: (asString(m.role)?.toLowerCase() ?? "user") as ChatMessage["role"],
       content: text,
       createdAt: timestamp,
-      ...(asString(m.reasoningContent)
-        ? { reasoning: asString(m.reasoningContent)! }
-        : {}),
+      // Imports are a load boundary: build the current-format timeline here so
+      // the rest of the app never sees a message without `segments`.
+      segments: segmentsFromLegacy({ content: text, reasoning }),
+      ...(reasoning ? { reasoning } : {}),
       ...(attachments ? { attachments } : {}),
       ...(activeChildId ? { activeChildId: idMap.get(activeChildId)! } : {}),
     };

@@ -22,7 +22,7 @@ function msg(
   content: string,
   extra: Partial<ChatMessage> = {},
 ): ChatMessage {
-  return { id, parentId, role, content, createdAt: 1, ...extra };
+  return { id, parentId, role, content, createdAt: 1, segments: [], ...extra };
 }
 
 function conv(

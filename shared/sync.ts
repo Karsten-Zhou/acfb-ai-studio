@@ -19,12 +19,13 @@ import {
   generationParamsSchema,
 } from "./chat";
 import { galleryItemSchema } from "./draw";
+import { migratePayloadRaw } from "./chat-migration";
 
 /** KV key holding the whole synced state. */
 export const SYNC_KEY = "state";
 
 /** Schema version of the stored payload (bump on breaking changes). */
-export const SYNC_VERSION = 2;
+export const SYNC_VERSION = 3;
 
 /** Cloudflare's hard limit for a single KV value: 25 MiB. */
 export const SYNC_MAX_BYTES = 25 * 1024 * 1024;
@@ -66,21 +67,24 @@ const looseDefaultsSchema = z.looseObject({
   params: z.looseObject({ ...generationParamsSchema.shape }),
 });
 
-export const syncPayloadSchema = z.looseObject({
-  version: z.number().int(),
-  revision: z.number().int().nonnegative(),
-  updatedAt: z.number(),
-  conversations: z.array(looseConversationSchema),
-  gallery: z.array(looseGalleryItemSchema),
-  defaults: looseDefaultsSchema,
-  defaultsUpdatedAt: z.number(),
-  /**
-   * Tombstones: item id -> deletion time (ms). Retained indefinitely because a
-   * device may be offline for an arbitrary time and would otherwise resurrect
-   * deleted items. They are ~60 bytes each, so growth is negligible.
-   */
-  deletions: z.record(z.string(), z.number()),
-});
+export const syncPayloadSchema = z.preprocess(
+  migratePayloadRaw,
+  z.looseObject({
+    version: z.number().int(),
+    revision: z.number().int().nonnegative(),
+    updatedAt: z.number(),
+    conversations: z.array(looseConversationSchema),
+    gallery: z.array(looseGalleryItemSchema),
+    defaults: looseDefaultsSchema,
+    defaultsUpdatedAt: z.number(),
+    /**
+     * Tombstones: item id -> deletion time (ms). Retained indefinitely because a
+     * device may be offline for an arbitrary time and would otherwise resurrect
+     * deleted items. They are ~60 bytes each, so growth is negligible.
+     */
+    deletions: z.record(z.string(), z.number()),
+  }),
+);
 
 /** The whole synced state, as stored in KV. */
 export type SyncPayload = z.infer<typeof syncPayloadSchema>;

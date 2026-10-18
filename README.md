@@ -116,7 +116,10 @@ bun run deploy
 - [ ] MCP support for chatting AIs.
 - [ ] Custom OpenAI compatible endpoint support for chatting AIs
 - [ ] Optimise the remaining token calculation.
-- [ ] Optimise the handrolled sse handling.
+- [ ] API fails without login page redirecting when Cloudflare Access expires.
+- [ ] Move the code highlighting logic from `markdown.ts` to `CodeBlock.vue` or a standalone ts file.
+- [ ] Drop potentially duplicated code for toolcalling-disabled chatting.
+- [ ] `<ToolCallList>` -> `<ToolCall>`
 
 ## My Other Projects
 

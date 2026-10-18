@@ -61,10 +61,9 @@ async function copy() {
     <!-- eslint-disable vue/no-v-html -- highlightedHtml is sanitized in lib/markdown -->
     <div v-if="highlightedHtml" v-html="highlightedHtml" />
     <!-- eslint-enable vue/no-v-html -->
-    <pre
-      v-else
-      class="m-0 w-full overflow-x-auto p-4 text-sm"
-    ><code>{{ code }}</code></pre>
+    <pre v-else class="m-0 w-full overflow-x-auto p-4 text-sm">
+    <code>{{ code }}</code>
+  </pre>
   </div>
 </template>
 

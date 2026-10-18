@@ -11,6 +11,7 @@ import { defineStore } from "pinia";
 import { ref, watch } from "vue";
 import { throttleFilter, useStorage } from "@vueuse/core";
 import { STORAGE_KEY } from "@shared/chat";
+import { migrateChatStorage } from "@shared/chat-migration";
 import type { ChatRequest } from "@shared/api";
 import { FREE_TEXT_GENERATION_MODELS } from "@shared/generated/models";
 import { defaultOptions, setDefaults } from "@/composables/chat-defaults";
@@ -45,6 +46,16 @@ function resolveInitialModel(): string {
   return FREE_TEXT_GENERATION_MODELS[0]?.name ?? "";
 }
 
+/**
+ * Run the versioned chat-storage migration against this browser's storage.
+ * The migration and its write-verify-delete safety live in
+ * `@shared/chat-migration`; this is only the environment guard.
+ */
+function migrateLegacyStorage(): void {
+  if (typeof localStorage === "undefined") return;
+  migrateChatStorage(localStorage);
+}
+
 export const useChatStore = defineStore("chat", () => {
   const sync = useSyncStore();
 
@@ -53,6 +64,11 @@ export const useChatStore = defineStore("chat", () => {
    * that rapid mutations during streaming are batched into at most one write
    * every 300ms.
    */
+  // One-time upgrade of the pre-`segments` (v2) localStorage key. New writes go
+  // to the v3 key; this folds any old data forward and removes the old key so
+  // the upgrade runs exactly once. KV data is migrated separately, on read (see
+  // `shared/sync.ts`).
+  migrateLegacyStorage();
   const conversations = useStorage<Conversation[]>(STORAGE_KEY, [], undefined, {
     eventFilter: throttleFilter(300),
   });
@@ -195,6 +211,9 @@ export const useChatStore = defineStore("chat", () => {
       role,
       content,
       createdAt: Date.now(),
+      // Every message carries an (initially empty) ordered timeline; assistant
+      // replies fill it as they stream (see the delta handler below).
+      segments: [],
       ...(attachments && attachments.length > 0 ? { attachments } : {}),
     };
   }
@@ -234,6 +253,7 @@ export const useChatStore = defineStore("chat", () => {
     delete assistant.error;
     delete assistant.reasoning;
     delete assistant.toolCalls;
+    assistant.segments = [];
     assistant.content = "";
     replyTo.activeChildId = assistant.id;
     conv.leafId = assistant.id;
@@ -273,11 +293,28 @@ export const useChatStore = defineStore("chat", () => {
         (delta) => {
           const { msg } = currentTurn();
           if (!msg) return;
+          // `segments` is the authoritative, in-order record of the reply;
+          // reasoning/content deltas extend the trailing segment of the same
+          // kind and a new tool call opens a tool segment. The flat
+          // reasoning/content/toolCalls fields are kept as projections for wire
+          // replay and backup.
+          const segments = msg.segments;
+          const appendText = (
+            type: "reasoning" | "content",
+            text: string,
+          ): void => {
+            const last = segments[segments.length - 1];
+            if (last?.type === type) last.text += text;
+            else segments.push({ type, text });
+          };
+
           if (delta.reasoning) {
             msg.reasoning = (msg.reasoning ?? "") + delta.reasoning;
+            appendText("reasoning", delta.reasoning);
           }
           if (delta.content) {
             msg.content = (msg.content ?? "") + delta.content;
+            appendText("content", delta.content);
           }
           if (delta.toolCall) {
             const list = msg.toolCalls ?? [];
@@ -287,13 +324,8 @@ export const useChatStore = defineStore("chat", () => {
               existing.name = delta.toolCall.name;
               existing.arguments = delta.toolCall.arguments;
             } else {
-              msg.toolCalls = [
-                ...list,
-                {
-                  ...delta.toolCall,
-                  contentOffset: (msg.content ?? "").length,
-                },
-              ];
+              msg.toolCalls = [...list, { ...delta.toolCall }];
+              segments.push({ type: "tool", id: delta.toolCall.id });
             }
           }
           if (delta.toolResult) {

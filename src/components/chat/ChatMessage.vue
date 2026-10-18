@@ -12,7 +12,7 @@ import {
   RefreshCw,
   Send,
 } from "@lucide/vue";
-import type { ChatMessage, ToolCall } from "@shared/chat";
+import type { ChatMessage } from "@shared/chat";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -32,6 +32,7 @@ import { AlertCircleIcon } from "@lucide/vue";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useDirection } from "reka-ui";
 import { formatNumber } from "@/lib/i18n";
+import { buildAssistantParts } from "@/lib/chat-parts";
 import MarkdownContent from "./MarkdownContent.vue";
 import AttachmentList from "./AttachmentList.vue";
 import ToolCallList from "./ToolCallList.vue";
@@ -63,45 +64,13 @@ const { t } = useI18n();
 const dir = useDirection();
 const isRtl = computed(() => dir.value === "rtl");
 
-type AssistantPart =
-  { type: "content"; text: string } | { type: "tools"; calls: ToolCall[] };
-
 /**
- * The assistant reply as an ordered timeline: prose segments interleaved with
- * the tool calls that interrupted them. Each call records the content length at
- * the moment it was requested (`contentOffset`), so it renders exactly where it
- * happened rather than all at the top of the message.
+ * The assistant reply as two ordered regions: a leading "reasoning" region
+ * (reasoning text with any tool calls the model made mid-thought) and the answer
+ * body (content with any later tool calls). Ordering comes from the message's
+ * `segments`; see `@/lib/chat-parts`.
  */
-const assistantParts = computed<AssistantPart[]>(() => {
-  const content = props.message.content ?? "";
-  const calls = props.message.toolCalls ?? [];
-  if (calls.length === 0) return [{ type: "content", text: content }];
-
-  const groups = new Map<number, ToolCall[]>();
-  for (const call of calls) {
-    const offset = Math.max(
-      0,
-      Math.min(call.contentOffset ?? 0, content.length),
-    );
-    const bucket = groups.get(offset);
-    if (bucket) bucket.push(call);
-    else groups.set(offset, [call]);
-  }
-
-  const parts: AssistantPart[] = [];
-  let cursor = 0;
-  for (const offset of [...groups.keys()].sort((a, b) => a - b)) {
-    if (offset > cursor) {
-      parts.push({ type: "content", text: content.slice(cursor, offset) });
-      cursor = offset;
-    }
-    parts.push({ type: "tools", calls: groups.get(offset) ?? [] });
-  }
-  if (cursor < content.length) {
-    parts.push({ type: "content", text: content.slice(cursor) });
-  }
-  return parts;
-});
+const assistantParts = computed(() => buildAssistantParts(props.message));
 
 const editing = ref(false);
 const draft = ref("");
@@ -273,7 +242,7 @@ async function copy() {
 
             <template v-else-if="message.role === 'assistant'">
               <Collapsible
-                v-if="message.reasoning"
+                v-if="assistantParts.reasoning.length"
                 v-model:open="reasoningOpen"
                 class="mb-3"
               >
@@ -297,10 +266,21 @@ async function copy() {
                   </Button>
                 </CollapsibleTrigger>
                 <CollapsibleContent class="rounded-md border p-4 my-2">
-                  <MarkdownContent
-                    :source="message.reasoning ?? ''"
-                    class="prose prose-sm max-w-none dark:prose-invert"
-                  />
+                  <template
+                    v-for="(part, index) in assistantParts.reasoning"
+                    :key="index"
+                  >
+                    <ToolCallList
+                      v-if="part.type === 'tools'"
+                      :tool-calls="part.calls"
+                      :streaming="isLast && streaming"
+                    />
+                    <MarkdownContent
+                      v-else-if="part.text"
+                      :source="part.text"
+                      class="prose prose-sm max-w-none dark:prose-invert"
+                    />
+                  </template>
                 </CollapsibleContent>
               </Collapsible>
 
@@ -324,14 +304,17 @@ async function copy() {
                 </MarkerContent>
               </Marker>
 
-              <template v-for="(part, index) in assistantParts" :key="index">
+              <template
+                v-for="(part, index) in assistantParts.body"
+                :key="index"
+              >
                 <ToolCallList
                   v-if="part.type === 'tools'"
                   :tool-calls="part.calls"
                   :streaming="isLast && streaming"
                 />
                 <MarkdownContent
-                  v-if="part.type === 'content' && part.text"
+                  v-else-if="part.text"
                   :source="part.text"
                   class="prose max-w-none dark:prose-invert"
                 />

@@ -90,13 +90,23 @@ export const toolCallSchema = z.object({
   result: z.string().optional(),
   /** Set when execution failed; `result` may then hold a diagnostic. */
   error: z.string().optional(),
-  /**
-   * Length of the reply's content when this call was requested, so the UI can
-   * render it inline where it happened. Storage-only; absent means "at the top".
-   */
-  contentOffset: z.number().int().nonnegative().optional(),
 });
 export type ToolCall = z.infer<typeof toolCallSchema>;
+
+/**
+ * One step of an assistant reply's timeline, in the exact order the model
+ * produced it. Reasoning, answer text and tool invocations interleave — a
+ * reasoning model can call a tool mid-thought — so a single ordered list is the
+ * only lossless record of that sequence. `content` / `reasoning` / `toolCalls`
+ * remain as projections for wire replay and backup; this is the source of truth
+ * for rendering order. Storage-only.
+ */
+export const assistantSegmentSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("reasoning"), text: z.string() }),
+  z.object({ type: z.literal("content"), text: z.string() }),
+  z.object({ type: z.literal("tool"), id: z.string().min(1) }),
+]);
+export type AssistantSegment = z.infer<typeof assistantSegmentSchema>;
 
 /**
  * A stored chat message node. Messages form a tree (`parentId`) so a
@@ -114,6 +124,8 @@ export const chatMessageSchema = z.object({
   error: z.string().optional(),
   /** Tool-calling steps taken while producing this reply. Storage-only. */
   toolCalls: z.array(toolCallSchema).optional(),
+  /** Ordered reasoning/content/tool timeline. Storage-only. */
+  segments: z.array(assistantSegmentSchema),
 });
 export type ChatMessage = z.infer<typeof chatMessageSchema>;
 
@@ -180,5 +192,14 @@ export const streamEventSchema = z.discriminatedUnion("type", [
 ]);
 export type StreamEvent = z.infer<typeof streamEventSchema>;
 
-/** Namespace the client-side persistence under. */
-export const STORAGE_KEY = "conversations:v2";
+/**
+ * Current persisted chat schema version. Bump this and add a `v -> v+1` step in
+ * `shared/chat-migration.ts` whenever the stored message shape changes.
+ */
+export const CHAT_SCHEMA_VERSION = 3;
+
+/** Prefix of the versioned localStorage keys (`conversations:v<N>`). */
+export const STORAGE_KEY_PREFIX = "conversations:v";
+
+/** localStorage key for the current schema version. */
+export const STORAGE_KEY = `${STORAGE_KEY_PREFIX}${CHAT_SCHEMA_VERSION}`;

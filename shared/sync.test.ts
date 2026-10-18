@@ -276,6 +276,33 @@ describe("parseSyncPayload", () => {
     ).toBeNull();
   });
 
+  it("migrates legacy messages without segments on parse", () => {
+    const legacyConversation = {
+      ...conversation({ id: "c1" }),
+      messages: [
+        {
+          id: "m1",
+          parentId: null,
+          role: "assistant",
+          content: "answer",
+          reasoning: "think",
+          createdAt: 1,
+        },
+      ],
+      leafId: "m1",
+    };
+    // Legacy data was stored under sync version 2 (pre-`segments`).
+    const parsed = parseSyncPayload({
+      ...payload(),
+      version: 2,
+      conversations: [legacyConversation],
+    });
+
+    expect(parsed?.conversations[0].messages[0].segments).toEqual([
+      { type: "reasoning", text: "think" },
+      { type: "content", text: "answer" },
+    ]);
+  });
   it("preserves unknown fields rather than stripping them", () => {
     const parsed = parseSyncPayload({
       ...payload(),
