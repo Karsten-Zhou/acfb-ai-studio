@@ -1,8 +1,6 @@
-// Shared SSE reading for the two consumers of an upstream Workers AI stream:
-// the byte-level transform in `./sse` and the agent's async generator in
-// `./agent`. Their *reading shapes* differ — one is a TransformStream, the
-// other drives a tool loop — but the framing and failure rules must be
-// identical, so they live here once.
+// SSE reading for the upstream Workers AI stream consumed by the agent loop
+// (`./agent`). Framing and failure rules live here, separate from how a
+// consumer drives the parsed frames.
 //
 // Framing is delegated entirely to the maintained `eventsource-parser`
 // library: `TextDecoderStream` handles chunk boundaries and incremental UTF-8

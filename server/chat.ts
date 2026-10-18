@@ -19,9 +19,7 @@ import { reasoningParams } from "@shared/reasoning";
 import { toWireTools } from "@shared/tools";
 import { errorResponse, upstreamError } from "./errors";
 import { readInferenceResult } from "./inference";
-import { canonicalEventStream } from "./sse";
-import { upstreamFrames } from "./sse-parse";
-import { nonStreamingToolAgent, streamingToolAgent } from "./agent";
+import { nonStreamingAgent, streamingAgent } from "./agent";
 import { zodErrorHook } from "./validation";
 import { buildChatInput } from "./attachments";
 import { readSyncMeta } from "./sync-storage";
@@ -165,58 +163,29 @@ app.post(
     // Dispatch
     // ---------------------------------------------------------------------
 
-    // The tool-calling loop owns the request end to end: it makes its own
-    // upstream calls so it can feed tool results back between steps.
-    if (toolsEnabled) {
-      if (!stream) {
-        try {
-          const result = await nonStreamingToolAgent({
-            baseParams: cfParams,
-            messages: cfMessages,
-            runOnce: (msgs, p) =>
-              env.AI.run(known.name, { ...p, messages: msgs }),
-          });
-          return Response.json(
-            chatResponseSchema.parse({
-              conversationId,
-              content: result.content,
-              reasoning: result.reasoning,
-              model: known.name,
-              toolCalls: result.toolCalls,
-            }),
-          );
-        } catch (err) {
-          return errorResponse(upstreamError(err));
-        }
-      }
+    // ---------------------------------------------------------------------
+    // Dispatch — one pipeline for every reply
+    // ---------------------------------------------------------------------
 
-      const toolStream = streamingToolAgent({
-        baseParams: cfParams,
-        messages: cfMessages,
-        runStream: async (msgs, p) =>
-          (await env.AI.run(known.name, {
-            ...p,
-            messages: msgs,
-          })) as unknown as ReadableStream<Uint8Array>,
-      });
-      return new Response(toolStream, {
-        headers: {
-          "content-type": "text/event-stream; charset=utf-8",
-          "cache-control": "no-cache",
-          "x-accel-buffering": "no",
-          connection: "keep-alive",
-        },
-      });
-    }
-
+    // The agent owns the request end to end. With no tools offered it makes a
+    // single upstream call, so plain chatting and tool calling share this path;
+    // `toolsEnabled` keeps a hallucinated call from running when none were.
     if (!stream) {
       try {
-        const result = await env.AI.run(known.name, cfParams);
+        const result = await nonStreamingAgent({
+          baseParams: cfParams,
+          messages: cfMessages,
+          toolsEnabled,
+          runOnce: (msgs, p) =>
+            env.AI.run(known.name, { ...p, messages: msgs }),
+        });
         return Response.json(
           chatResponseSchema.parse({
             conversationId,
-            ...readInferenceResult(result),
+            content: result.content,
+            reasoning: result.reasoning,
             model: known.name,
+            toolCalls: result.toolCalls,
           }),
         );
       } catch (err) {
@@ -224,31 +193,24 @@ app.post(
       }
     }
 
-    cfParams.stream = true;
-
-    let upstream: ReadableStream<Uint8Array>;
-    try {
-      upstream = (await env.AI.run(
-        known.name,
-        cfParams,
-      )) as unknown as ReadableStream<Uint8Array>;
-    } catch (err) {
-      return errorResponse(upstreamError(err));
-    }
-
-    return new Response(
-      upstream
-        .pipeThrough(upstreamFrames())
-        .pipeThrough(canonicalEventStream()),
-      {
-        headers: {
-          "content-type": "text/event-stream; charset=utf-8",
-          "cache-control": "no-cache",
-          "x-accel-buffering": "no",
-          connection: "keep-alive",
-        },
+    const reply = streamingAgent({
+      baseParams: cfParams,
+      messages: cfMessages,
+      toolsEnabled,
+      runStream: async (msgs, p) =>
+        (await env.AI.run(known.name, {
+          ...p,
+          messages: msgs,
+        })) as unknown as ReadableStream<Uint8Array>,
+    });
+    return new Response(reply, {
+      headers: {
+        "content-type": "text/event-stream; charset=utf-8",
+        "cache-control": "no-cache",
+        "x-accel-buffering": "no",
+        connection: "keep-alive",
       },
-    );
+    });
   },
 );
 

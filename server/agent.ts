@@ -1,4 +1,5 @@
-// The server-side tool-calling loop.
+// The server-side reply loop: every chat reply runs through here, with or
+// without tools. When no tools are offered it is a single upstream call.
 //
 // Workers AI's traditional function-calling flow (see
 // https://developers.cloudflare.com/workers-ai/features/function-calling/)
@@ -26,8 +27,13 @@ import {
   type WireToolCall,
 } from "./inference";
 import { executeToolCall, type ToolExecution } from "./tools";
-import { encodeSseEvent } from "./sse";
 import { upstreamFrames, readSseError } from "./sse-parse";
+
+const encoder = new TextEncoder();
+
+function encodeSseEvent(event: object): Uint8Array {
+  return encoder.encode(`data: ${JSON.stringify(event)}\n\n`);
+}
 
 /** Hard cap on model↔tool round trips within a single reply. */
 const MAX_STEPS = 5;
@@ -84,6 +90,11 @@ function toToolCall(call: WireToolCall): ToolCall {
 export interface StreamingAgentOptions {
   /** Prebuilt non-message params (temperature, reasoning, tools, ...). */
   baseParams: Record<string, unknown>;
+  /**
+   * Whether a tool call the model emits may run. False when no tools were
+   * offered, so a hallucinated call is neither announced nor executed.
+   */
+  toolsEnabled: boolean;
   /** The starting wire messages; a copy is mutated across steps. */
   messages: unknown[];
   /** Start one streaming model call; resolves to the upstream byte stream. */
@@ -98,10 +109,10 @@ export interface StreamingAgentOptions {
  * reasoning deltas stream through as they arrive; a tool call is announced as
  * soon as it starts and its result follows once it has run.
  */
-export function streamingToolAgent(
+export function streamingAgent(
   options: StreamingAgentOptions,
 ): ReadableStream<Uint8Array> {
-  const { baseParams, runStream } = options;
+  const { baseParams, toolsEnabled, runStream } = options;
   const messages = [...options.messages];
 
   return new ReadableStream<Uint8Array>({
@@ -127,22 +138,25 @@ export function streamingToolAgent(
               failed = true;
               break;
             }
-            accumulateStreamToolCalls(calls, chunk);
-            // Announce each call as soon as its name arrives — long before its
-            // arguments finish generating — so the UI can show a pending step.
-            calls.forEach((call, index) => {
-              if (!call || !call.name) return;
-              if (!call.id) call.id = `call_${index}`;
-              const signature = `${call.name}|${call.arguments}`;
-              if (announced.get(index) === signature) return;
-              announced.set(index, signature);
-              emit({
-                type: "tool_call",
-                id: call.id,
-                name: call.name,
-                arguments: call.arguments || "{}",
+            if (toolsEnabled) {
+              accumulateStreamToolCalls(calls, chunk);
+              // Announce each call as soon as its name arrives — long before
+              // its arguments finish generating — so the UI can show a pending
+              // step.
+              calls.forEach((call, index) => {
+                if (!call || !call.name) return;
+                if (!call.id) call.id = `call_${index}`;
+                const signature = `${call.name}|${call.arguments}`;
+                if (announced.get(index) === signature) return;
+                announced.set(index, signature);
+                emit({
+                  type: "tool_call",
+                  id: call.id,
+                  name: call.name,
+                  arguments: call.arguments || "{}",
+                });
               });
-            });
+            }
 
             const delta = readStreamChunk(chunk);
             if (delta.reasoning) {
@@ -154,7 +168,7 @@ export function streamingToolAgent(
           }
           if (failed) return;
           const requested = calls.filter((call) => call.name);
-          if (requested.length === 0) break;
+          if (requested.length === 0 || !toolsEnabled) break;
 
           messages.push(assistantToolCallMessage(requested));
 
@@ -195,6 +209,8 @@ export function streamingToolAgent(
 
 export interface NonStreamingAgentOptions {
   baseParams: Record<string, unknown>;
+  /** See {@link StreamingAgentOptions.toolsEnabled}. */
+  toolsEnabled: boolean;
   messages: unknown[];
   runOnce: (
     messages: unknown[],
@@ -209,10 +225,10 @@ export interface NonStreamingAgentResult {
   toolCalls: ToolCall[];
 }
 
-export async function nonStreamingToolAgent(
+export async function nonStreamingAgent(
   options: NonStreamingAgentOptions,
 ): Promise<NonStreamingAgentResult> {
-  const { baseParams, runOnce } = options;
+  const { baseParams, toolsEnabled, runOnce } = options;
   const messages = [...options.messages];
   const toolCalls: ToolCall[] = [];
   let content = "";
@@ -224,7 +240,9 @@ export async function nonStreamingToolAgent(
     content = read.content;
     reasoning = read.reasoning;
 
-    const calls = readToolCalls(result).filter((call) => call.name);
+    const calls = toolsEnabled
+      ? readToolCalls(result).filter((call) => call.name)
+      : [];
     if (calls.length === 0) break;
 
     messages.push(assistantToolCallMessage(calls));
@@ -252,14 +270,14 @@ export async function nonStreamingToolAgent(
 
 /**
  * Parse an upstream Workers AI SSE stream into the JSON payload of each `data:`
- * event. Framing and failure rules are shared with the transform (`./sse-parse`)
- * so both consumers behave identically. A stream that ends without `[DONE]`
- * throws, so the agent loop reports it instead of finishing silently.
+ * event. Framing and failure rules live in `./sse-parse`; a stream that ends
+ * without `[DONE]` throws, so the agent loop reports it instead of finishing
+ * silently.
  */
 async function* parseUpstreamSse(
   stream: ReadableStream<Uint8Array>,
 ): AsyncGenerator<unknown> {
-  // Framing + completion policy are shared with the transform (`./sse-parse`).
+  // Framing + completion policy live in `./sse-parse`.
   const frameReader = stream.pipeThrough(upstreamFrames()).getReader();
   try {
     for (;;) {

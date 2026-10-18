@@ -50,7 +50,7 @@ Deploy your own private, self-hosted instance in under a minute with one click:
 ├── server/                   # Cloudflare Worker backend
 │   ├── index.ts              # Worker entry point
 │   ├── chat.ts, draw.ts      # AI chat & image endpoints
-│   ├── agent.ts, tools.ts    # Tool-calling loop & server-side tool execution
+│   ├── agent.ts, tools.ts    # Reply loop (with/without tools) & tool execution
 │   ├── sync.ts, sync-storage.ts # Data synchronization handlers
 │   └── errors.ts, image-dimensions.ts
 │
@@ -117,9 +117,8 @@ bun run deploy
 - [ ] Custom OpenAI compatible endpoint support for chatting AIs
 - [ ] Optimise the remaining token calculation.
 - [ ] API fails without login page redirecting when Cloudflare Access expires.
+- [ ] **Client cache quota mismatch:** the app gates generation on Cloudflare KV's 25 MiB limit but persists the same payload to `localStorage`, which is capped at roughly 5 MiB of UTF-16 (~2.5M characters) per origin. Move attachments/gallery images to IndexedDB or object storage, or catch `QuotaExceededError` and enforce a local budget.
 - [ ] Move the code highlighting logic from `markdown.ts` to `CodeBlock.vue` or a standalone ts file.
-- [ ] Drop potentially duplicated code for toolcalling-disabled chatting.
-- [ ] `<ToolCallList>` -> `<ToolCall>`
 
 ## My Other Projects
 

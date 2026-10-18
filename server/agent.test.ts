@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { canonicalEventStream } from "./sse";
-import { upstreamFrames } from "./sse-parse";
+import { streamingAgent } from "./agent";
 
-/** Feed raw upstream bytes through both stages and return the `data:` lines. */
-async function run(input: string, splitAt: number[] = []): Promise<string[]> {
+/** Split raw bytes at the given offsets into a stream the agent can read. */
+function byteStream(
+  input: string,
+  splitAt: number[] = [],
+): ReadableStream<Uint8Array> {
   const bytes = new TextEncoder().encode(input);
   const chunks: Uint8Array[] = [];
   const cuts = [0, ...splitAt, bytes.length];
@@ -11,22 +13,36 @@ async function run(input: string, splitAt: number[] = []): Promise<string[]> {
     chunks.push(bytes.slice(cuts[i - 1], cuts[i]));
   }
   let index = 0;
-  const stream = new ReadableStream<Uint8Array>({
+  return new ReadableStream<Uint8Array>({
     pull(controller) {
       if (index < chunks.length) controller.enqueue(chunks[index++]);
       else controller.close();
     },
   });
-  const text = await new Response(
-    stream.pipeThrough(upstreamFrames()).pipeThrough(canonicalEventStream()),
-  ).text();
+}
+
+/** Run one reply through the agent and return its `data:` event lines. */
+async function run(
+  input: string,
+  {
+    toolsEnabled = false,
+    splitAt = [],
+  }: { toolsEnabled?: boolean; splitAt?: number[] } = {},
+): Promise<string[]> {
+  const stream = streamingAgent({
+    baseParams: {},
+    messages: [],
+    toolsEnabled,
+    runStream: async () => byteStream(input, splitAt),
+  });
+  const text = await new Response(stream).text();
   return text.split("\n").filter((l) => l.startsWith("data:"));
 }
 
 const has = (out: string[], type: string): boolean =>
   out.some((l) => l.includes(`"type":"${type}"`));
 
-describe("canonicalEventStream", () => {
+describe("streamingAgent", () => {
   it("emits deltas and done for a well-formed stream", async () => {
     const out = await run(
       'data: {"choices":[{"delta":{"content":"hi"}}]}\n\n' + "data: [DONE]\n\n",
@@ -89,9 +105,9 @@ describe("canonicalEventStream", () => {
       "data: [DONE]\n\n";
     const prefix = 'data: {"choices":[{"delta":{"content":"'.length;
     // Split inside the first 3-byte character.
-    const out = await run(raw, [
-      new TextEncoder().encode(raw.slice(0, prefix)).length + 1,
-    ]);
+    const out = await run(raw, {
+      splitAt: [new TextEncoder().encode(raw.slice(0, prefix)).length + 1],
+    });
     expect(out.some((l) => l.includes("你好"))).toBe(true);
     expect(has(out, "error")).toBe(false);
   });
@@ -104,5 +120,15 @@ describe("canonicalEventStream", () => {
     const out = await run(raw);
     expect(has(out, "delta")).toBe(true);
     expect(has(out, "error")).toBe(false);
+  });
+
+  it("ignores a tool call when no tools were offered", async () => {
+    const out = await run(
+      'data: {"choices":[{"delta":{"tool_calls":[{"index":0,"id":"c1","function":{"name":"get_current_datetime","arguments":"{}"}}]}}]}\n\n' +
+        "data: [DONE]\n\n",
+    );
+    expect(has(out, "tool_call")).toBe(false);
+    expect(has(out, "tool_result")).toBe(false);
+    expect(has(out, "done")).toBe(true);
   });
 });

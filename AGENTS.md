@@ -1,3 +1,4 @@
 - Prefer `bun run typecheck` (or `npm run typecheck`) for typechecking across all projects and environments. Before running any other typechecking commands directly (e.g. `tsc` or `vue-tsc`), run `bunx cf workers types` (or `npx cf workers types`) to ensure Cloudflare Workers types are up to date.
 - Avoid manual regex if a mature AST-based solution is available.
 - Frontend UI changes must account for LTR and RTL layouts, i18n, and responsiveness across mobile, tablet, and desktop.
+- Strongly prefer mature third-party libraries over hand-rolled implementations.
