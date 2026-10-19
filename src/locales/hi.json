@@ -174,6 +174,8 @@
     "synced": "{time} पर Sync हुआ",
     "syncing": "Sync हो रहा है…",
     "tooLarge": "हिस्ट्री {size} की है, जो एक synced entry की {limit} सीमा से ज़्यादा है। Sync फिर से शुरू करने के लिए कुछ बातचीत या इमेज हटाएँ।",
-    "usage": "{total} में से {used} इस्तेमाल"
+    "usage": "{total} में से {used} इस्तेमाल",
+    "storageUnavailable": "लोकल सहेजना उपलब्ध नहीं; रीलोड पर बदलाव खो जाएँगे",
+    "storageLegacyUnreadable": "पुराना लोकल डेटा पढ़ा नहीं जा सका और अप्रयुक्त है"
   }
 }

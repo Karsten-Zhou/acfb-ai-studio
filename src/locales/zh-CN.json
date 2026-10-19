@@ -174,6 +174,8 @@
     "synced": "{time}已同步",
     "syncing": "同步中…",
     "tooLarge": "记录大小为 {size}，超过单条同步条目的上限 {limit}。请删除一些会话或图片以恢复同步。",
-    "usage": "已使用 {used}/{total}"
+    "usage": "已使用 {used}/{total}",
+    "storageUnavailable": "本地存储不可用，刷新后改动会丢失",
+    "storageLegacyUnreadable": "旧的本地数据无法读取，仍处于未使用状态"
   }
 }

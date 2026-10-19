@@ -14,5 +14,13 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["shared/**/*.test.ts", "src/**/*.test.ts", "server/**/*.test.ts"],
+    server: {
+      deps: {
+        // `vi.mock("idb-keyval")` only reaches modules that Vite processes: an
+        // externalized `@vueuse/integrations` imports the real package through
+        // Node and would bypass the mock entirely.
+        inline: [/idb-keyval/, /@vueuse\/integrations/],
+      },
+    },
   },
 });

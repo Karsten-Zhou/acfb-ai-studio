@@ -12,6 +12,7 @@ import { useI18n } from "vue-i18n";
 import { Button } from "@/components/ui/button";
 import { requestSync, resetSyncState } from "@/composables/sync";
 import { useSyncStore } from "@/stores/sync";
+import { storageIssue } from "@/lib/app-storage";
 import { formatMebibytes, formatRelativeTime } from "@/lib/i18n";
 
 const { t } = useI18n();
@@ -63,6 +64,21 @@ const status = computed(() => {
   };
 });
 
+/**
+ * A persistence failure does not announce itself again, so it stays visible
+ * here instead of in a toast the user can dismiss: without it they keep working
+ * under the assumption that their changes are saved.
+ */
+const storageLabel = computed(() => {
+  if (storageIssue.value === "unavailable") {
+    return t("sync.storageUnavailable");
+  }
+  if (storageIssue.value === "legacy-unreadable") {
+    return t("sync.storageLegacyUnreadable");
+  }
+  return null;
+});
+
 /** The single KV entry fills up predictably, so show how much room is left. */
 const percent = computed(() =>
   Math.min(100, Math.round(sync.storageUsage.ratio * 100)),
@@ -94,6 +110,16 @@ async function onReset() {
 
 <template>
   <div class="flex flex-col gap-2 px-2 py-1">
+    <div v-if="storageLabel" class="flex items-center gap-2">
+      <AlertCircle class="size-3.5 shrink-0 text-destructive" />
+      <span
+        class="min-w-0 flex-1 truncate text-xs text-destructive"
+        :title="storageLabel"
+      >
+        {{ storageLabel }}
+      </span>
+    </div>
+
     <div class="flex items-center gap-2">
       <component
         :is="status.icon"

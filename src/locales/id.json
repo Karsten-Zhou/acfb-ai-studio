@@ -174,6 +174,8 @@
     "synced": "Disinkronkan {time}",
     "syncing": "Menyinkronkan…",
     "tooLarge": "Riwayat berukuran {size}, melebihi batas {limit} untuk satu entri sinkronisasi. Hapus beberapa percakapan atau gambar untuk melanjutkan sinkronisasi.",
-    "usage": "{used} dari {total} digunakan"
+    "usage": "{used} dari {total} digunakan",
+    "storageUnavailable": "Penyimpanan lokal tidak tersedia; perubahan hilang saat muat ulang",
+    "storageLegacyUnreadable": "Data lokal lama tidak dapat dibaca dan tetap tidak terpakai"
   }
 }

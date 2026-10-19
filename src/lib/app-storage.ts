@@ -22,6 +22,18 @@ export const GALLERY_STORAGE_KEY = "draw:gallery:v1";
 const SNAPSHOT_THROTTLE_MS = 300;
 
 /**
+ * Why persistence is degraded, reported to the UI until the page reloads.
+ *
+ * - `unavailable`: IndexedDB could not be read or written, so this session's
+ *   changes would be lost on reload.
+ * - `legacy-unreadable`: a legacy `localStorage` copy exists but could not be
+ *   parsed; it is left untouched and stays unused.
+ */
+export type StorageIssue = "unavailable" | "legacy-unreadable";
+
+export const storageIssue = ref<StorageIssue | null>(null);
+
+/**
  * Reactive state backed by IndexedDB, written at most once per `throttleMs`.
  *
  * `useIDBKeyval` has no `eventFilter`, so its own watcher would clone and write
@@ -33,7 +45,18 @@ const SNAPSHOT_THROTTLE_MS = 300;
  * it before writing through a value that may have existed before this session.
  */
 export function usePersistentState<T>(key: string, initialValue: T) {
-  const persisted = useIDBKeyval<T>(key, initialValue);
+  const persisted = useIDBKeyval<T>(key, initialValue, {
+    // `data` only ever receives a complete snapshot, so deep tracking would
+    // walk the whole tree to notice that its reference changed.
+    deep: false,
+    onError: (error: unknown) => {
+      storageIssue.value = "unavailable";
+      console.error(
+        `[storage] could not read or write "${key}" in IndexedDB:`,
+        error,
+      );
+    },
+  });
   const state = ref(toRaw(initialValue)) as Ref<T>;
   /**
    * The snapshot currently representing `state` on disk. Identity is what tells
@@ -41,9 +64,21 @@ export function usePersistentState<T>(key: string, initialValue: T) {
    */
   let snapshot = state.value;
   let applyingRemote = false;
+  /**
+   * Local mutations seen, and the count at which the store was last current.
+   * A counter rather than an identity check because a nested mutation does not
+   * change the tree's reference, while adopting a remote value does.
+   */
+  let edits = 0;
+  let storedAtEdits = 0;
 
   const takeSnapshot = useThrottleFn(
     () => {
+      // A remote update can land while this trailing edge is queued and leave
+      // the store exactly current; re-cloning would only echo the same bytes
+      // back to IndexedDB and to the other tab.
+      if (edits === storedAtEdits) return;
+      storedAtEdits = edits;
       // `toRaw` first: the raw graph holds plain objects, while reading through
       // the reactive proxy would clone through a proxy per node.
       snapshot = structuredClone(toRaw(state.value));
@@ -59,7 +94,9 @@ export function usePersistentState<T>(key: string, initialValue: T) {
   watch(
     state,
     () => {
-      if (!applyingRemote) takeSnapshot();
+      if (applyingRemote) return;
+      edits++;
+      takeSnapshot();
     },
     { deep: true, flush: "sync" },
   );
@@ -77,6 +114,9 @@ export function usePersistentState<T>(key: string, initialValue: T) {
       applyingRemote = true;
       state.value = incoming;
       applyingRemote = false;
+      // This tab now holds exactly what the store holds, so anything queued
+      // before this update has nothing left to write.
+      storedAtEdits = edits;
     },
     { flush: "sync" },
   );
@@ -106,8 +146,9 @@ async function migrateKey(key: string, local: KeyValueStore): Promise<void> {
   try {
     value = JSON.parse(raw) as unknown;
   } catch (error) {
-    // Left in `localStorage` for manual recovery, but the user has to learn
-    // that a copy of their data is sitting there unread.
+    // Left in `localStorage` for manual recovery, and reported: the user has to
+    // learn that a copy of their data is sitting there unread.
+    storageIssue.value ??= "legacy-unreadable";
     console.error(
       `[storage] Legacy "${key}" is not valid JSON and stays in localStorage:`,
       error,
@@ -134,6 +175,7 @@ export async function initAppStorage(): Promise<void> {
     local = window.localStorage;
     const folded = migrateChatStorage(local);
     if (folded.blocked) {
+      storageIssue.value ??= "legacy-unreadable";
       console.error(
         `[storage] Legacy chat data is present but was not folded forward (${folded.blocked}${
           folded.detail ? `: ${folded.detail}` : ""

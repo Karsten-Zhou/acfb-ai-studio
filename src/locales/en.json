@@ -174,6 +174,8 @@
     "synced": "Synced {time}",
     "syncing": "Syncing…",
     "tooLarge": "History is {size}, which is over the {limit} limit for a single synced entry. Delete some conversations or images to resume syncing.",
-    "usage": "{used} of {total} used"
+    "usage": "{used} of {total} used",
+    "storageUnavailable": "Local saving is unavailable; changes are lost on reload",
+    "storageLegacyUnreadable": "Old local data could not be read and stays unused"
   }
 }
