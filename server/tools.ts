@@ -88,7 +88,13 @@ function currentDateTime(
   let timeZone: string | undefined = requested;
   try {
     new Intl.DateTimeFormat("en-US", { timeZone }).format(now);
-  } catch {
+  } catch (error) {
+    // The result reports the zone actually used in `timezone`, so the model can
+    // tell the user; the rejection itself belongs in the logs.
+    console.warn(
+      `[tools] unknown IANA time zone "${requested}", using the default:`,
+      error,
+    );
     timeZone = undefined;
   }
 

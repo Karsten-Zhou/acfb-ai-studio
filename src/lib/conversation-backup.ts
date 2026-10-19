@@ -477,7 +477,11 @@ export function parseBackupFile(
       try {
         const parsed = JSON.parse(firstLine);
         isJsonl = isRecord(parsed) && parsed.type === RECORD_SESSION;
-      } catch {
+      } catch (error) {
+        // A pretty-printed legacy document has an unparseable first line by
+        // construction, so this is a format probe, not a defect: the branch
+        // below still reports the real error if the whole file fails to parse.
+        console.debug("[backup] first line is not a JSONL record:", error);
         isJsonl = false;
       }
 

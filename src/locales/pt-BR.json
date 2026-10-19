@@ -26,7 +26,9 @@
     "renameAction": "Renomear",
     "deleteTitle": "Excluir",
     "deleteConversationDescription": "Tem certeza de que deseja excluir esta conversa? Essa ação não pode ser desfeita.",
-    "deleteImageDescription": "Tem certeza de que deseja excluir esta imagem? Essa ação não pode ser desfeita."
+    "deleteImageDescription": "Tem certeza de que deseja excluir esta imagem? Essa ação não pode ser desfeita.",
+    "copyFailed": "Falha ao copiar",
+    "copyFailedDescription": "Não foi possível copiar o texto para a área de transferência."
   },
   "nav": {
     "chat": "Chat",

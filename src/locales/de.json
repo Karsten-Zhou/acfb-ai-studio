@@ -26,7 +26,9 @@
     "renameAction": "Umbenennen",
     "deleteTitle": "Löschen",
     "deleteConversationDescription": "Möchtest du diese Unterhaltung wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
-    "deleteImageDescription": "Möchtest du dieses Bild wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+    "deleteImageDescription": "Möchtest du dieses Bild wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "copyFailed": "Kopieren fehlgeschlagen",
+    "copyFailedDescription": "Der Text konnte nicht in die Zwischenablage kopiert werden."
   },
   "nav": {
     "chat": "Chat",

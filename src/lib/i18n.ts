@@ -180,7 +180,13 @@ export function languageLabel(locale: Locale): string {
         type: "language",
       }).of(locale) ?? locale
     );
-  } catch {
+  } catch (error) {
+    // `Intl.DisplayNames` is missing or too old in some engines; the language
+    // list then shows the code instead of the name.
+    console.debug(
+      "[i18n] DisplayNames unavailable, using the locale code:",
+      error,
+    );
     return locale;
   }
 }

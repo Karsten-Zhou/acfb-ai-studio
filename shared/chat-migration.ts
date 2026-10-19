@@ -156,6 +156,14 @@ export interface StorageMigrationResult {
   migrated: boolean;
   /** The version migrated from, when `migrated` is true. */
   fromVersion?: number;
+  /**
+   * Why a legacy payload that *exists* could not be moved. Without it a
+   * stranded copy is indistinguishable from "nothing to do", and the caller has
+   * nothing to report.
+   */
+  blocked?: "unparseable" | "write-verification-failed";
+  /** The underlying message, when the block came from a thrown error. */
+  detail?: string;
 }
 
 /**
@@ -194,8 +202,12 @@ export function migrateChatStorage(
   let migrated: unknown;
   try {
     migrated = migrateConversations(JSON.parse(raw) as unknown, fromVersion);
-  } catch {
-    return { migrated: false };
+  } catch (error) {
+    return {
+      migrated: false,
+      blocked: "unparseable",
+      detail: error instanceof Error ? error.message : String(error),
+    };
   }
   if (!Array.isArray(migrated) || migrated.length === 0) {
     return { migrated: false };
@@ -203,7 +215,9 @@ export function migrateChatStorage(
 
   const serialized = JSON.stringify(migrated);
   storage.setItem(currentKey, serialized);
-  if (storage.getItem(currentKey) !== serialized) return { migrated: false };
+  if (storage.getItem(currentKey) !== serialized) {
+    return { migrated: false, blocked: "write-verification-failed" };
+  }
 
   for (const version of versions) {
     storage.removeItem(`${STORAGE_KEY_PREFIX}${version}`);

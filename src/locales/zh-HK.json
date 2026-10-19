@@ -26,7 +26,9 @@
     "renameAction": "重新命名",
     "deleteTitle": "刪除",
     "deleteConversationDescription": "確定要刪除這段對話嗎？此操作無法復原。",
-    "deleteImageDescription": "確定要刪除這張圖片嗎？此操作無法復原。"
+    "deleteImageDescription": "確定要刪除這張圖片嗎？此操作無法復原。",
+    "copyFailed": "複製失敗",
+    "copyFailedDescription": "無法把內容複製到剪貼簿。"
   },
   "nav": {
     "chat": "聊天",

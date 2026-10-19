@@ -362,11 +362,21 @@ function computeOutputFormat(output: unknown): OutputFormat {
 // ---------------------------------------------------------------------------
 
 async function writeIfChanged(file: string, content: string): Promise<boolean> {
+  let existing: string | undefined;
   try {
-    if ((await readFile(file, "utf8")) === content) return false;
-  } catch {
-    /* file does not exist yet */
+    existing = await readFile(file, "utf8");
+  } catch (error) {
+    // Absent is the normal first run; any other failure means we would
+    // overwrite a file we never managed to read.
+    const code = (error as { code?: string }).code;
+    if (code !== "ENOENT") {
+      console.warn(
+        `[sync-models] could not read ${file} for comparison:`,
+        error,
+      );
+    }
   }
+  if (existing === content) return false;
   await writeFile(file, content);
   return true;
 }

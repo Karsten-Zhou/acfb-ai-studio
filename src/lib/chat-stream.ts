@@ -30,18 +30,40 @@ export async function consumeChatStream(
 ): Promise<void> {
   let streamError: string | undefined;
   let sawDone = false;
+  /**
+   * Frames the binding sent that this parser cannot use. Counted, so a broken
+   * upstream produces one warning per stream instead of one per chunk.
+   */
+  let malformedFrames = 0;
+
+  function reportMalformed(
+    payload: string,
+    reason: string,
+    detail: unknown,
+  ): void {
+    malformedFrames++;
+    if (malformedFrames > 1) return;
+    console.warn(
+      `[chat-stream] discarding frame (${reason}): ${payload.slice(0, 200)}`,
+      detail,
+    );
+  }
 
   function handlePayload(payload: string): void {
     if (!payload) return;
     let json: unknown;
     try {
       json = JSON.parse(payload);
-    } catch {
+    } catch (error) {
       // A non-JSON frame cannot complete the stream; only `done` can.
+      reportMalformed(payload, "not JSON", error);
       return;
     }
     const parsed = streamEventSchema.safeParse(json);
-    if (!parsed.success) return;
+    if (!parsed.success) {
+      reportMalformed(payload, "not a stream event", parsed.error);
+      return;
+    }
 
     const event = parsed.data;
     if (event.type === "error") {
@@ -106,7 +128,14 @@ export async function consumeChatStream(
       if (streamError) break;
     }
   } finally {
-    await eventReader.cancel().catch(() => {});
+    await eventReader.cancel().catch((error: unknown) => {
+      // Teardown only. The reader is being discarded and any stream failure was
+      // already reported by `streamError`, so this cannot reach the user.
+      console.debug(
+        "[chat-stream] reader cancel during teardown failed:",
+        error,
+      );
+    });
   }
 
   if (streamError) throw new Error(streamError);

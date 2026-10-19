@@ -26,7 +26,9 @@
     "renameAction": "Cambiar nombre",
     "deleteTitle": "Eliminar",
     "deleteConversationDescription": "¿Seguro que quieres eliminar esta conversación? Esta acción no se puede deshacer.",
-    "deleteImageDescription": "¿Seguro que quieres eliminar esta imagen? Esta acción no se puede deshacer."
+    "deleteImageDescription": "¿Seguro que quieres eliminar esta imagen? Esta acción no se puede deshacer.",
+    "copyFailed": "Error al copiar",
+    "copyFailedDescription": "No se pudo copiar el texto al portapapeles."
   },
   "nav": {
     "chat": "Chat",

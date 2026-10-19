@@ -26,7 +26,9 @@
     "renameAction": "إعادة التسمية",
     "deleteTitle": "حذف",
     "deleteConversationDescription": "هل تريد حذف هذه المحادثة؟ لا يمكن التراجع عن هذا الإجراء.",
-    "deleteImageDescription": "هل تريد حذف هذه الصورة؟ لا يمكن التراجع عن هذا الإجراء."
+    "deleteImageDescription": "هل تريد حذف هذه الصورة؟ لا يمكن التراجع عن هذا الإجراء.",
+    "copyFailed": "فشل النسخ",
+    "copyFailedDescription": "تعذر نسخ النص إلى الحافظة."
   },
   "nav": {
     "chat": "المحادثة",

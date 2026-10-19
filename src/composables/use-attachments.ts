@@ -78,8 +78,12 @@ export async function readAttachments(
         mimeType: parsed.mimeType,
         name: file.name,
       });
-    } catch {
-      errors.push({ fileName: file.name, message: "Could not read file." });
+    } catch (error) {
+      console.error(`[attachments] could not read "${file.name}":`, error);
+      errors.push({
+        fileName: file.name,
+        message: `Could not read file: ${error instanceof Error ? error.message : String(error)}`,
+      });
     }
   }
 

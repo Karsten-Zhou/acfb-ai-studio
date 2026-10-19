@@ -12,6 +12,7 @@ import {
   loadLanguages,
   resolveTheme,
 } from "@/lib/code-highlight";
+import { toastError } from "@/lib/toast";
 
 const props = defineProps<{
   code: string;
@@ -58,23 +59,46 @@ watch(
 
 const copied = ref(false);
 
+/**
+ * Legacy copy path for insecure contexts and older browsers. `execCommand`
+ * reports success in its return value, so a false there is a real failure.
+ */
+function copyViaTextArea(code: string): boolean {
+  const ta = document.createElement("textarea");
+  ta.value = code;
+  ta.style.position = "fixed";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.select();
+  let ok = false;
+  try {
+    ok = document.execCommand("copy");
+  } catch (error) {
+    console.error("[clipboard] execCommand copy failed:", error);
+  }
+  ta.remove();
+  return ok;
+}
+
 async function copy() {
+  let succeeded: boolean;
   try {
     await navigator.clipboard.writeText(props.code);
-  } catch {
-    // Fallback for non-HTTPS contexts / older browsers.
-    const ta = document.createElement("textarea");
-    ta.value = props.code;
-    ta.style.position = "fixed";
-    ta.style.opacity = "0";
-    document.body.appendChild(ta);
-    ta.select();
-    try {
-      document.execCommand("copy");
-    } catch {
-      // Clipboard unavailable even via fallback.
-    }
-    ta.remove();
+    succeeded = true;
+  } catch (error) {
+    // The Clipboard API needs a secure context; fall back to `execCommand`.
+    console.warn(
+      "[clipboard] async copy unavailable, trying execCommand:",
+      error,
+    );
+    succeeded = copyViaTextArea(props.code);
+  }
+
+  // The "copied" tick must only appear when something actually landed on the
+  // clipboard, otherwise the UI claims a copy the user cannot paste.
+  if (!succeeded) {
+    toastError(t("common.copyFailed"), t("common.copyFailedDescription"));
+    return;
   }
   copied.value = true;
   window.setTimeout(() => (copied.value = false), 1500);

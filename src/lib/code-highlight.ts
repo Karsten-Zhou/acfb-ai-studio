@@ -113,7 +113,13 @@ export function highlightCode(
       theme,
       defaultColor: false,
     });
-  } catch {
+  } catch (error) {
+    // Reached only when Shiki fails for a language this module already deemed
+    // loadable, so the plain-text block the user sees hides a real defect.
+    console.warn(
+      `[highlight] failed to highlight "${language}", rendering plain text:`,
+      error,
+    );
     highlighted = highlighter.codeToHtml(code, {
       lang: "text",
       theme,

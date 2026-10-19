@@ -170,7 +170,11 @@ async function putState(body: string): Promise<SyncStateResponse> {
 async function readJson(res: Response): Promise<unknown> {
   try {
     return await res.json();
-  } catch {
+  } catch (error) {
+    // The caller turns the null into a user-facing sync error; this keeps the
+    // transport detail (truncated body, HTML from a proxy) out of the UI but
+    // not out of the logs.
+    console.warn(`[sync] response body is not JSON (${res.status}):`, error);
     return null;
   }
 }

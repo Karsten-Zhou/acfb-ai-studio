@@ -26,7 +26,9 @@
     "renameAction": "Ganti nama",
     "deleteTitle": "Hapus",
     "deleteConversationDescription": "Yakin ingin menghapus percakapan ini? Tindakan ini tidak dapat dibatalkan.",
-    "deleteImageDescription": "Yakin ingin menghapus gambar ini? Tindakan ini tidak dapat dibatalkan."
+    "deleteImageDescription": "Yakin ingin menghapus gambar ini? Tindakan ini tidak dapat dibatalkan.",
+    "copyFailed": "Gagal menyalin",
+    "copyFailedDescription": "Teks tidak dapat disalin ke papan klip."
   },
   "nav": {
     "chat": "Chat",

@@ -21,8 +21,10 @@ export function dimensionsOfBytes(bytes: Uint8Array): ImageDimensions {
   try {
     const { width, height } = imageSize(bytes);
     return width && height ? { width, height } : {};
-  } catch {
-    // Not worth failing the request over: report "size unknown" instead.
+  } catch (error) {
+    // Not worth failing the request over: report "size unknown" instead, but
+    // leave a trace for whoever is wondering why a dimension is missing.
+    console.debug("[image-dimensions] unrecognized image payload:", error);
     return {};
   }
 }
@@ -38,7 +40,11 @@ export function dimensionsOfBase64(base64: string): ImageDimensions {
     return head.width !== undefined
       ? head
       : dimensionsOfBytes(base64ToBytes(base64));
-  } catch {
+  } catch (error) {
+    console.debug(
+      "[image-dimensions] could not decode the base64 body:",
+      error,
+    );
     return {};
   }
 }

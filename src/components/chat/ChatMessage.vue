@@ -33,6 +33,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useDirection } from "reka-ui";
 import { formatNumber } from "@/lib/i18n";
 import { buildAssistantParts } from "@/lib/chat-parts";
+import { toastError } from "@/lib/toast";
 import MarkdownContent from "./MarkdownContent.vue";
 import AttachmentList from "./AttachmentList.vue";
 import ToolCallList from "./ToolCallList.vue";
@@ -157,13 +158,17 @@ function onEditKeydown(event: KeyboardEvent) {
 async function copy() {
   try {
     await navigator.clipboard.writeText(props.message.content);
-    copied.value = true;
-    setTimeout(() => {
-      copied.value = false;
-    }, 1500);
-  } catch {
-    // Clipboard unavailable.
+  } catch (error) {
+    // Needs a secure context; without it there is nothing to copy, so say so
+    // instead of flashing the "copied" state the user cannot act on.
+    console.error("[clipboard] could not copy the message:", error);
+    toastError(t("common.copyFailed"), t("common.copyFailedDescription"));
+    return;
   }
+  copied.value = true;
+  setTimeout(() => {
+    copied.value = false;
+  }, 1500);
 }
 </script>
 

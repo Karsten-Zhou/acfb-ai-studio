@@ -26,7 +26,9 @@
     "renameAction": "नाम बदलें",
     "deleteTitle": "हटाएँ",
     "deleteConversationDescription": "क्या आप वाकई इस बातचीत को हटाना चाहते हैं? इसे वापस नहीं लाया जा सकता।",
-    "deleteImageDescription": "क्या आप वाकई इस इमेज को हटाना चाहते हैं? इसे वापस नहीं लाया जा सकता।"
+    "deleteImageDescription": "क्या आप वाकई इस इमेज को हटाना चाहते हैं? इसे वापस नहीं लाया जा सकता।",
+    "copyFailed": "कॉपी विफल",
+    "copyFailedDescription": "टेक्स्ट को क्लिपबोर्ड पर कॉपी नहीं किया जा सका।"
   },
   "nav": {
     "chat": "चैट",

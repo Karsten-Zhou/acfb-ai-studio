@@ -26,7 +26,9 @@
     "renameAction": "名前を変更",
     "deleteTitle": "削除",
     "deleteConversationDescription": "この会話を削除しますか？この操作は元に戻せません。",
-    "deleteImageDescription": "この画像を削除しますか？この操作は元に戻せません。"
+    "deleteImageDescription": "この画像を削除しますか？この操作は元に戻せません。",
+    "copyFailed": "コピーに失敗しました",
+    "copyFailedDescription": "クリップボードにコピーできませんでした。"
   },
   "nav": {
     "chat": "チャット",

@@ -26,7 +26,9 @@
     "renameAction": "Переименовать",
     "deleteTitle": "Удаление",
     "deleteConversationDescription": "Удалить этот разговор? Это действие нельзя отменить.",
-    "deleteImageDescription": "Удалить это изображение? Это действие нельзя отменить."
+    "deleteImageDescription": "Удалить это изображение? Это действие нельзя отменить.",
+    "copyFailed": "Не удалось скопировать",
+    "copyFailedDescription": "Текст не удалось скопировать в буфер обмена."
   },
   "nav": {
     "chat": "Чат",

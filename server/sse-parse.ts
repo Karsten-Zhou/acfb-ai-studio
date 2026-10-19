@@ -111,11 +111,12 @@ export function upstreamFrames(): {
       }
       try {
         controller.enqueue({ kind: "payload", payload: JSON.parse(data) });
-      } catch {
+      } catch (error) {
         // Distinguish malformed JSON from SSE framing: the frame was
         // well-formed but its body was not the JSON the binding is contracted
         // to send. Keep the first offender for the terminal message.
         if (!malformed) malformed = clip(data);
+        console.debug("[sse] frame body is not JSON:", error);
       }
     },
 
@@ -140,7 +141,12 @@ export function upstreamFrames(): {
     .pipeThrough(terminator)
     .pipeThrough(sse)
     .pipeTo(policy.writable)
-    .catch(() => {});
+    .catch((error: unknown) => {
+      console.debug(
+        "[sse] pipe closed, the consumer already got the error:",
+        error,
+      );
+    });
 
   return { writable: decoder.writable, readable: policy.readable };
 }

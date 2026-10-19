@@ -56,7 +56,8 @@ app.put("/", async (c) => {
   let raw: string;
   try {
     raw = await c.req.text();
-  } catch {
+  } catch (error) {
+    console.warn("[sync] could not read the request body:", error);
     return c.json({ error: "Could not read the request body." }, 400);
   }
 
@@ -72,7 +73,8 @@ app.put("/", async (c) => {
   let body: unknown;
   try {
     body = JSON.parse(raw);
-  } catch {
+  } catch (error) {
+    console.warn("[sync] request body is not valid JSON:", error);
     return c.json({ error: "Request body is not valid JSON." }, 400);
   }
 

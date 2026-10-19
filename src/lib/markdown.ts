@@ -145,8 +145,14 @@ function collectCodeBlocks(tokens: Token[], ctx: RenderContext): void {
             ...KATEX_OPTIONS,
             displayMode: true,
           });
-        } catch {
-          // Fallback: plain block rendered by <CodeBlock/>.
+        } catch (error) {
+          // Fallback: plain block rendered by <CodeBlock/>, so the user still
+          // reads the source. Logged because malformed math is a real defect in
+          // what the model produced, and it re-renders on every visit.
+          console.debug(
+            `[markdown] KaTeX could not render: ${code.text.slice(0, 80)}`,
+            error,
+          );
           ctx.codeBlocks.push({ language: "text", code: code.text });
           code.type = "html";
           code.text = codeBlockMarker(ctx.codeBlocks.length - 1);

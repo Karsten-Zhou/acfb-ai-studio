@@ -70,7 +70,13 @@ function safeArguments(raw: string): unknown {
   if (!trimmed) return {};
   try {
     return JSON.parse(trimmed) as unknown;
-  } catch {
+  } catch (error) {
+    // A model that ignores the JSON contract still gets its call executed with
+    // the text it wrote, but the malformed payload has to be visible in logs.
+    console.warn(
+      "[agent] tool arguments are not JSON, passing through raw:",
+      error,
+    );
     return trimmed;
   }
 }
