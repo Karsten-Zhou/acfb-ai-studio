@@ -117,7 +117,6 @@ bun run deploy
 - [ ] Custom OpenAI compatible endpoint support for chatting AIs
 - [ ] Optimise the remaining token calculation.
 - [ ] API fails without login page redirecting when Cloudflare Access expires.
-- [ ] **Client cache quota mismatch:** the app gates generation on Cloudflare KV's 25 MiB limit but persists the same payload to `localStorage`, which is capped at roughly 5 MiB of UTF-16 (~2.5M characters) per origin. Move attachments/gallery images to IndexedDB or object storage, or catch `QuotaExceededError` and enforce a local budget.
 
 ## My Other Projects
 

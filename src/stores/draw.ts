@@ -3,11 +3,10 @@
 //
 // A Pinia store because the gallery is rendered from two places (the sidebar
 // list and the image view) and must survive route changes; the gallery itself
-// is persisted with VueUse's `useStorage`.
+// is persisted in IndexedDB.
 
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { throttleFilter, useStorage } from "@vueuse/core";
 import { defaultOptions, setDefaults } from "@/composables/chat-defaults";
 import { useSyncStore } from "@/stores/sync";
 import {
@@ -27,8 +26,7 @@ import { readApiError } from "@/lib/api-error";
 import { formatMebibytes, t } from "@/lib/i18n";
 import { toastError } from "@/lib/toast";
 import { autoTitle, generateTitle } from "@/lib/titles";
-
-const GALLERY_KEY = "draw:gallery:v1";
+import { GALLERY_STORAGE_KEY, usePersistentState } from "@/lib/app-storage";
 
 /** Re-exported for consumers that already import it from this module. */
 export type { GalleryItem };
@@ -74,14 +72,15 @@ export const useDrawStore = defineStore("draw", () => {
   const sync = useSyncStore();
 
   /**
-   * A reactive ref backed by localStorage. `throttleFilter(300)` batches rapid
-   * writes (e.g. clearing then re-adding during bulk operations) and uses a
-   * deep watcher internally, so mutating `gallery.unshift(...)` or reassigning
-   * the array both persist automatically.
+   * A reactive ref backed by IndexedDB (generated images are data URLs, so they
+   * do not fit in localStorage). Deep observation persists
+   * `gallery.unshift(...)` and reassignment alike; `hydrated` resolves once the
+   * stored gallery has been read.
    */
-  const gallery = useStorage<GalleryItem[]>(GALLERY_KEY, [], undefined, {
-    eventFilter: throttleFilter(300),
-  });
+  const { state: gallery, hydrated } = usePersistentState<GalleryItem[]>(
+    GALLERY_STORAGE_KEY,
+    [],
+  );
 
   const options = ref<DrawOptions>({
     model: resolveInitialModel(),
@@ -309,6 +308,7 @@ export const useDrawStore = defineStore("draw", () => {
 
   return {
     gallery,
+    hydrated,
     options,
     generating,
     titlesPendingIds,

@@ -9,9 +9,8 @@
 
 import { defineStore } from "pinia";
 import { ref, watch } from "vue";
-import { throttleFilter, useStorage } from "@vueuse/core";
 import { STORAGE_KEY } from "@shared/chat";
-import { migrateChatStorage } from "@shared/chat-migration";
+import { usePersistentState } from "@/lib/app-storage";
 import type { ChatRequest } from "@shared/api";
 import { FREE_TEXT_GENERATION_MODELS } from "@shared/generated/models";
 import { defaultOptions, setDefaults } from "@/composables/chat-defaults";
@@ -46,32 +45,20 @@ function resolveInitialModel(): string {
   return FREE_TEXT_GENERATION_MODELS[0]?.name ?? "";
 }
 
-/**
- * Run the versioned chat-storage migration against this browser's storage.
- * The migration and its write-verify-delete safety live in
- * `@shared/chat-migration`; this is only the environment guard.
- */
-function migrateLegacyStorage(): void {
-  if (typeof localStorage === "undefined") return;
-  migrateChatStorage(localStorage);
-}
-
 export const useChatStore = defineStore("chat", () => {
   const sync = useSyncStore();
 
   /**
-   * A reactive ref backed by localStorage. The `throttleFilter(300)` ensures
-   * that rapid mutations during streaming are batched into at most one write
-   * every 300ms.
+   * A reactive ref backed by IndexedDB (conversations embed base64 images, so
+   * they do not fit in localStorage). Legacy keys are folded forward and copied
+   * in before the app mounts (see `lib/app-storage.ts`); `hydrated` reports
+   * when the stored tree has been read. KV data is migrated separately, on
+   * read (see `shared/sync.ts`).
    */
-  // One-time upgrade of the pre-`segments` (v2) localStorage key. New writes go
-  // to the v3 key; this folds any old data forward and removes the old key so
-  // the upgrade runs exactly once. KV data is migrated separately, on read (see
-  // `shared/sync.ts`).
-  migrateLegacyStorage();
-  const conversations = useStorage<Conversation[]>(STORAGE_KEY, [], undefined, {
-    eventFilter: throttleFilter(300),
-  });
+  const { state: conversations, hydrated } = usePersistentState<Conversation[]>(
+    STORAGE_KEY,
+    [],
+  );
   const activeId = ref<string | null>(null);
   const model = ref(resolveInitialModel());
   const reasoningEffort = ref<ReasoningEffort>(defaultOptions.reasoningEffort);
@@ -102,7 +89,9 @@ export const useChatStore = defineStore("chat", () => {
     );
   }
 
-  dropPersistedBlankThreads();
+  // Filtered only after the stored tree has been read: doing it while the read
+  // is in flight would persist the filtered result over the value being read.
+  void hydrated.then(dropPersistedBlankThreads);
 
   // Remember the composer options as the defaults for new conversations.
   watch(
@@ -641,6 +630,7 @@ export const useChatStore = defineStore("chat", () => {
 
   return {
     conversations,
+    hydrated,
     activeId,
     model,
     reasoningEffort,
