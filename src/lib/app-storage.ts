@@ -78,10 +78,25 @@ export function usePersistentState<T>(key: string, initialValue: T) {
       // the store exactly current; re-cloning would only echo the same bytes
       // back to IndexedDB and to the other tab.
       if (edits === storedAtEdits) return;
+
+      let next: T;
+      try {
+        // `toRaw` first: the raw graph holds plain objects, while reading through
+        // the reactive proxy would clone through a proxy per node.
+        next = structuredClone(toRaw(state.value));
+      } catch (error) {
+        // Nothing reached the store, so these edits stay unhandled and the next
+        // mutation attempts the snapshot again.
+        storageIssue.value ??= "unavailable";
+        console.error(
+          `[storage] could not snapshot "${key}" for IndexedDB:`,
+          error,
+        );
+        return;
+      }
+
       storedAtEdits = edits;
-      // `toRaw` first: the raw graph holds plain objects, while reading through
-      // the reactive proxy would clone through a proxy per node.
-      snapshot = structuredClone(toRaw(state.value));
+      snapshot = next;
       persisted.data.value = snapshot;
     },
     SNAPSHOT_THROTTLE_MS,
@@ -170,9 +185,18 @@ async function migrateKey(key: string, local: KeyValueStore): Promise<void> {
  * back to the quota this change exists to escape.
  */
 export async function initAppStorage(): Promise<void> {
-  let local: KeyValueStore | null = null;
+  let local: KeyValueStore;
   try {
     local = window.localStorage;
+  } catch (error) {
+    // Nothing can be folded forward, but there is no evidence that legacy data
+    // exists either and IndexedDB may still be perfectly usable, so this stays a
+    // log rather than a warning the user could not act on.
+    console.error("[storage] localStorage is unavailable:", error);
+    return;
+  }
+
+  try {
     const folded = migrateChatStorage(local);
     if (folded.blocked) {
       storageIssue.value ??= "legacy-unreadable";
@@ -183,14 +207,19 @@ export async function initAppStorage(): Promise<void> {
       );
     }
   } catch (error) {
+    // The versioned upgrade itself threw, so whatever legacy copy exists stays
+    // there, unread by this session.
+    storageIssue.value ??= "legacy-unreadable";
     console.error("[storage] Legacy chat migration failed:", error);
   }
-  if (!local) return;
 
   for (const key of [STORAGE_KEY, GALLERY_STORAGE_KEY]) {
     try {
       await migrateKey(key, local);
     } catch (error) {
+      // Reading or writing IndexedDB failed. That is a persistence problem, not
+      // a legacy-format one, so it warns differently.
+      storageIssue.value ??= "unavailable";
       console.error(`[storage] Failed to migrate "${key}":`, error);
     }
   }
