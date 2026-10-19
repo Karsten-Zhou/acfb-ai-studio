@@ -36,17 +36,12 @@ export async function consumeChatStream(
    */
   let malformedFrames = 0;
 
-  function reportMalformed(
-    payload: string,
-    reason: string,
-    detail: unknown,
-  ): void {
+  function reportMalformed(reason: string, detail?: unknown): void {
     malformedFrames++;
     if (malformedFrames > 1) return;
-    console.warn(
-      `[chat-stream] discarding frame (${reason}): ${payload.slice(0, 200)}`,
-      detail,
-    );
+    // Never log the frame body: it is conversation content. The reason and the
+    // offending field paths are enough to find the bug, which is in the binding.
+    console.warn(`[chat-stream] discarding a frame (${reason})`, detail ?? "");
   }
 
   function handlePayload(payload: string): void {
@@ -54,14 +49,18 @@ export async function consumeChatStream(
     let json: unknown;
     try {
       json = JSON.parse(payload);
-    } catch (error) {
-      // A non-JSON frame cannot complete the stream; only `done` can.
-      reportMalformed(payload, "not JSON", error);
+    } catch {
+      // The `SyntaxError` message can quote the input, so the error object
+      // stays out of the log.
+      reportMalformed("not JSON");
       return;
     }
     const parsed = streamEventSchema.safeParse(json);
     if (!parsed.success) {
-      reportMalformed(payload, "not a stream event", parsed.error);
+      reportMalformed(
+        "not a stream event",
+        parsed.error.issues.map((issue) => issue.path.join(".") || "(root)"),
+      );
       return;
     }
 
@@ -128,14 +127,10 @@ export async function consumeChatStream(
       if (streamError) break;
     }
   } finally {
-    await eventReader.cancel().catch((error: unknown) => {
-      // Teardown only. The reader is being discarded and any stream failure was
-      // already reported by `streamError`, so this cannot reach the user.
-      console.debug(
-        "[chat-stream] reader cancel during teardown failed:",
-        error,
-      );
-    });
+    // Nothing to report here: the reader is being discarded, and the reason we
+    // are tearing down (`streamError`, an abort, or a missing `done`) is thrown
+    // by this function itself a few lines below.
+    await eventReader.cancel().catch(() => {});
   }
 
   if (streamError) throw new Error(streamError);
@@ -146,5 +141,11 @@ export async function consumeChatStream(
         ? "Generation stopped."
         : "The response stream ended before it finished.",
     );
+  }
+
+  // `done` still arrives after a frame is discarded, so without this the reply
+  // reads as finished while the content of every dropped delta is missing.
+  if (malformedFrames > 0) {
+    throw new Error("The response contained data this app could not read.");
   }
 }

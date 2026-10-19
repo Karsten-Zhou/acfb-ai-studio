@@ -141,12 +141,7 @@ export function upstreamFrames(): {
     .pipeThrough(terminator)
     .pipeThrough(sse)
     .pipeTo(policy.writable)
-    .catch((error: unknown) => {
-      console.debug(
-        "[sse] pipe closed, the consumer already got the error:",
-        error,
-      );
-    });
+    .catch(() => {});
 
   return { writable: decoder.writable, readable: policy.readable };
 }

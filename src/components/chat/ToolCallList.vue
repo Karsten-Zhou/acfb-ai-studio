@@ -28,10 +28,9 @@ const { t } = useI18n();
 function pretty(json: string): string {
   try {
     return JSON.stringify(JSON.parse(json), null, 2);
-  } catch (error) {
-    // The raw arguments are rendered instead, so the user still sees exactly
-    // what the model sent; this line is for tracing which call produced it.
-    console.debug("[tool-call] arguments are not JSON, showing raw:", error);
+  } catch {
+    // Invalid JSON is a model formatting slip, not a defect here: the raw
+    // arguments are rendered, so the user sees exactly what was sent.
     return json;
   }
 }

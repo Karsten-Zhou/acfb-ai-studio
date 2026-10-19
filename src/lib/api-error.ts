@@ -25,13 +25,9 @@ export async function readApiError(res: Response): Promise<ApiError> {
         const { error, code } = parsed.data;
         return { message: error, status, ...(code ? { code } : {}) };
       }
-    } catch (error) {
+    } catch {
       // Not JSON (an HTML error page, a proxy response): fall through and show
       // the body itself rather than losing the only clue we have.
-      console.debug(
-        "[api-error] error body is not JSON, showing it raw:",
-        error,
-      );
     }
     return { message: raw.slice(0, 300), status };
   }
